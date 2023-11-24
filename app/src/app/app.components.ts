@@ -40,4 +40,5 @@ export class AppComponent {
     this.pageHeading = this.appService.pageHeading$;
     this.appService.init();
   }
+  /* gyl commit teszthez */
 }
