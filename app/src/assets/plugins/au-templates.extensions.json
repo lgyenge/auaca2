@@ -24,7 +24,7 @@
             "id": "au.extension.main",
             "icon": "extension",
             "title": "au Extension",
-            "route": "au.extension.route"
+            "route": "templates"
           }
         ]
       }

@@ -22,6 +22,8 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable @cspell/spellchecker */
+
 import { FilesComponent } from './components/files/files.component';
 import { LibrariesComponent } from './components/libraries/libraries.component';
 import { FavoriteLibrariesComponent } from './components/favorite-libraries/favorite-libraries.component';
@@ -40,6 +42,8 @@ import { Route } from '@angular/router';
 import { SharedLinkViewComponent } from './components/shared-link-view/shared-link-view.component';
 import { TrashcanComponent } from './components/trashcan/trashcan.component';
 import { ShellLayoutComponent } from '@alfresco/adf-core/shell';
+import { AuTemplatesComponent } from './components/au-templates/au-templates.component';
+import { AuTemplateItemComponent } from './components/au-template-item/au-template-item.component';
 
 export const CONTENT_ROUTES: ExtensionRoute[] = [
   {
@@ -504,6 +508,35 @@ export const CONTENT_LAYOUT_ROUTES: Route = {
           loadChildren: () => import('@alfresco/aca-content/folder-rules').then((m) => m.AcaFolderRulesModule)
         }
       ]
+    },
+    {
+      path: 'templates',
+      children: [
+        {
+          path: '',
+          component: AuTemplatesComponent,
+          data: {
+            title: 'Sablonok',
+            sortingPreferenceKey: 'libraries'
+          }
+        }
+      ]
+    },
+    {
+      path: 'templates/:folderId',
+      /* canActivate: [AuthGuardEcm], */
+      children: [
+        {
+          path: '',
+          component: AuTemplateItemComponent,
+          data: {
+            title: 'Ügyfél',
+            icon: 'folder',
+            defaultNodeId: '-my-'
+          }
+        }
+      ]
+      /* canActivateChild: [AuthGuardEcm] */
     },
     {
       path: '**',

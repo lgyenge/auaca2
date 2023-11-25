@@ -26,7 +26,7 @@ import { DataTableModule, PaginationModule, ShowHeaderMode } from '@alfresco/adf
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { NodeEntry, Node, PathElement } from '@alfresco/js-api';
-import { NodeActionsService } from '../../services/node-actions.service';
+// import { NodeActionsService } from '../../../../../projects/aca-content/src/lib/services/node-actions.service';
 // import { NodeActionsService } from '@alfresco/aca-content';
 
 import {
@@ -45,15 +45,15 @@ import { FilterSearch, ShareDataRow, FileUploadEvent, BreadcrumbModule, UploadMo
 import { DocumentListPresetRef, ExtensionsModule } from '@alfresco/adf-extensions';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DocumentListDirective } from '../../directives/document-list.directive';
+// import { DocumentListDirective } from '../../../../../projects/aca-content/src/lib/directives/document-list.directive';
 // import { DocumentListDirective } from '@alfresco/aca-content';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
-  selector: 'lib-au-templates',
-  templateUrl: './au-templates.component.html',
-  styleUrls: ['./au-templates.component.css'],
+  selector: 'lib-au-template-item',
+  templateUrl: './au-template-item.component.html',
+  styleUrls: ['./au-template-item.component.css'],
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
@@ -63,7 +63,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     GenericErrorComponent,
     UploadModule,
     DocumentListModule,
-    DocumentListDirective,
+    // DocumentListDirective,
     ContextActionsDirective,
     DataTableModule,
     ExtensionsModule,
@@ -75,7 +75,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ToolbarComponent
   ]
 })
-export class AuTemplatesComponent extends PageComponent implements OnInit, OnDestroy {
+export class AuTemplateItemComponent extends PageComponent implements OnInit, OnDestroy {
   isValidPath = true;
   isAdmin = false;
   selectedNode: NodeEntry;
@@ -87,7 +87,7 @@ export class AuTemplatesComponent extends PageComponent implements OnInit, OnDes
   columns: DocumentListPresetRef[] = [];
   isFilterHeaderActive = false;
 
-  constructor(private route: ActivatedRoute, private contentApi: ContentApiService, private nodeActionsService: NodeActionsService) {
+  constructor(private route: ActivatedRoute, private contentApi: ContentApiService /* private nodeActionsService: NodeActionsService */) {
     super();
   }
 
@@ -125,7 +125,7 @@ export class AuTemplatesComponent extends PageComponent implements OnInit, OnDes
     });
 
     this.subscriptions = this.subscriptions.concat([
-      this.nodeActionsService.contentCopied.subscribe((nodes) => this.onContentCopied(nodes)),
+      // this.nodeActionsService.contentCopied.subscribe((nodes) => this.onContentCopied(nodes)),
       this.uploadService.fileUploadComplete.pipe(debounceTime(300)).subscribe((file) => this.onFileUploadedEvent(file)),
       this.uploadService.fileUploadDeleted.pipe(debounceTime(300)).subscribe((file) => this.onFileUploadedEvent(file))
     ]);
@@ -389,3 +389,17 @@ export class AuTemplatesComponent extends PageComponent implements OnInit, OnDes
     this.isValidPath = false;
   }
 }
+
+/* import { Component, ViewEncapsulation } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'lib-au-template-item',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './au-template-item.component.html',
+  styleUrls: ['./au-template-item.component.css'],
+  encapsulation: ViewEncapsulation.None
+})
+export class AuTemplateItemComponent {}
+ */
