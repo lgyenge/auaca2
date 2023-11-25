@@ -1,0 +1,33 @@
+{
+  "$schema": "../../../extension.schema.json",
+  "$id": "au-templates",
+  "$version": "1.0.0",
+  "$vendor": "Your name or company name",
+  "$name": "plugin1",
+  "$description": "demo plugin",
+  "$license": "MIT",
+
+  "routes": [
+    {
+      "id": "au.extension.route",
+      "path": "ext/au/route",
+      "component": "au-templates.main.component"
+    }
+  ],
+
+  "features": {
+    "navbar": [
+      {
+        "id": "au.extension.nav",
+        "items": [
+          {
+            "id": "au.extension.main",
+            "icon": "extension",
+            "title": "au Extension",
+            "route": "au.extension.route"
+          }
+        ]
+      }
+    ]
+  }
+}
