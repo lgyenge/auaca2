@@ -22,21 +22,29 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NgModule } from '@angular/core';
-import { EffectsModule } from '@ngrx/effects';
-import { SnackbarEffects } from './effects/snackbar.effects';
-import { DialogEffects } from './effects/dialog.effects';
-import { RouterEffects } from './effects/router.effects';
-import { StoreModule } from '@ngrx/store';
-import { auTemplatesReducer } from './reducers/au-templates.reducer';
-// import { auReducer } from './reducers/au-templates.reducer';
+import { ActionReducerMap } from '@ngrx/store';
+// import { userReducer, UserState } from './user.reducer';
+// import { cartReducer, CartState } from './cart.reducer';
 
-import { AuPageEffects } from './effects/au-templates.effects';
+import { appReducer } from '../../../../aca-content/src/lib/store/reducers/app.reducer';
+import { AppState, State, AppStore } from '@alfresco/aca-shared/store';
+// import { AppStore, State } from '@alfresco/aca-shared/store';
 
-@NgModule({
-  imports: [
-    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPageEffects]),
-    StoreModule.forFeature('auPages', auTemplatesReducer)
-  ]
-})
-export class SharedStoreModule {}
+// import { auTemplatesReducer } from './au-templates.reducer';
+// import { auReducer } from './au-templates.reducer';
+
+export interface AcaContentState {
+  app: AppState;
+  auTemplates: State;
+}
+
+/* export const reducers: ActionReducerMap<AcaContentState> = {
+  app: appReducer,
+  auTemplates: auReducer
+}; */
+
+export const reducers: ActionReducerMap<AppStore> = {
+  app: appReducer
+};
+
+// export const reducers = appReducer;

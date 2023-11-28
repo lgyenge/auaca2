@@ -22,21 +22,24 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NgModule } from '@angular/core';
-import { EffectsModule } from '@ngrx/effects';
-import { SnackbarEffects } from './effects/snackbar.effects';
-import { DialogEffects } from './effects/dialog.effects';
-import { RouterEffects } from './effects/router.effects';
-import { StoreModule } from '@ngrx/store';
-import { auTemplatesReducer } from './reducers/au-templates.reducer';
-// import { auReducer } from './reducers/au-templates.reducer';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { AuPageEffects } from './effects/au-templates.effects';
+import { Injectable } from '@angular/core';
+import { NodesApiService } from '@alfresco/adf-content-services';
 
-@NgModule({
-  imports: [
-    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPageEffects]),
-    StoreModule.forFeature('auPages', auTemplatesReducer)
-  ]
+@Injectable({
+  providedIn: 'root'
 })
-export class SharedStoreModule {}
+export class AuTemplatesService {
+
+  constructor(private nodesApi: NodesApiService) {}
+
+  getAuPages(nodeId: string) {
+    const opts = {
+      skipCount: 0,
+      maxItems: 20,
+      where: "(nodeType='cm:folder')"
+    };
+    return this.nodesApi.getNodeChildren(nodeId, opts);
+  }
+}

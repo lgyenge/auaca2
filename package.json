@@ -52,6 +52,7 @@
     "@fontsource/open-sans": "^5.0.12",
     "@mat-datetimepicker/core": "^10.1.1",
     "@ngrx/effects": "^14.2.0",
+    "@ngrx/entity": "^14.3.3",
     "@ngrx/router-store": "^14.2.0",
     "@ngrx/store": "^14.2.0",
     "@ngrx/store-devtools": "^14.2.0",

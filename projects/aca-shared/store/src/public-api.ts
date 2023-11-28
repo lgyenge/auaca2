@@ -52,3 +52,11 @@ export * from './selectors/app.selectors';
 export * from './states/app.state';
 
 export * from './store.module';
+
+// !!gyl add
+export * from './actions/au-templates-actions';
+export * from './models/au-templates.model';
+export * from './selectors/au-templates.selectors';
+export * from './effects/au-templates.effects';
+// export * from './reducers/au-templates.reducer';
+// export * from './states/au-templates.state'

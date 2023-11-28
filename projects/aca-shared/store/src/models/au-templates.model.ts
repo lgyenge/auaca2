@@ -22,21 +22,10 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NgModule } from '@angular/core';
-import { EffectsModule } from '@ngrx/effects';
-import { SnackbarEffects } from './effects/snackbar.effects';
-import { DialogEffects } from './effects/dialog.effects';
-import { RouterEffects } from './effects/router.effects';
-import { StoreModule } from '@ngrx/store';
-import { auTemplatesReducer } from './reducers/au-templates.reducer';
-// import { auReducer } from './reducers/au-templates.reducer';
+import { Node } from '@alfresco/js-api';
 
-import { AuPageEffects } from './effects/au-templates.effects';
-
-@NgModule({
-  imports: [
-    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPageEffects]),
-    StoreModule.forFeature('auPages', auTemplatesReducer)
-  ]
-})
-export class SharedStoreModule {}
+/* export interface AuPage {
+  id: string;
+}
+ */
+export type AuPage = Node;
