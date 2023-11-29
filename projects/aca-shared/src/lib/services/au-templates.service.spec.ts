@@ -24,14 +24,14 @@
 
 import { TestBed } from '@angular/core/testing';
 
-import { auPagesService } from './au-templates.service';
+import { AuTemplatesService } from './au-templates.service';
 
-describe('auPagesService', () => {
-  let service: auPagesService;
+describe('AuTemplatesService', () => {
+  let service: AuTemplatesService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(auPagesService);
+    service = TestBed.inject(AuTemplatesService);
   });
 
   it('should be created', () => {
