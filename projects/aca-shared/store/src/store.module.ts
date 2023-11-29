@@ -28,15 +28,15 @@ import { SnackbarEffects } from './effects/snackbar.effects';
 import { DialogEffects } from './effects/dialog.effects';
 import { RouterEffects } from './effects/router.effects';
 import { StoreModule } from '@ngrx/store';
-import { auTemplatesReducer } from './reducers/au-templates.reducer';
+import { auPagesReducer } from './reducers/au-pages.reducer';
 // import { auReducer } from './reducers/au-templates.reducer';
 
-import { AuPageEffects } from './effects/au-templates.effects';
+import { AuPagesEffects } from './effects/au-templates.effects';
 
 @NgModule({
   imports: [
-    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPageEffects]),
-    StoreModule.forFeature('auPages', auTemplatesReducer)
+    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPagesEffects]),
+    StoreModule.forFeature('auPages', auPagesReducer)
   ]
 })
 export class SharedStoreModule {}
