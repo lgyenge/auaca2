@@ -24,12 +24,11 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-
 import { createReducer, on, Action } from '@ngrx/store';
 // import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 // import { AuPage, auPagesFeatureKey, State, adapter, initialState } from '@alfresco/aca-shared/store';
-import { adapter, initialState, State } from '@alfresco/aca-shared/store';
-import * as AuPageActions from '@alfresco/aca-shared/store';
+import { adapter, initialState, State } from '../selectors/au-templates.selectors';
+import * as AuPageActions from '../actions/au-templates-actions';
 
 // export const auPagesFeatureKey = 'auPages';
 

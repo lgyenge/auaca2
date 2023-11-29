@@ -28,15 +28,18 @@ import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, concatMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import * as AuPageActions from '@alfresco/aca-shared/store';
+import * as AuPageActions from '../actions/au-templates-actions';
 // import { NodesApiService } from '@alfresco/adf-content-services';
-import { AuTemplatesService } from '../../../../aca-content/src/lib/services/au-templates.service';
+// import { AuTemplatesService } from '../../../src/lib/services/au-templates.service';
+// import { AuTemplatesService } from '../../../src/public-api';
+import { NodesApiService } from '@alfresco/adf-content-services';
 
 @Injectable()
 export class AuPageEffects {
   // private nodesApi = inject(NodesApiService);
-  private auTemplates = inject(AuTemplatesService);
+  // private auTemplates = inject(AuTemplatesService);
   private actions$ = inject(Actions);
+  private nodesApi = inject(NodesApiService);
 
   loadAuPages$ = createEffect(() => {
     return this.actions$.pipe(
@@ -44,7 +47,8 @@ export class AuPageEffects {
       concatMap((templateId) =>
         /** An EMPTY observable only emits completion. Replace with your own observable API request */
         // this.auTemplates.getAuPages('91f74719-c33e-4814-a630-d78022a6cc04').pipe(
-        this.auTemplates.getAuPages(templateId.template).pipe(
+        // this.auTemplates.getAuPages(templateId.template).pipe(
+        this.nodesApi.getNodeChildren(templateId.template).pipe(
           // eslint-disable-next-line no-console
           // tap(console.log('salami')),
           // eslint-disable-next-line no-console

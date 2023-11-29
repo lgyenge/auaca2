@@ -22,19 +22,19 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionReducerMap } from '@ngrx/store';
+// import { ActionReducerMap } from '@ngrx/store';
 // import { userReducer, UserState } from './user.reducer';
 // import { cartReducer, CartState } from './cart.reducer';
 
-import { appReducer } from '../../../../aca-content/src/lib/store/reducers/app.reducer';
-import { AppState, State, AppStore } from '@alfresco/aca-shared/store';
-// import { AppStore, State } from '@alfresco/aca-shared/store';
+// import { appReducer } from '../../../../aca-content/src/lib/store/reducers/app.reducer';
+// import { AppState, State, AppStore } from '@alfresco/aca-shared/store';
+import { State } from '../selectors/au-templates.selectors';
 
 // import { auTemplatesReducer } from './au-templates.reducer';
 // import { auReducer } from './au-templates.reducer';
 
 export interface AcaContentState {
-  app: AppState;
+  // app: AppState;
   auTemplates: State;
 }
 
@@ -42,9 +42,9 @@ export interface AcaContentState {
   app: appReducer,
   auTemplates: auReducer
 }; */
-
+/*
 export const reducers: ActionReducerMap<AppStore> = {
   app: appReducer
-};
+}; */
 
 // export const reducers = appReducer;

@@ -22,24 +22,19 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { TestBed } from '@angular/core/testing';
 
-import { Injectable } from '@angular/core';
-import { NodesApiService } from '@alfresco/adf-content-services';
+import { AuTemplatesService } from './au-templates.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuTemplatesService {
+describe('AuTemplatesService', () => {
+  let service: AuTemplatesService;
 
-  constructor(private nodesApi: NodesApiService) {}
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(AuTemplatesService);
+  });
 
-  getAuPages(nodeId: string) {
-    const opts = {
-      skipCount: 0,
-      maxItems: 20,
-      where: "(nodeType='cm:folder')"
-    };
-    return this.nodesApi.getNodeChildren(nodeId, opts);
-  }
-}
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
