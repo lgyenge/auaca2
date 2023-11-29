@@ -24,8 +24,4 @@
 
 import { Node } from '@alfresco/js-api';
 
-/* export interface AuPage {
-  id: string;
-}
- */
 export type AuPage = Node;

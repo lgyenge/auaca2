@@ -26,12 +26,11 @@
 
 import { Injectable } from '@angular/core';
 import { NodesApiService } from '@alfresco/adf-content-services';
-// import { AppHookService, ContentApiService, NodePermissionService } from '@alfresco/aca-shared';
-// import { DeletedNodesPaging, Node, NodeEntry, PathInfo, SiteBodyCreate, SiteEntry } from '@alfresco/js-api';
+
 @Injectable({
   providedIn: 'root'
 })
-export class AuTemplatesService {
+export class auPagesService {
   constructor(private nodesApi: NodesApiService) {}
 
   getAuPages(nodeId: string) {
@@ -43,23 +42,3 @@ export class AuTemplatesService {
     return this.nodesApi.getNodeChildren(nodeId, opts);
   }
 }
-
-/*  this.nodesApi
-      .getNode(this.folderId)
-      .pipe(takeUntil(this.onDestroy$))
-      .subscribe(
-        (node) => {
-          this.isValidPath = true;
-          if (node && node.isFolder) {
-            this.updateCurrentNode(node);
-          }
-        },
-        () => (this.isValidPath = false)
-      );
-
-    this.subscriptions = this.subscriptions.concat([
-      this.breakpointObserver.observe([Breakpoints.HandsetPortrait, Breakpoints.HandsetLandscape]).subscribe((result) => {
-        this.isSmallScreen = result.matches;
-      })
-    ]);
- */

@@ -23,32 +23,29 @@
  */
 
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-import { AuPage } from '../models/au-templates.model';
-// import * as AuPageActions from '../actions/au-templates-actions';
-
-export const auPagesFeatureKey = 'auPages';
-export type State = EntityState<AuPage>;
-export const adapter: EntityAdapter<AuPage> = createEntityAdapter<AuPage>();
-export const initialState: State = adapter.getInitialState({
-  // additional entity state properties
-});
+import { AuPagesData } from '../reducers/au-pages.reducer';
+import * as fromAuPages from '../reducers/au-pages.reducer';
 
 // Lookup the 'Pages' feature state managed by NgRx
-export const selectState = createFeatureSelector<State>(auPagesFeatureKey);
-
-const { selectAll, selectEntities } = adapter.getSelectors();
+export const selectState = createFeatureSelector<AuPagesData>(fromAuPages.auPagesFeatureKey);
 
 // export const selectPagesLoaded = createSelector(selectState, (state: State) => state.loaded);
 
 // export const selectPagesError = createSelector(selectState, (state: State) => state.error);
 
-export const selectAllPages = createSelector(selectState, (state: State) => selectAll(state));
+export const getAllAuPages = createSelector(selectState, (state: AuPagesData) => fromAuPages.selectAll(state));
 
-export const selectPagesEntities = createSelector(selectState, (state: State) => selectEntities(state));
+export const getAuPagesEntities = createSelector(selectState, (state: AuPagesData) => fromAuPages.selectEntities(state));
 
-// export const selectSelectedId = createSelector(selectState, (state: State) => state.selectedId);
+// export const getSelectedId = createSelector(selectState, (state: State) => state.selectedId);
 
-/* export const selectEntity = createSelector(selectPagesEntities, selectSelectedId, (entities, selectedId) =>
+/* export const getEntity = createSelector(selectPagesEntities, selectSelectedId, (entities, selectedId) =>
   selectedId ? entities[selectedId] : undefined
 ); */
+
+export const auPageQuery = {
+  getAllAuPages,
+  getAuPagesEntities
+  // getSelectedProductId,
+  // getSelectedProduct,
+};

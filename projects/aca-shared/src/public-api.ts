@@ -62,6 +62,3 @@ export * from './lib/testing/lib-testing-module';
 
 export * from './lib/deprecated/shared.module';
 export * from './lib/deprecated/shared-toolbar.module';
-
-// !!gyl add
-export * from './lib/services/au-templates.service';
