@@ -57,9 +57,9 @@ export const auPagesReducer = createReducer(
   on(AuPagesActions.updateAuPages, (state, action) => auPagesAdapter.updateMany(action.auPages, state)),
   on(AuPagesActions.deleteAuPage, (state, action) => auPagesAdapter.removeOne(action.id, state)),
   on(AuPagesActions.deleteAuPages, (state, action) => auPagesAdapter.removeMany(action.ids, state)),
-  on(AuPagesActions.loadTemplatePages, (state) => ({ ...state, loaded: false, error: null })),
-  on(AuPagesActions.loadTemplatePagesSuccess, (state, action) => auPagesAdapter.setAll(action.AuPages, { ...state, loaded: true })),
-  on(AuPagesActions.loadTemplatePagesFailure, (state, { error }) => ({ ...state, error })),
+  on(AuPagesActions.loadAuPages, (state) => ({ ...state, loaded: false, error: null })),
+  on(AuPagesActions.loadAuPagesSuccess, (state, action) => auPagesAdapter.setAll(action.AuPages, { ...state, loaded: true })),
+  on(AuPagesActions.loadAuPagesFailure, (state, { error }) => ({ ...state, error })),
 
   on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll(state))
 );

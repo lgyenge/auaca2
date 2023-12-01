@@ -22,6 +22,8 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable @cspell/spellchecker */
+
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { SnackbarEffects } from './effects/snackbar.effects';
@@ -30,6 +32,9 @@ import { RouterEffects } from './effects/router.effects';
 import { StoreModule } from '@ngrx/store';
 import { auPagesReducer } from './reducers/au-pages.reducer';
 import * as fromAuCategory from './reducers/au-category.reducer';
+import * as fromAuItem from './reducers/au-item.reducer';
+import * as fromAuGlobalResponseSet from './reducers/au-global-response-set.reducer';
+import * as fromAuResposeSet from './reducers/au-response-set.reducer';
 
 import { AuPagesEffects, AuCategoryEffects } from './effects/au-templates.effects';
 
@@ -37,7 +42,10 @@ import { AuPagesEffects, AuCategoryEffects } from './effects/au-templates.effect
   imports: [
     EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPagesEffects, AuCategoryEffects]),
     StoreModule.forFeature('auPages', auPagesReducer),
-    StoreModule.forFeature('auCategories', fromAuCategory.reducer)
+    StoreModule.forFeature('auCategories', fromAuCategory.reducer),
+    StoreModule.forFeature('auItem', fromAuItem.reducer),
+    StoreModule.forFeature('auResponeSet', fromAuResposeSet.reducer),
+    StoreModule.forFeature('auGlobalResponseSet', fromAuGlobalResponseSet.reducer)
   ]
 })
 export class SharedStoreModule {}

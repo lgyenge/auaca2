@@ -55,6 +55,45 @@ export class auTemplatesService {
     term = 'item';
     return this.searchService.getNodeQueryResults(term, searchOptions);
   }
+
+  getTemplateItems(rootNodeId: string, term: string, skipCount: number) {
+    const searchOptions: SearchOptions = {
+      skipCount: skipCount,
+      maxItems: 100,
+      rootNodeId: rootNodeId,
+      nodeType: 'cm:folder',
+      include: [`properties`]
+    };
+
+    term = 'item';
+    return this.searchService.getNodeQueryResults(term, searchOptions);
+  }
+
+  getTemplateResponseSets(rootNodeId: string, term: string, skipCount: number) {
+    const searchOptions: SearchOptions = {
+      skipCount: skipCount,
+      maxItems: 100,
+      rootNodeId: rootNodeId,
+      nodeType: 'cm:folder',
+      include: [`properties`]
+    };
+
+    term = 'item';
+    return this.searchService.getNodeQueryResults(term, searchOptions);
+  }
+
+  getGlobalResponseSets(rootNodeId: string, term: string, skipCount: number) {
+    const searchOptions: SearchOptions = {
+      skipCount: skipCount,
+      maxItems: 100,
+      rootNodeId: rootNodeId,
+      nodeType: 'cm:folder',
+      include: [`properties`]
+    };
+
+    term = 'item';
+    return this.searchService.getNodeQueryResults(term, searchOptions);
+  }
   /* getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {
     const searchOptions: SearchOptions = {
       skipCount: skipCount,
