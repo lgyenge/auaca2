@@ -24,7 +24,7 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { createReducer, on, Action } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as AuPagesActions from '../actions/au-templates-actions';
 import { AuPage } from '../models/au-templates.model';
@@ -57,15 +57,15 @@ export const auPagesReducer = createReducer(
   on(AuPagesActions.updateAuPages, (state, action) => auPagesAdapter.updateMany(action.auPages, state)),
   on(AuPagesActions.deleteAuPage, (state, action) => auPagesAdapter.removeOne(action.id, state)),
   on(AuPagesActions.deleteAuPages, (state, action) => auPagesAdapter.removeMany(action.ids, state)),
-  on(AuPagesActions.loadAuPages, (state) => ({ ...state, loaded: false, error: null })),
-  on(AuPagesActions.loadAuPagesSuccess, (state, action) => auPagesAdapter.setAll(action.AuPages, { ...state, loaded: true })),
-  on(AuPagesActions.loadAuPagesFailure, (state, { error }) => ({ ...state, error })),
+  on(AuPagesActions.loadTemplatePages, (state) => ({ ...state, loaded: false, error: null })),
+  on(AuPagesActions.loadTemplatePagesSuccess, (state, action) => auPagesAdapter.setAll(action.AuPages, { ...state, loaded: true })),
+  on(AuPagesActions.loadTemplatePagesFailure, (state, { error }) => ({ ...state, error })),
 
   on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll(state))
 );
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = auPagesAdapter.getSelectors();
 
-export function auReducer(state: AuPagesData | undefined, action: Action) {
+/* export function auReducer(state: AuPagesData | undefined, action: Action) {
   return auPagesReducer(state, action);
-}
+} */

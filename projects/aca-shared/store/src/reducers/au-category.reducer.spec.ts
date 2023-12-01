@@ -22,22 +22,16 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NgModule } from '@angular/core';
-import { EffectsModule } from '@ngrx/effects';
-import { SnackbarEffects } from './effects/snackbar.effects';
-import { DialogEffects } from './effects/dialog.effects';
-import { RouterEffects } from './effects/router.effects';
-import { StoreModule } from '@ngrx/store';
-import { auPagesReducer } from './reducers/au-pages.reducer';
-import * as fromAuCategory from './reducers/au-category.reducer';
+import { reducer, initialState } from '../reducers/au-category.reducer';
 
-import { AuPagesEffects, AuCategoryEffects } from './effects/au-templates.effects';
+describe('AuCategory Reducer', () => {
+  describe('unknown action', () => {
+    it('should return the previous state', () => {
+      const action = {} as any;
 
-@NgModule({
-  imports: [
-    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPagesEffects, AuCategoryEffects]),
-    StoreModule.forFeature('auPages', auPagesReducer),
-    StoreModule.forFeature('auCategories', fromAuCategory.reducer)
-  ]
-})
-export class SharedStoreModule {}
+      const result = reducer(initialState, action);
+
+      expect(result).toBe(initialState);
+    });
+  });
+});

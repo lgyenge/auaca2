@@ -26,9 +26,9 @@ import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
 import { AuPage } from '../models/au-templates.model';
 
-export const loadAuPages = createAction('[AuPage/API] Load AuPages', props<{ template: string }>());
-export const loadAuPagesSuccess = createAction('[AuPages/API] Load AuPages Success', props<{ AuPages: AuPage[] }>());
-export const loadAuPagesFailure = createAction('[AuPages/API] Load AuPages Failure', props<{ error: any }>());
+export const loadTemplatePages = createAction('[AuPage/API] Load AuPages', props<{ templateId: string }>());
+export const loadTemplatePagesSuccess = createAction('[AuPages/API] Load AuPages Success', props<{ AuPages: AuPage[] }>());
+export const loadTemplatePagesFailure = createAction('[AuPages/API] Load AuPages Failure', props<{ error: any }>());
 
 export const addAuPage = createAction('[AuPage/API] Add AuPage', props<{ auPage: AuPage }>());
 

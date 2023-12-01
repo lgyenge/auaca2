@@ -29,8 +29,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, concatMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import * as AuPageActions from '../actions/au-templates-actions';
+import * as AuCategoryActions from '../actions/au-category.actions';
 // import { NodesApiService } from '@alfresco/adf-content-services';
-import { auPagesService } from '../services/au-templates.service'; // import ok
+import { auTemplatesService } from '../services/au-templates.service'; // import ok
 // import { auPagesService } from '@alfresco/aca-shared/store'; // @alfresco/aca-shared/store has a circular dependency on itself
 // import { auPagesService } from '../public-api'; // import ok
 
@@ -39,24 +40,53 @@ import { auPagesService } from '../services/au-templates.service'; // import ok
 @Injectable()
 export class AuPagesEffects {
   // private nodesApi = inject(NodesApiService);
-  private auTemplates = inject(auPagesService);
+  private auTemplates = inject(auTemplatesService);
   private actions$ = inject(Actions);
 
-  loadAuPages$ = createEffect(() => {
+  loadTemplatePages$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuPageActions.loadAuPages),
-      concatMap((templateId) =>
+      ofType(AuPageActions.loadTemplatePages),
+      concatMap((action) =>
         /** An EMPTY observable only emits completion. Replace with your own observable API request */
         // this.auTemplates.getAuPages('91f74719-c33e-4814-a630-d78022a6cc04').pipe(
-        this.auTemplates.getAuPages(templateId.template).pipe(
+        this.auTemplates.getTemplatePages(action.templateId).pipe(
           // this.nodesApi.getNodeChildren(templateId.template).pipe(
           // eslint-disable-next-line no-console
           // tap(console.log('salami')),
           // eslint-disable-next-line no-console
           tap((value) => console.log('valami' + value)),
           map((nodePaging) => nodePaging.list.entries.map((x) => x.entry)),
-          map((data) => AuPageActions.loadAuPagesSuccess({ AuPages: data })),
-          catchError((error) => of(AuPageActions.loadAuPagesFailure({ error })))
+          map((data) => AuPageActions.loadTemplatePagesSuccess({ AuPages: data })),
+          catchError((error) => of(AuPageActions.loadTemplatePagesFailure({ error })))
+        )
+      )
+    );
+  });
+
+  constructor() {}
+}
+
+@Injectable()
+export class AuCategoryEffects {
+  // private nodesApi = inject(NodesApiService);
+  private auTemplates = inject(auTemplatesService);
+  private actions$ = inject(Actions);
+
+  loadAuCategories$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuCategoryActions.loadAuCategories),
+      concatMap((action) =>
+        /** An EMPTY observable only emits completion. Replace with your own observable API request */
+        // this.auTemplates.getAuPages('91f74719-c33e-4814-a630-d78022a6cc04').pipe(
+        this.auTemplates.getTemplateCategories(action.templateId, 'abc*', 0).pipe(
+          // this.nodesApi.getNodeChildren(templateId.template).pipe(
+          // eslint-disable-next-line no-console
+          // tap(console.log('salami')),
+          // eslint-disable-next-line no-console
+          tap((value) => console.log('category effect:' + value)),
+          map((nodePaging) => nodePaging.list.entries.map((x) => x.entry)),
+          map((data) => AuCategoryActions.loadAuCategoriesSuccess({ AuCategories: data })),
+          catchError((error) => of(AuCategoryActions.loadAuCategoriesFailure({ error })))
         )
       )
     );

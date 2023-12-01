@@ -25,20 +25,80 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Injectable } from '@angular/core';
-import { NodesApiService } from '@alfresco/adf-content-services';
+import { SearchService, NodesApiService, SearchOptions } from '@alfresco/adf-content-services';
 
 @Injectable({
   providedIn: 'root'
 })
-export class auPagesService {
-  constructor(private nodesApi: NodesApiService) {}
+export class auTemplatesService {
+  constructor(private nodesApi: NodesApiService, private searchService: SearchService) {}
 
-  getAuPages(nodeId: string) {
+  getTemplatePages(nodeId: string) {
+    const opts = {
+      skipCount: 0,
+      maxItems: 20,
+      include: [`properties`],
+      where: "(nodeType='cm:folder')"
+    };
+    return this.nodesApi.getNodeChildren(nodeId, opts);
+  }
+
+  getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {
+    const searchOptions: SearchOptions = {
+      skipCount: skipCount,
+      maxItems: 100,
+      rootNodeId: rootNodeId,
+      nodeType: 'cm:folder',
+      include: [`properties`]
+    };
+
+    term = 'item';
+    return this.searchService.getNodeQueryResults(term, searchOptions);
+  }
+  /* getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {
+    const searchOptions: SearchOptions = {
+      skipCount: skipCount,
+      maxItems: 100,
+      rootNodeId: rootNodeId,
+      nodeType: 'cm:folder',
+      include: [`properties`],
+      orderBy: ['id'],
+      fields: []
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    searchOptions;
+    term = 'item';
+
+    return this.searchService.getNodeQueryResults(term);
+  }
+ */
+  /*
+  getTemplateItems(nodeId: string) {
     const opts = {
       skipCount: 0,
       maxItems: 20,
       where: "(nodeType='cm:folder')"
     };
-    return this.nodesApi.getNodeChildren(nodeId, opts);
+    return this.searchService.getNodeQueryResults(term: string, options?: SearchOptions);
   }
+
+  getTemplateResponseSets(nodeId: string) {
+    const opts = {
+      skipCount: 0,
+      maxItems: 20,
+      where: "(nodeType='cm:folder')"
+    };
+    return this.searchService.getNodeQueryResults(term: string, options?: SearchOptions);
+  }
+
+  getTemplateMedia(nodeId: string) {
+    const opts = {
+      skipCount: 0,
+      maxItems: 20,
+      where: "(nodeType='cm:folder')"
+    };
+    return this.searchService.getNodeQueryResults(term: string, options?: SearchOptions);
+  }
+ */
 }

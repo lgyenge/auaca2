@@ -39,7 +39,14 @@ import {
   PaginationDirective,
   ToolbarComponent
 } from '@alfresco/aca-shared';
-import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector, loadAuPages } from '@alfresco/aca-shared/store';
+import {
+  SetCurrentFolderAction,
+  isAdmin,
+  UploadFileVersionAction,
+  showLoaderSelector,
+  loadTemplatePages,
+  loadAuCategories
+} from '@alfresco/aca-shared/store';
 // import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector } from '@alfresco/aca-shared/store';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { FilterSearch, ShareDataRow, FileUploadEvent, BreadcrumbModule, UploadModule, DocumentListModule } from '@alfresco/adf-content-services';
@@ -106,7 +113,8 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
       // const nodeId = folderId || data.defaultNodeId;
       let nodeId = folderId;
       nodeId = 'f109f9b6-eb63-4cb4-9bb1-3b6bfd0ba8aa';
-      this.store.dispatch(loadAuPages({ template: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+      this.store.dispatch(loadTemplatePages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+      this.store.dispatch(loadAuCategories({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
 
       this.contentApi.getNode(nodeId).subscribe(
         (node) => {
