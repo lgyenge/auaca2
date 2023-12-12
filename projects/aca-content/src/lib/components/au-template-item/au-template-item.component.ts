@@ -56,6 +56,7 @@ import { TranslateModule } from '@ngx-translate/core';
 // import { DocumentListDirective } from '../../../../../projects/aca-content/src/lib/directives/document-list.directive';
 // import { DocumentListDirective } from '@alfresco/aca-content';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AuPagesComponent } from '../au-pages/au-pages.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -80,7 +81,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     InfoDrawerComponent,
     PaginationDirective,
     PageLayoutComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    AuPagesComponent
   ]
 })
 export class AuTemplateItemComponent extends PageComponent implements OnInit, OnDestroy {
@@ -94,6 +96,8 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
 
   columns: DocumentListPresetRef[] = [];
   isFilterHeaderActive = false;
+  templateNode: Node;
+  // nodeId: string;
 
   constructor(private route: ActivatedRoute, private contentApi: ContentApiService /* private nodeActionsService: NodeActionsService */) {
     super();
@@ -110,9 +114,9 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
       this.queryParams = queryMap.params;
     });
     this.route.params.subscribe(({ folderId }: Params) => {
-      // const nodeId = folderId || data.defaultNodeId;
-      let nodeId = folderId;
-      nodeId = 'f109f9b6-eb63-4cb4-9bb1-3b6bfd0ba8aa';
+      const nodeId = folderId || data.defaultNodeId;
+      // this.nodeId = folderId;
+      // nodeId = 'f109f9b6-eb63-4cb4-9bb1-3b6bfd0ba8aa';
       this.store.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
       this.store.dispatch(loadAuCategories({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
 
@@ -123,6 +127,7 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
           if (node?.entry?.isFolder) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.updateCurrentNode(node.entry);
+            this.templateNode = node.entry;
           } else {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.router.navigate(['/personal-files', node.entry.parentId], {

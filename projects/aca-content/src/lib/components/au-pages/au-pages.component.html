@@ -1,0 +1,28 @@
+<!-- <ng-container *ngFor="let page of auPages$ | async; let i = index">
+  <lib-au-page [pageName]="page.name"></lib-au-page>
+  <button mat-button (click)="createPage(i)">Add Page</button>
+  <button mat-button (click)="deletePage(page.id)">Delete Page</button>
+</ng-container> -->
+
+<!-- <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+  <cdk-virtual-scroll-viewport itemSize="50" class="example-viewport">
+  <ng-container *cdkVirtualFor="let page of auPages; let i = index" ;>
+    <div class="example-box" cdkDrag >
+     <div class="example-custom-placeholder" *cdkDragPlaceholder> </div>
+      <lib-au-page [pageName]="page.name" ></lib-au-page>
+      <button mat-button (click)="createPage(i)">Add Page</button>
+      <button mat-button (click)="deletePage(page.id)">Delete Page</button>
+    </div>
+  </ng-container>
+</cdk-virtual-scroll-viewport>
+</div> -->
+<div cdkDropList class="example-list"  (cdkDropListDropped)="drop($event)">
+  <ng-container *ngFor="let page of auPages$ |async; let i = index" ;>
+    <div class="example-box" cdkDrag >
+     <div class="example-custom-placeholder" *cdkDragPlaceholder> </div>
+      <lib-au-page [pageName]="page.name" ></lib-au-page>
+      <button mat-button (click)="createPage(i)">Add Page</button>
+      <button mat-button (click)="deletePage(page.id)">Delete Page</button>
+    </div>
+  </ng-container>
+</div>

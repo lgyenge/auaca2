@@ -1,4 +1,3 @@
-<p>au-templates works!</p>
 <aca-page-layout [hasError]="!isValidPath">
   <div class="aca-page-layout-header">
     <adf-breadcrumb [root]="title" [folderNode]="node" [maxItems]="isSmallScreen ? 1 : 0" (navigate)="onBreadcrumbNavigate($event)"> </adf-breadcrumb>
@@ -10,7 +9,7 @@
   </div>
 
   <div class="aca-page-layout-content">
-    <div class="main-content" *ngIf="!(showLoader$ | async)">
+    <div class="aca-main-content" *ngIf="!(showLoader$ | async)">
       <adf-upload-drag-area [rootFolderId]="node?.id" [disabled]="!canUpload" (updateFileVersion)="onUploadNewVersion($event)">
         <adf-document-list
           #documentList
@@ -28,6 +27,8 @@
           [imageResolver]="imageResolver"
           [headerFilters]="true"
           [filterValue]="queryParams"
+          [isResizingEnabled]="true"
+          [blurOnResize]="false"
           (node-dblclick)="handleNodeClick($event)"
           (name-click)="handleNodeClick($event)"
           (sorting-changed)="onSortingChanged($event)"
@@ -84,13 +85,11 @@
       </adf-upload-drag-area>
     </div>
 
-    <mat-progress-spinner
-      *ngIf="showLoader$ | async"
+    <mat-progress-spinner *ngIf="showLoader$ | async"
       id="adf-document-list-loading"
       class="adf-document-list-loading-margin"
       [color]="'primary'"
-      [mode]="'indeterminate'"
-    >
+      [mode]="'indeterminate'">
     </mat-progress-spinner>
 
     <div class="aca-sidebar" *ngIf="infoDrawerOpened$ | async">

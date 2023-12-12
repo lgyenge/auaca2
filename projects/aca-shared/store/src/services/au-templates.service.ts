@@ -23,9 +23,12 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @cspell/spellchecker */
 
 import { Injectable } from '@angular/core';
 import { SearchService, NodesApiService, SearchOptions } from '@alfresco/adf-content-services';
+import { forkJoin } from 'rxjs';
+// import { AuPage } from '../models/au-templates.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,14 +36,54 @@ import { SearchService, NodesApiService, SearchOptions } from '@alfresco/adf-con
 export class auTemplatesService {
   constructor(private nodesApi: NodesApiService, private searchService: SearchService) {}
 
-  getTemplatePages(nodeId: string) {
+  /*  getTemplatePages(nodeId: string) {
     const opts = {
       skipCount: 0,
       maxItems: 20,
       include: [`properties`],
-      where: "(nodeType='cm:folder')"
+      where: "(nodeType='au:page')"
     };
     return this.nodesApi.getNodeChildren(nodeId, opts);
+  } */
+
+  getTemplatePages(nodeId: string) {
+    const opts1 = {
+      skipCount: 0,
+      maxItems: 20,
+      include: [`properties`],
+      where: "(nodeType='au:page')"
+    };
+
+    const opts2 = {
+      include: [`properties`],
+      where: "(nodeType='cm:folder')"
+    };
+    return forkJoin([this.nodesApi.getNodeChildren(nodeId, opts1), this.nodesApi.getNode(nodeId, opts2)]);
+  }
+
+  addTemplatePage(parentId: string, pageId: number) {
+    // const { ordLinName, properties, nodesApi, parentNode } = this;
+    const name = 'Oldal';
+    const nodeType = 'au:page';
+    const opts = {
+      ['autoRename']: true
+    };
+    const properties = { 'cm:description': 'ordLinDescription', 'au:pageId': pageId };
+    return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
+  }
+
+  // updateNode(nodeId: string, nodeBody: any, options?: any): Observable<Node>;
+  updateTemplateIds(nodeId: string, iDs: string) {
+    const properties = { 'au:pagesOrder': iDs };
+    // eslint-disable-next-line no-console
+    // console.log('iDs:' + iDs);
+    return this.nodesApi.updateNode(nodeId, { properties });
+  }
+
+  deleteTemplateNode(nodeId: string) {
+    // eslint-disable-next-line no-console
+    console.log('nodeId:' + nodeId);
+    return this.nodesApi.deleteNode(nodeId);
   }
 
   getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {

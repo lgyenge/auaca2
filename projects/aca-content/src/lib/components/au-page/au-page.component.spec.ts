@@ -22,16 +22,24 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reducer, initialState } from './au-global-response-set.reducer';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AuPageComponent } from './au-page.component';
 
-describe('AuGlobalResponseSet Reducer', () => {
-  describe('unknown action', () => {
-    it('should return the previous state', () => {
-      const action = {} as any;
+describe('AuPageComponent', () => {
+  let component: AuPageComponent;
+  let fixture: ComponentFixture<AuPageComponent>;
 
-      const result = reducer(initialState, action);
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AuPageComponent]
+    }).compileComponents();
 
-      expect(result).toBe(initialState);
-    });
+    fixture = TestBed.createComponent(AuPageComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
 });

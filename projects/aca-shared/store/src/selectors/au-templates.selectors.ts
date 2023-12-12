@@ -32,8 +32,9 @@ export const selectState = createFeatureSelector<AuPagesData>(fromAuPages.auPage
 // export const selectPagesLoaded = createSelector(selectState, (state: State) => state.loaded);
 
 // export const selectPagesError = createSelector(selectState, (state: State) => state.error);
-
-export const getAllAuPages = createSelector(selectState, (state: AuPagesData) => fromAuPages.selectAll(state));
+// selectIds, selectEntities, selectAll, selectTotal
+export const getAuPagesAll = createSelector(selectState, (state: AuPagesData) => fromAuPages.selectAll(state));
+export const getAuPagesIds = createSelector(selectState, (state: AuPagesData) => fromAuPages.selectIds(state));
 
 export const getAuPagesEntities = createSelector(selectState, (state: AuPagesData) => fromAuPages.selectEntities(state));
 
@@ -44,7 +45,7 @@ export const getAuPagesEntities = createSelector(selectState, (state: AuPagesDat
 ); */
 
 export const auPageQuery = {
-  getAllAuPages,
+  getAuPagesAll,
   getAuPagesEntities
   // getSelectedProductId,
   // getSelectedProduct,

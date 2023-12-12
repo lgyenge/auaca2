@@ -27,8 +27,6 @@ import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { NodeEntry, Node, PathElement } from '@alfresco/js-api';
 import { NodeActionsService } from '../../services/node-actions.service';
-// import { NodeActionsService } from '@alfresco/aca-content';
-
 import {
   ContentApiService,
   ContextActionsDirective,
@@ -46,7 +44,6 @@ import { DocumentListPresetRef, ExtensionsModule } from '@alfresco/adf-extension
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DocumentListDirective } from '../../directives/document-list.directive';
-// import { DocumentListDirective } from '@alfresco/aca-content';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({

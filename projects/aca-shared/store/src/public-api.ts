@@ -55,14 +55,27 @@ export * from './store.module';
 
 // !!gyl add
 export * from './actions/au-templates-actions';
-export * from './models/au-templates.model';
-export * from './selectors/au-templates.selectors';
-export * from './effects/au-templates.effects';
-export * from './services/au-templates.service';
-
+export * from './actions/au-item.actions';
 export * from './actions/au-category.actions';
+export * from './actions/au-response-set.actions';
+export * from './actions/au-global-response-set.actions';
+
+export * as fromPages from './reducers/au-pages.reducer';
+export * as fromItem from './reducers/au-item.reducer';
+export * as fromCategory from './reducers/au-category.reducer';
+export * as fromResponseSet from './reducers/au-response-set.reducer';
+export * as fromGlobalResponseSet from './reducers/au-global-response-set.reducer';
+
+export * from './models/au-templates.model';
+export * from './models/au-item.model';
 export * from './models/au-category.model';
+export * from './models/au-response-set.model';
+export * from './models/au-global-response-set.model';
+
+export * from './effects/au-templates.effects';
 export * from './selectors/au-templates.selectors';
+
+export * from './services/au-templates.service';
 
 // export * from './reducers/au-templates.reducer';
 // export * from './states/au-templates.state'

@@ -22,16 +22,28 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reducer, initialState } from './au-global-response-set.reducer';
+import { Component, ViewChild, ViewEncapsulation, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatAccordion } from '@angular/material/expansion';
+import { MaterialModule } from '@alfresco/adf-core';
 
-describe('AuGlobalResponseSet Reducer', () => {
-  describe('unknown action', () => {
-    it('should return the previous state', () => {
-      const action = {} as any;
-
-      const result = reducer(initialState, action);
-
-      expect(result).toBe(initialState);
-    });
-  });
-});
+@Component({
+  encapsulation: ViewEncapsulation.None,
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'lib-au-page',
+  standalone: true,
+  imports: [CommonModule, MaterialModule],
+  templateUrl: './au-page.component.html',
+  styleUrls: ['./au-page.component.css']
+})
+export class AuPageComponent {
+  @Input() pageName: string;
+  @ViewChild(MatAccordion) accordion: MatAccordion;
+  displayMode = 'default';
+  multi = false;
+  hideToggle = true;
+  disabled = false;
+  showPanel3 = true;
+  expandedHeight: string;
+  collapsedHeight: string;
+}
