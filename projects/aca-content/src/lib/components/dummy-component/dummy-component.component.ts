@@ -22,25 +22,23 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Node, NodePaging } from '@alfresco/js-api';
+import { Component, ViewEncapsulation, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
-/* export interface AuCategory {
-  id: string;
-} */
-
-export type AuCategory = Node;
-
-export interface addAuCategoriesSuccessParams {
-  pageId: string;
-  categoryNumber: number;
-}
-export interface addAuCategorySuccessParams {
-  node: AuCategory;
-  nodePaging: NodePaging;
-}
-
-export interface MoveCategoryParams {
-  node: AuCategory;
-  newIndex: number;
-  oldIndex: number;
+@Component({
+  encapsulation: ViewEncapsulation.None,
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'lib-dummy-component',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './dummy-component.component.html',
+  styleUrls: ['./dummy-component.component.css']
+})
+export class DummyComponentComponent implements OnInit {
+  ngOnInit() {
+    // this.auStore.dispatch(loadAuCategories({ pageId: this.pageId }));
+    // this.auCategories$ = this.auStore.pipe(select(getAuCategoriesAll));
+    // eslint-disable-next-line no-console, @cspell/spellchecker
+    console.log(`dummy component nginit`);
+  }
 }

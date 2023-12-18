@@ -43,9 +43,10 @@ import {
   SetCurrentFolderAction,
   isAdmin,
   UploadFileVersionAction,
-  showLoaderSelector,
-  loadAuPages,
-  loadAuCategories
+  showLoaderSelector
+  // loadAuPages,
+  // loadAuCategories,
+  // loadAuItems
 } from '@alfresco/aca-shared/store';
 // import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector } from '@alfresco/aca-shared/store';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -117,8 +118,13 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
       const nodeId = folderId || data.defaultNodeId;
       // this.nodeId = folderId;
       // nodeId = 'f109f9b6-eb63-4cb4-9bb1-3b6bfd0ba8aa';
-      this.store.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
-      this.store.dispatch(loadAuCategories({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+      // console.log(`dispatch loadAuPages from template-item nginit`);
+      // this.store.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+      // this.store.dispatch(loadAuCategories({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+      // this.store.dispatch(loadAuItems({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+      /*  setTimeout(() => {
+        this.store.dispatch(loadAuItems({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+      }, 2000); */
 
       this.contentApi.getNode(nodeId).subscribe(
         (node) => {
@@ -151,7 +157,7 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
       .subscribe((value) => {
         this.isAdmin = value;
       });
-
+    // select Ids, selectEntities, selectAll, selectTotal
     this.extensions.filesDocumentListPreset$.pipe(takeUntil(this.onDestroy$)).subscribe((preset) => {
       this.columns = preset;
     });
@@ -159,6 +165,8 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
     if (this.queryParams && Object.keys(this.queryParams).length > 0) {
       this.isFilterHeaderActive = true;
     }
+    // eslint-disable-next-line no-console
+    console.log(`template item component nginit`);
   }
 
   ngOnDestroy() {

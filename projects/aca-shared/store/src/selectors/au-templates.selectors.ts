@@ -27,12 +27,12 @@ import { AuPagesData } from '../reducers/au-pages.reducer';
 import * as fromAuPages from '../reducers/au-pages.reducer';
 
 // Lookup the 'Pages' feature state managed by NgRx
-export const selectState = createFeatureSelector<AuPagesData>(fromAuPages.auPagesFeatureKey);
+const selectState = createFeatureSelector<AuPagesData>(fromAuPages.auPagesFeatureKey);
 
 // export const selectPagesLoaded = createSelector(selectState, (state: State) => state.loaded);
 
 // export const selectPagesError = createSelector(selectState, (state: State) => state.error);
-// selectIds, selectEntities, selectAll, selectTotal
+// select Ids, selectEntities, selectAll, selectTotal
 export const getAuPagesAll = createSelector(selectState, (state: AuPagesData) => fromAuPages.selectAll(state));
 export const getAuPagesIds = createSelector(selectState, (state: AuPagesData) => fromAuPages.selectIds(state));
 
@@ -50,3 +50,5 @@ export const auPageQuery = {
   // getSelectedProductId,
   // getSelectedProduct,
 };
+
+export const getAuPagesLoaded = createSelector(selectState, (state: AuPagesData) => state.loaded);

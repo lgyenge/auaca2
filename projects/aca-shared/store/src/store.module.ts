@@ -36,14 +36,14 @@ import * as fromAuItem from './reducers/au-item.reducer';
 import * as fromAuGlobalResponseSet from './reducers/au-global-response-set.reducer';
 import * as fromAuResposeSet from './reducers/au-response-set.reducer';
 
-import { AuPagesEffects, AuCategoryEffects } from './effects/au-templates.effects';
+import { AuPagesEffects, AuCategoryEffects, AuItemEffects } from './effects/au-templates.effects';
 
 @NgModule({
   imports: [
-    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPagesEffects, AuCategoryEffects]),
+    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPagesEffects, AuCategoryEffects, AuItemEffects]),
     StoreModule.forFeature('auPages', auPagesReducer),
     StoreModule.forFeature('auCategories', fromAuCategory.reducer),
-    StoreModule.forFeature('auItem', fromAuItem.reducer),
+    StoreModule.forFeature('auItems', fromAuItem.reducer),
     StoreModule.forFeature('auResponeSet', fromAuResposeSet.reducer),
     StoreModule.forFeature('auGlobalResponseSet', fromAuGlobalResponseSet.reducer)
   ]

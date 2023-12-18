@@ -22,6 +22,21 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Node } from '@alfresco/js-api';
+import { Node, NodePaging } from '@alfresco/js-api';
 
 export type AuItem = Node;
+
+export interface addAuItemsSuccessParams {
+  node: AuItem;
+  itemNumber: number;
+}
+export interface addAuItemSuccessParams {
+  node: AuItem;
+  nodePaging: NodePaging;
+}
+
+export interface MoveItemParams {
+  node: AuItem;
+  newIndex: number;
+  oldIndex: number;
+}

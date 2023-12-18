@@ -22,25 +22,6 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Node, NodePaging } from '@alfresco/js-api';
-
-/* export interface AuCategory {
-  id: string;
-} */
-
-export type AuCategory = Node;
-
-export interface addAuCategoriesSuccessParams {
-  pageId: string;
-  categoryNumber: number;
-}
-export interface addAuCategorySuccessParams {
-  node: AuCategory;
-  nodePaging: NodePaging;
-}
-
-export interface MoveCategoryParams {
-  node: AuCategory;
-  newIndex: number;
-  oldIndex: number;
-}
+describe('AuItem Selectors', () => {
+  it('should select the feature state', () => {});
+});

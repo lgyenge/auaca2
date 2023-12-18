@@ -28,13 +28,17 @@ import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as AuPagesActions from '../actions/au-templates-actions';
 import { AuPage } from '../models/au-templates.model';
-export const auPagesFeatureKey = 'auPages';
-import { Node, NodeEntry } from '@alfresco/js-api';
+import { Node } from '@alfresco/js-api';
+// import { Node, NodeEntry } from '@alfresco/js-api';
+
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 
+export const auPagesFeatureKey = 'auPages';
 export interface AuPagesData extends EntityState<AuPage> {
   selectedAuPageId?: string | number;
-  loading: boolean;
+  // loading: boolean;
+  // eslint-disable-next-line @cspell/spellchecker
+  loaded: boolean;
   error?: string | null;
 }
 
@@ -48,7 +52,8 @@ export const auPagesAdapter: EntityAdapter<AuPage> = createEntityAdapter<AuPage>
 export const initialState: AuPagesData = auPagesAdapter.getInitialState({
   error: '',
   selectedProductId: null,
-  loading: false
+  // loading: false
+  loaded: false
 });
 
 export const auPagesReducer = createReducer(
@@ -60,43 +65,30 @@ export const auPagesReducer = createReducer(
     return auPagesAdapter.setAll(nodes, { ...state });
   }),
   on(AuPagesActions.addAuPageFailure, (state, { error }) => ({ ...state, error })),
-
   on(AuPagesActions.deleteAuPage, (state) => ({ ...state, loaded: false, error: null })),
-  // on(AuPagesActions.deleteAuPage, (state, action) => auPagesAdapter.removeOne(action.id, state)),
-  // on(AuPagesActions.deleteAuPage, (state, action) => auPagesAdapter.removeOne(pageId, state)),
-
   on(AuPagesActions.deleteAuPageSuccess, (state: AuPagesData, { pageId }) => auPagesAdapter.removeOne(pageId, state)),
-
-  /* on(AuPagesActions.deleteAuPageSuccess, (state: AuPagesData, { templateId, pageId }) => {
-    const nodes = selectAll(state);
-    // nodes.splice(pageNumber, 0, node);
-    return auPagesAdapter.setAll(nodes, { ...state });
-  }), */
   on(AuPagesActions.deleteAuPageFailure, (state, { error }) => ({ ...state, error })),
-
   on(AuPagesActions.moveAuPage, (state, { params: { oldIndex, newIndex } }) => {
     const entities = selectAll(state);
     moveItemInArray<AuPage>(entities, oldIndex, newIndex);
     return auPagesAdapter.setAll(entities, { ...state, loaded: true });
   }),
-
   on(AuPagesActions.upsertAuPage, (state, action) => auPagesAdapter.upsertOne(action.auPage, state)),
   on(AuPagesActions.addAuPages, (state, action) => auPagesAdapter.addMany(action.auPages, state)),
   on(AuPagesActions.upsertAuPages, (state, action) => auPagesAdapter.upsertMany(action.auPages, state)),
   on(AuPagesActions.updateAuPage, (state, action) => auPagesAdapter.updateOne(action.auPage, state)),
   on(AuPagesActions.updateAuPages, (state, action) => auPagesAdapter.updateMany(action.auPages, state)),
+
   on(AuPagesActions.deleteAuPages, (state, action) => auPagesAdapter.removeMany(action.ids, state)),
   on(AuPagesActions.loadAuPages, (state) => ({ ...state, loaded: false, error: null })),
-  // on(AuPagesActions.loadAuPagesSuccess, (state, action) => auPagesAdapter.setAll(action.AuPages, { ...state, loaded: true })),
-  on(AuPagesActions.loadAuPagesSuccess, (state: AuPagesData, { params: { nodePaging, node } }) => {
+
+  // on(AuPagesActions.loadAuPagesSuccess, (state: AuPagesData, { params: { nodePaging, node } }) => {
+  on(AuPagesActions.loadAuPagesSuccess, (state: AuPagesData, { params: { nodePaging } }) => {
     const nodes: Node[] = [];
     nodePaging.list.entries.forEach((element) => {
       nodes.push(element.entry);
     });
-    // eslint-disable-next-line no-console
-    // console.log('iDs' + node.properties['au:pagesOrder']);
-    // map((nodePaging) => nodePaging.list.entries.map((x) => x.entry)),
-    const iDs: string[] = node.properties['au:pagesOrder'].split(',');
+    /*  const iDs: string[] = node.properties['au:pagesOrder'].split(',');
     const sortedNodes: Node[] = [];
     iDs.forEach((e) => {
       nodePaging.list.entries.find(checkId);
@@ -106,12 +98,11 @@ export const auPagesReducer = createReducer(
           sortedNodes.push(entry.entry);
         }
       }
-    });
-    return auPagesAdapter.setAll(sortedNodes, { ...state, loaded: true });
+    }); */
+    // return auPagesAdapter.setAll(sortedNodes, { ...state, loaded: true });
+    return auPagesAdapter.setAll(nodes, { ...state, loaded: true });
   }),
-
   on(AuPagesActions.loadAuPagesFailure, (state, { error }) => ({ ...state, error })),
-
   on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll(state))
 );
 

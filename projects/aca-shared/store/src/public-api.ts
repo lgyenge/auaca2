@@ -74,6 +74,8 @@ export * from './models/au-global-response-set.model';
 
 export * from './effects/au-templates.effects';
 export * from './selectors/au-templates.selectors';
+export * from './selectors/au-category.selectors';
+export * from './selectors/au-item.selectors';
 
 export * from './services/au-templates.service';
 

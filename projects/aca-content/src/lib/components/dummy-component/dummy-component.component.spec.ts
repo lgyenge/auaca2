@@ -22,25 +22,24 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Node, NodePaging } from '@alfresco/js-api';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DummyComponentComponent } from './dummy-component.component';
 
-/* export interface AuCategory {
-  id: string;
-} */
+describe('DummyComponentComponent', () => {
+  let component: DummyComponentComponent;
+  let fixture: ComponentFixture<DummyComponentComponent>;
 
-export type AuCategory = Node;
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [DummyComponentComponent]
+    }).compileComponents();
 
-export interface addAuCategoriesSuccessParams {
-  pageId: string;
-  categoryNumber: number;
-}
-export interface addAuCategorySuccessParams {
-  node: AuCategory;
-  nodePaging: NodePaging;
-}
+    fixture = TestBed.createComponent(DummyComponentComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-export interface MoveCategoryParams {
-  node: AuCategory;
-  newIndex: number;
-  oldIndex: number;
-}
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

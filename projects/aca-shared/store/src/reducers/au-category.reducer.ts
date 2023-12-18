@@ -26,14 +26,15 @@
 
 import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-import { AuCategory } from '../models/au-category.model';
 import * as AuCategoryActions from '../actions/au-category.actions';
+import { AuCategory } from '../models/au-category.model';
+// import { Node } from '@alfresco/js-api';
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 export const auCategoriesFeatureKey = 'auCategories';
-
 export interface AuCategoryData extends EntityState<AuCategory> {
   selectedAuCategoryId?: string | number;
-  loading: boolean;
+  loaded: boolean;
   error?: string | null;
 }
 
@@ -41,31 +42,49 @@ export interface AuCategoryStore {
   readonly auCategories: AuCategoryData;
 }
 
-// export type State = EntityState<AuCategory>;
-
-export const adapter: EntityAdapter<AuCategory> = createEntityAdapter<AuCategory>();
-
+export const adapter: EntityAdapter<AuCategory> = createEntityAdapter<AuCategory>({
+  sortComparer: false
+});
 export const initialState: AuCategoryData = adapter.getInitialState({
   error: '',
   selectedCategoryId: null,
-  loading: false
+  loaded: false
 });
 
 export const reducer = createReducer(
   initialState,
-  on(AuCategoryActions.addAuCategory, (state, action) => adapter.addOne(action.auCategory, state)),
+  on(AuCategoryActions.addAuCategory, (state) => ({ ...state, loaded: false, error: null })),
+  on(AuCategoryActions.addAuCategorySuccess, (state: AuCategoryData, { category, categoryNumber }) => {
+    const nodes = selectAll(state);
+    nodes.splice(categoryNumber, 0, category);
+    return adapter.setAll(nodes, { ...state });
+  }),
+  on(AuCategoryActions.addAuCategoryFailure, (state, { error }) => ({ ...state, error })),
+  on(AuCategoryActions.deleteAuCategory, (state) => ({ ...state, loaded: false, error: null })),
+  on(AuCategoryActions.deleteAuCategorySuccess, (state: AuCategoryData, { pageId }) => adapter.removeOne(pageId, state)),
+  on(AuCategoryActions.deleteAuCategoryFailure, (state, { error }) => ({ ...state, error })),
+  on(AuCategoryActions.moveAuCategory, (state, { params: { oldIndex, newIndex } }) => {
+    const entities = selectAll(state);
+    moveItemInArray<AuCategory>(entities, oldIndex, newIndex);
+    return adapter.setAll(entities, { ...state, loaded: true });
+  }),
   on(AuCategoryActions.upsertAuCategory, (state, action) => adapter.upsertOne(action.auCategory, state)),
   on(AuCategoryActions.addAuCategories, (state, action) => adapter.addMany(action.auCategories, state)),
   on(AuCategoryActions.upsertAuCategories, (state, action) => adapter.upsertMany(action.auCategories, state)),
   on(AuCategoryActions.updateAuCategory, (state, action) => adapter.updateOne(action.auCategory, state)),
   on(AuCategoryActions.updateAuCategories, (state, action) => adapter.updateMany(action.auCategories, state)),
-  on(AuCategoryActions.deleteAuCategory, (state, action) => adapter.removeOne(action.id, state)),
+  // on(AuCategoryActions.deleteAuCategory, (state) => ({ ...state, loaded: false, error: null })),
   on(AuCategoryActions.deleteAuCategories, (state, action) => adapter.removeMany(action.ids, state)),
-  on(AuCategoryActions.loadAuCategories, (state) => ({ ...state, loaded: false, error: null })),
-  on(AuCategoryActions.loadAuCategoriesSuccess, (state, action) => adapter.setAll(action.AuCategories, { ...state, loaded: true })),
-  on(AuCategoryActions.loadAuCategoriesFailure, (state, { error }) => ({ ...state, error })),
 
-  // on(AuCategoryActions.loadAuCategories, (state, action) => adapter.setAll(action.auCategories, state)),
+  on(AuCategoryActions.loadAuCategories, (state) => ({ ...state, loaded: false, error: null })),
+  on(AuCategoryActions.loadAuCategoriesSuccess, (state, action) => {
+    const nodes: AuCategory[] = [];
+    action.nodePaging.list.entries.forEach((element) => {
+      return nodes.push(element.entry);
+    });
+    return adapter.upsertMany(nodes, { ...state, loaded: true });
+  }),
+  on(AuCategoryActions.loadAuCategoriesFailure, (state, { error }) => ({ ...state, error })),
   on(AuCategoryActions.clearAuCategories, (state) => adapter.removeAll(state))
 );
 

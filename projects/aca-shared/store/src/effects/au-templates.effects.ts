@@ -32,14 +32,16 @@ import { of } from 'rxjs';
 
 import * as AuPageActions from '../actions/au-templates-actions';
 import * as AuCategoryActions from '../actions/au-category.actions';
+// import { loadAuCategories } from '../actions/au-category.actions';
 import * as AuItemActions from '../actions/au-item.actions';
 import * as AuGlobalResponseSetActions from '../actions/au-global-response-set.actions';
 import * as AuResponseSetActions from '../actions/au-response-set.actions';
 // import { getAuPagesIds, AuPage, addAuPage } from '@alfresco/aca-shared/store';
 import { getAuPagesIds } from '../selectors/au-templates.selectors';
+import { getAuCategoriesIds } from '../selectors/au-category.selectors';
+
 import { AuPagesStore } from '../reducers/au-pages.reducer';
 import { Node } from '@alfresco/js-api';
-
 import { Store, select } from '@ngrx/store';
 
 // import { NodesApiService } from '@alfresco/adf-content-services';
@@ -62,7 +64,7 @@ export class AuPagesEffects {
       concatMap((action) =>
         this.auTemplates.getTemplatePages(action.templateId).pipe(
           // eslint-disable-next-line no-console
-          // tap((value) => console.log('valami' + value)),
+          tap((value) => console.log('loadAuPages effect:' + value)),
           map((data) => {
             const obj = { nodePaging: data[0], node: data[1] };
             return obj;
@@ -183,26 +185,128 @@ export class AuCategoryEffects {
   // private nodesApi = inject(NodesApiService);
   private auTemplates = inject(auTemplatesService);
   private actions$ = inject(Actions);
+  private auStore = inject(Store<AuPagesStore>);
 
   loadAuCategories$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuCategoryActions.loadAuCategories),
       concatMap((action) =>
-        /** An EMPTY observable only emits completion. Replace with your own observable API request */
-        // this.auTemplates.getAuPages('91f74719-c33e-4814-a630-d78022a6cc04').pipe(
-        this.auTemplates.getTemplateCategories(action.templateId, 'abc*', 0).pipe(
-          // this.nodesApi.getNodeChildren(templateId.template).pipe(
+        this.auTemplates.getTemplateCategories(action.pageId).pipe(
           // eslint-disable-next-line no-console
-          // tap(console.log('salami')),
-          // eslint-disable-next-line no-console
-          tap((value) => console.log('category effect:' + value)),
-          map((nodePaging) => nodePaging.list.entries.map((x) => x.entry)),
-          map((data) => AuCategoryActions.loadAuCategoriesSuccess({ AuCategories: data })),
+          tap((value) => console.log('loadAuCategories effect:' + value)),
+          map((data) => {
+            const obj = { nodePaging: data[0], node: data[1] };
+            return obj;
+          }),
+          map((data) => AuCategoryActions.loadAuCategoriesSuccess(data)),
           catchError((error) => of(AuCategoryActions.loadAuCategoriesFailure({ error })))
         )
       )
     );
   });
+
+  addAuCategory$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuCategoryActions.addAuCategory),
+      concatMap((action) => {
+        return this.auTemplates.addTemplateCategory(action.pageId).pipe(
+          //  return this.auTemplates.addTemplateCategory(action.pageId, action.categoryNumber).pipe(
+
+          map((node) => {
+            return { category: node, categoryNumber: action.categoryNumber };
+          }),
+          // eslint-disable-next-line no-console
+          tap((value) => console.log('valami' + value)),
+          map((data) => AuCategoryActions.addAuCategorySuccess(data)),
+          catchError((error) => of(AuCategoryActions.addAuCategoryFailure({ error })))
+        );
+      })
+    );
+  });
+
+  deleteAuCategory$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuCategoryActions.deleteAuCategory),
+      concatMap((action) => {
+        return this.auTemplates.deleteTemplateNode(action.categoryId).pipe(
+          map((_node: Node) => {
+            return { pageId: action.pageId, categoryId: action.categoryId };
+          }),
+          // eslint-disable-next-line no-console
+          tap((value) => console.log('valami' + value)),
+          map(({ pageId, categoryId }) => AuCategoryActions.deleteAuCategorySuccess({ categoryId, pageId })),
+
+          catchError((error) => of(AuCategoryActions.deleteAuCategoryFailure({ error })))
+        );
+      })
+    );
+  });
+
+  moveAuCategory$ = createEffect(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.actions$.pipe(
+        ofType(AuCategoryActions.moveAuCategory),
+        concatMap((action) => {
+          return this.auStore.pipe(select(getAuCategoriesIds)).pipe(
+            // eslint-disable-next-line no-console
+            // tap((response) => console.log('response:' + response)),
+            map((iDs) => {
+              return { action: action, iDs: iDs };
+            })
+          );
+        }),
+        map((res) => {
+          return [res.action.params.node.parentId, res.iDs.join()];
+        }),
+        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
+      ),
+    { dispatch: false }
+  );
+
+  saveAuCategoryIds$ = createEffect(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.actions$.pipe(
+        ofType(AuCategoryActions.addAuCategorySuccess),
+        concatMap((action) => {
+          return this.auStore.pipe(select(getAuCategoriesIds)).pipe(
+            // eslint-disable-next-line no-console
+            // tap((response) => console.log('response:' + response)),
+            map((iDs) => {
+              return { action: action, iDs: iDs };
+            })
+          );
+        }),
+        map((res) => {
+          return [res.action.category.parentId, res.iDs.join()];
+        }),
+        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
+      ),
+    { dispatch: false }
+  );
+
+  deleteAuCategoryIds$ = createEffect(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.actions$.pipe(
+        ofType(AuCategoryActions.deleteAuCategorySuccess),
+        concatMap((action) => {
+          return this.auStore.pipe(select(getAuCategoriesIds)).pipe(
+            // eslint-disable-next-line no-console
+            tap((response) => console.log('response:' + response)),
+            map((iDs) => {
+              return { action: action, iDs: iDs };
+            })
+          );
+        }),
+        map((res) => {
+          return [res.action.pageId, res.iDs.join()];
+        }),
+        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
+      ),
+    { dispatch: false }
+  );
 
   constructor() {}
 }
@@ -212,26 +316,128 @@ export class AuItemEffects {
   // private nodesApi = inject(NodesApiService);
   private auTemplates = inject(auTemplatesService);
   private actions$ = inject(Actions);
+  private auStore = inject(Store<AuPagesStore>);
 
   loadAuItems$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuItemActions.loadAuItems),
       concatMap((action) =>
-        /** An EMPTY observable only emits completion. Replace with your own observable API request */
-        // this.auTemplates.getAuPages('91f74719-c33e-4814-a630-d78022a6cc04').pipe(
-        this.auTemplates.getTemplateItems(action.templateId, 'abc*', 0).pipe(
-          // this.nodesApi.getNodeChildren(templateId.template).pipe(
+        // this.auTemplates.getTemplateItems('91f74719-c33e-4814-a630-d78022a6cc04', 'aaa*', 0).pipe(
+        this.auTemplates.getTemplateItems(action.categoryId).pipe(
           // eslint-disable-next-line no-console
-          // tap(console.log('salami')),
-          // eslint-disable-next-line no-console
-          tap((value) => console.log('category effect:' + value)),
-          map((nodePaging) => nodePaging.list.entries.map((x) => x.entry)),
-          map((data) => AuItemActions.loadAuItemsSuccess({ AuItems: data })),
+          tap((value) => console.log('loadAuItems effect:' + value)),
+          map((data) => {
+            const obj = { nodePaging: data[0], node: data[1] };
+            return obj;
+          }),
+          map((data) => AuItemActions.loadAuItemsSuccess(data)),
           catchError((error) => of(AuItemActions.loadAuItemsFailure({ error })))
         )
       )
     );
   });
+
+  addAuItem$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuItemActions.addAuItem),
+      concatMap((action) => {
+        return this.auTemplates.addTemplateItem(action.categoryId).pipe(
+          //  return this.auTemplates.addTemplateItem(action.pageId, action.categoryNumber).pipe(
+          map((node) => {
+            return { item: node, itemNumber: action.itemNumber };
+          }),
+          // eslint-disable-next-line no-console
+          tap((value) => console.log('valami' + value)),
+          map((data) => AuItemActions.addAuItemSuccess(data)),
+          catchError((error) => of(AuItemActions.addAuItemFailure({ error })))
+        );
+      })
+    );
+  });
+
+  deleteAuItem$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuItemActions.deleteAuItem),
+      concatMap((action) => {
+        return this.auTemplates.deleteTemplateNode(action.itemId).pipe(
+          map((_node: Node) => {
+            return { categoryId: action.categoryId, itemId: action.itemId };
+          }),
+          // eslint-disable-next-line no-console
+          tap((value) => console.log('valami' + value)),
+          map(({ categoryId, itemId }) => AuItemActions.deleteAuItemSuccess({ itemId, categoryId })),
+
+          catchError((error) => of(AuItemActions.deleteAuItemFailure({ error })))
+        );
+      })
+    );
+  });
+
+  moveAuItem$ = createEffect(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.actions$.pipe(
+        ofType(AuItemActions.moveAuItem),
+        concatMap((action) => {
+          return this.auStore.pipe(select(getAuCategoriesIds)).pipe(
+            // eslint-disable-next-line no-console
+            // tap((response) => console.log('response:' + response)),
+            map((iDs) => {
+              return { action: action, iDs: iDs };
+            })
+          );
+        }),
+        map((res) => {
+          return [res.action.params.node.parentId, res.iDs.join()];
+        }),
+        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
+      ),
+    { dispatch: false }
+  );
+
+  saveAuItemIds$ = createEffect(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.actions$.pipe(
+        ofType(AuItemActions.addAuItemSuccess),
+        concatMap((action) => {
+          return this.auStore.pipe(select(getAuCategoriesIds)).pipe(
+            // eslint-disable-next-line no-console
+            // tap((response) => console.log('response:' + response)),
+            map((iDs) => {
+              return { action: action, iDs: iDs };
+            })
+          );
+        }),
+        map((res) => {
+          return [res.action.item.parentId, res.iDs.join()];
+        }),
+        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
+      ),
+    { dispatch: false }
+  );
+
+  deleteAuItemIds$ = createEffect(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.actions$.pipe(
+        ofType(AuItemActions.deleteAuItemSuccess),
+        concatMap((action) => {
+          return this.auStore.pipe(select(getAuCategoriesIds)).pipe(
+            // eslint-disable-next-line no-console
+            tap((response) => console.log('response:' + response)),
+            map((iDs) => {
+              return { action: action, iDs: iDs };
+            })
+          );
+        }),
+        map((res) => {
+          return [res.action.categoryId, res.iDs.join()];
+        }),
+        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
+      ),
+    { dispatch: false }
+  );
 
   constructor() {}
 }

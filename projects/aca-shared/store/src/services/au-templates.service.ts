@@ -86,30 +86,91 @@ export class auTemplatesService {
     return this.nodesApi.deleteNode(nodeId);
   }
 
-  getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {
+  /* getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {
     const searchOptions: SearchOptions = {
       skipCount: skipCount,
       maxItems: 100,
       rootNodeId: rootNodeId,
-      nodeType: 'cm:folder',
+      nodeType: 'au:itemCategory',
       include: [`properties`]
     };
 
-    term = 'item';
+    term = 'Category';
     return this.searchService.getNodeQueryResults(term, searchOptions);
+  } */
+
+  getTemplateCategories(nodeId: string) {
+    const opts1 = {
+      skipCount: 0,
+      maxItems: 20,
+      include: [`properties`],
+      where: "(nodeType='au:itemCategory')"
+    };
+
+    const opts2 = {
+      include: [`properties`],
+      where: "(nodeType='au:page')"
+    };
+    return forkJoin([this.nodesApi.getNodeChildren(nodeId, opts1), this.nodesApi.getNode(nodeId, opts2)]);
   }
 
-  getTemplateItems(rootNodeId: string, term: string, skipCount: number) {
-    const searchOptions: SearchOptions = {
+  addTemplateCategory(parentId: string) {
+    // const { ordLinName, properties, nodesApi, parentNode } = this;
+    const name = 'Category';
+    const nodeType = 'au:itemCategory';
+    const opts = {
+      ['autoRename']: true
+    };
+    // const properties = { 'cm:description': 'ordLinDescription', 'au:categoryId': categoryId };
+    const properties = { 'cm:description': 'ordLinDescription' };
+
+    // eslint-disable-next-line no-console
+    console.log('category parent id:' + parentId);
+    return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
+  }
+
+  /*  getTemplateItems(rootNodeId: string, term: string, skipCount: number) {
+    const searchOptions : SearchOptions = {
       skipCount: skipCount,
       maxItems: 100,
       rootNodeId: rootNodeId,
-      nodeType: 'cm:folder',
+      nodeType: 'au:itemQuestion',
       include: [`properties`]
     };
 
-    term = 'item';
+    term = 'Item';
     return this.searchService.getNodeQueryResults(term, searchOptions);
+  } */
+
+  getTemplateItems(nodeId: string) {
+    const opts1 = {
+      skipCount: 0,
+      maxItems: 20,
+      include: [`properties`],
+      where: "(nodeType='cm:folder')"
+    };
+    // where: "(nodeType='au:itemQuestion')"
+
+    const opts2 = {
+      include: [`properties`],
+      where: "(nodeType='au:itemCategory')"
+    };
+    return forkJoin([this.nodesApi.getNodeChildren(nodeId, opts1), this.nodesApi.getNode(nodeId, opts2)]);
+  }
+
+  addTemplateItem(parentId: string) {
+    // const { ordLinName, properties, nodesApi, parentNode } = this;
+    const name = 'Item';
+    const nodeType = 'au:itemQuestion';
+    const opts = {
+      ['autoRename']: true
+    };
+    // const properties = { 'cm:description': 'ordLinDescription', 'au:categoryId': categoryId };
+    const properties = { 'cm:description': 'ordLinDescription' };
+
+    // eslint-disable-next-line no-console
+    console.log('category parent id:' + parentId);
+    return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
   }
 
   getTemplateResponseSets(rootNodeId: string, term: string, skipCount: number) {
@@ -133,7 +194,6 @@ export class auTemplatesService {
       nodeType: 'cm:folder',
       include: [`properties`]
     };
-
     term = 'item';
     return this.searchService.getNodeQueryResults(term, searchOptions);
   }

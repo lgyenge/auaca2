@@ -22,28 +22,28 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, OnInit, ViewEncapsulation, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
 import { AuPageComponent } from '../au-page/au-page.component';
+import { DummyComponentComponent } from '../dummy-component/dummy-component.component';
+
 import { Store, select } from '@ngrx/store';
+// import { Store } from '@ngrx/store';
 import * as fromAuPages from '@alfresco/aca-shared/store';
-// import { CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-// import { ScrollingModule } from '@angular/cdk/scrolling';
+import { getAuPagesAll, AuPage, addAuPage, deleteAuPage, moveAuPage, loadAuPages } from '@alfresco/aca-shared/store';
 
-// import { AppStore, getAuPagesAll, AuPage } from '@alfresco/aca-shared/store';
-import { getAuPagesAll, AuPage, addAuPage, deleteAuPage, moveAuPage } from '@alfresco/aca-shared/store';
-
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'lib-au-pages',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MaterialModule, AuPageComponent, DragDropModule],
+  // changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MaterialModule, AuPageComponent, DragDropModule, DummyComponentComponent],
   templateUrl: './au-pages.component.html',
   styleUrls: ['./au-pages.component.css']
 })
@@ -53,13 +53,20 @@ export class AuPagesComponent implements OnInit {
   auPages$: Observable<AuPage[]>;
   pageNumber: number;
   auPages: AuPage[] = [];
-  subscription: Subscription;
+  dataLoaded$: Observable<boolean>;
 
   constructor(private auStore: Store<fromAuPages.fromPages.AuPagesStore>) {}
 
   ngOnInit() {
-    // this.auPages$ = this.store.pipe(select(getAuPagesAll));
-    this.auPages$ = this.auStore.pipe(select(getAuPagesAll));
+    // this.dataLoding = fromAuPages.getAuPagesLoading;
+    this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuPagesLoaded));
+    // eslint-disable-next-line no-console
+    console.log(`dispatch loadAuPages from Pages nginit`);
+    this.auStore.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+    this.auPages$ = this.auStore.pipe(select(getAuPagesAll)).pipe(
+      // eslint-disable-next-line no-console
+      tap((val) => console.log(`Get all Page from Pages Oservable${val}`))
+    );
   }
 
   getIndex(i: string | number) {
@@ -67,9 +74,6 @@ export class AuPagesComponent implements OnInit {
   }
 
   createPage(pageNumber: number) {
-    // this.store.dispatch(new FlCreateClientSiteAction(this.parentNode.id)); addAuPage
-    // parentId = 'abc';
-    // const { templateId, pageNumber } = this;
     const { templateId } = this;
 
     this.auStore.dispatch(addAuPage({ templateId, pageNumber }));
@@ -81,9 +85,6 @@ export class AuPagesComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<AuPage[]>) {
-    // moveItemInArray(this.auPages, event.previousIndex, event.currentIndex);
-    this.auStore.dispatch(
-      moveAuPage({ params: { node: this.auPages[event.previousIndex], oldIndex: event.previousIndex, newIndex: event.currentIndex } })
-    );
+    this.auStore.dispatch(moveAuPage({ params: { node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } }));
   }
 }

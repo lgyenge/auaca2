@@ -24,14 +24,23 @@
 
 import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
+import { AuItem, MoveItemParams } from '../models/au-item.model';
+import { NodePaging } from '@alfresco/js-api';
 
-import { AuItem } from '../models/au-item.model';
-
-export const loadAuItems = createAction('[AuItem/API] Load AuItems', props<{ templateId: string }>());
-export const loadAuItemsSuccess = createAction('[AuItems/API] Load AuItems Success', props<{ AuItems: AuItem[] }>());
+export const loadAuItems = createAction('[AuItem/API] Load AuItems', props<{ categoryId: string }>());
+export const loadAuItemsSuccess = createAction('[AuItems/API] Load AuItems Success', props<{ nodePaging: NodePaging; node: AuItem }>());
 export const loadAuItemsFailure = createAction('[AuItems/API] Load AuItems Failure', props<{ error: any }>());
 
-export const addAuItem = createAction('[AuItem/API] Add AuItem', props<{ auItem: AuItem }>());
+// export const addAuItem = createAction('[AuItem/API] Add AuItem', props<{ auItem: AuItem }>());
+export const addAuItem = createAction('[AuItem/API] Add AuItem', props<{ categoryId: string; itemNumber: number }>());
+export const addAuItemSuccess = createAction('[AuItems/API] Add AuItem Success', props<{ item: AuItem; itemNumber: number }>());
+export const addAuItemFailure = createAction('[AuItems/API] Add AuItem Failure', props<{ error: any }>());
+
+export const moveAuItem = createAction('[AuItem/API] Move AuItem', props<{ params: MoveItemParams }>());
+
+export const deleteAuItem = createAction('[AuItem/API] Delete AuItem', props<{ categoryId: string; itemId: string }>());
+export const deleteAuItemSuccess = createAction('[AuItems/API] Delete AuItem Success', props<{ categoryId: string; itemId: string }>());
+export const deleteAuItemFailure = createAction('[AuItems/API] Delete AuItem Failure', props<{ error: any }>());
 
 export const upsertAuItem = createAction('[AuItem/API] Upsert AuItem', props<{ auItem: AuItem }>());
 
@@ -43,7 +52,7 @@ export const updateAuItem = createAction('[AuItem/API] Update AuItem', props<{ a
 
 export const updateAuItems = createAction('[AuItem/API] Update AuItems', props<{ auItems: Update<AuItem>[] }>());
 
-export const deleteAuItem = createAction('[AuItem/API] Delete AuItem', props<{ id: string }>());
+// export const deleteAuItem = createAction('[AuItem/API] Delete AuItem', props<{ id: string }>());
 
 export const deleteAuItems = createAction('[AuItem/API] Delete AuItems', props<{ ids: string[] }>());
 
