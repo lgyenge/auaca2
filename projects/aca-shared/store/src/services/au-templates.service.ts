@@ -30,13 +30,13 @@ import { SearchService, NodesApiService, SearchOptions } from '@alfresco/adf-con
 import { Observable, forkJoin } from 'rxjs';
 
 import { Store, select } from '@ngrx/store';
-import * as fromAuPages from '@alfresco/aca-shared/store';
+import * as fromAuPages from '../public-api';
 import {
   // getAuCategoriesAll,
   // loadAuCategories,
   selectCategoriesReady,
   selectPagesReady
-} from '@alfresco/aca-shared/store';
+} from '../public-api';
 import { concatMap, filter, take, tap } from 'rxjs/operators';
 
 import { AuPage } from '../models/au-templates.model';
