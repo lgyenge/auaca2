@@ -30,6 +30,7 @@ import * as AuCategoryActions from '../actions/au-category.actions';
 import { AuCategory } from '../models/au-category.model';
 // import { Node } from '@alfresco/js-api';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { NodeEntry, NodePaging } from '@alfresco/js-api';
 
 export const auCategoriesFeatureKey = 'auCategories';
 export interface AuCategoryData extends EntityState<AuCategory> {
@@ -53,19 +54,35 @@ export const initialState: AuCategoryData = adapter.getInitialState({
 
 export const reducer = createReducer(
   initialState,
-  on(AuCategoryActions.addAuCategory, (state) => ({ ...state, loaded: false, error: null })),
+  on(AuCategoryActions.addAuCategory, (state) => ({ ...state })),
   on(AuCategoryActions.addAuCategorySuccess, (state: AuCategoryData, { category, categoryNumber }) => {
     const nodes = selectAll(state);
     nodes.splice(categoryNumber, 0, category);
-    return adapter.setAll(nodes, { ...state });
+    return adapter.setAll(nodes, { ...state, loaded: true, error: null });
   }),
   on(AuCategoryActions.addAuCategoryFailure, (state, { error }) => ({ ...state, error })),
-  on(AuCategoryActions.deleteAuCategory, (state) => ({ ...state, loaded: false, error: null })),
-  on(AuCategoryActions.deleteAuCategorySuccess, (state: AuCategoryData, { pageId }) => adapter.removeOne(pageId, state)),
+  on(AuCategoryActions.deleteAuCategory, (state) => ({ ...state })),
+  on(AuCategoryActions.deleteAuCategorySuccess, (state: AuCategoryData, { categoryId }) =>
+    adapter.removeOne(categoryId, { ...state, loaded: true, error: null })
+  ),
   on(AuCategoryActions.deleteAuCategoryFailure, (state, { error }) => ({ ...state, error })),
-  on(AuCategoryActions.moveAuCategory, (state, { params: { oldIndex, newIndex } }) => {
+  on(AuCategoryActions.moveAuCategory, (state, { params: { node, oldIndex, newIndex } }) => {
     const entities = selectAll(state);
-    moveItemInArray<AuCategory>(entities, oldIndex, newIndex);
+    let foundIndex = 0;
+    entities.find(startFn);
+    function startFn(element, index) {
+      if (element.id === node.id) {
+        foundIndex = index;
+      }
+    }
+    // console.log(`nodeId:  ${node.id} `);
+    // console.log(`előtte oldIndex:  ${oldIndex} - newIndex: ${newIndex} - foundIndex: ${foundIndex}`);
+    const oldIndex2 = foundIndex;
+    const newIndex2 = foundIndex + (newIndex - oldIndex);
+    // console.log(`utána oldIndex2:  ${oldIndex2} - newIndex2: ${newIndex2} - foundIndex: ${foundIndex}`);
+    // console.log(`entities:  ${JSON.stringify(entities)}`);
+    moveItemInArray<AuCategory>(entities, oldIndex2, newIndex2);
+    // console.log(`entities utána:  ${JSON.stringify(entities)}`);
     return adapter.setAll(entities, { ...state, loaded: true });
   }),
   on(AuCategoryActions.upsertAuCategory, (state, action) => adapter.upsertOne(action.auCategory, state)),
@@ -73,19 +90,45 @@ export const reducer = createReducer(
   on(AuCategoryActions.upsertAuCategories, (state, action) => adapter.upsertMany(action.auCategories, state)),
   on(AuCategoryActions.updateAuCategory, (state, action) => adapter.updateOne(action.auCategory, state)),
   on(AuCategoryActions.updateAuCategories, (state, action) => adapter.updateMany(action.auCategories, state)),
-  // on(AuCategoryActions.deleteAuCategory, (state) => ({ ...state, loaded: false, error: null })),
   on(AuCategoryActions.deleteAuCategories, (state, action) => adapter.removeMany(action.ids, state)),
-
   on(AuCategoryActions.loadAuCategories, (state) => ({ ...state, loaded: false, error: null })),
+
   on(AuCategoryActions.loadAuCategoriesSuccess, (state, action) => {
-    const nodes: AuCategory[] = [];
-    action.nodePaging.list.entries.forEach((element) => {
-      return nodes.push(element.entry);
-    });
-    return adapter.upsertMany(nodes, { ...state, loaded: true });
+    const sortedNodes: AuCategory[] = [];
+    // eslint-disable-next-line no-console
+    console.log(`category reducer arr: ${JSON.stringify(action.catArray)}`);
+    /* const n = action.catArray as NodePaging[];
+    n.forEach((element, index) => {
+      if (index % 2 === 0) {
+        element.list.entries.forEach((el) => {
+          sortedNodes.push(el.entry);
+        });
+      } else {
+        // const _ord = element as Node;
+      }
+    }); */
+    for (let i = 0; i < action.catArray.length; i = i + 2) {
+      // eslint-disable-next-line no-console
+      console.log(`action.catArray[${i}]:  ${JSON.stringify(action.catArray[i])}`);
+      // eslint-disable-next-line no-console
+      console.log(`action.catArray[${i + 1}]:  ${JSON.stringify(action.catArray[i + 1])}`);
+      const iDs: string[] = (action.catArray[i + 1] as AuCategory).properties['au:pagesOrder']?.split(',');
+      iDs?.forEach((e) => {
+        (action.catArray[i] as NodePaging).list.entries.find(checkId);
+        function checkId(entry: NodeEntry) {
+          if (e === entry.entry.id) {
+            sortedNodes.push(entry.entry);
+          }
+        }
+      });
+      // eslint-disable-next-line no-console
+      console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
+    }
+    return adapter.setAll(sortedNodes, { ...state, loaded: true });
+    // return adapter.setAll(nodes, { ...state, loaded: true });
   }),
   on(AuCategoryActions.loadAuCategoriesFailure, (state, { error }) => ({ ...state, error })),
-  on(AuCategoryActions.clearAuCategories, (state) => adapter.removeAll(state))
+  on(AuCategoryActions.clearAuCategories, (state) => adapter.removeAll({ ...state, loaded: false, error: null }))
 );
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = adapter.getSelectors();

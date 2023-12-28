@@ -1,5 +1,3 @@
-<!-- <lib-au-pages [pageName]= node.name ></lib-au-pages> -->
-<!-- <lib-au-pages></lib-au-pages>-->
 <aca-page-layout [hasError]="!isValidPath">
   <div class="aca-page-layout-header">
     <adf-breadcrumb [root]="title" [folderNode]="node" [maxItems]="isSmallScreen ? 1 : 0" (navigate)="onBreadcrumbNavigate($event)"> </adf-breadcrumb>
@@ -9,7 +7,8 @@
 
   <div class="aca-page-layout-content aca-scrollable">
     <div class="aca-main-content" *ngIf="!(showLoader$ | async)">
-      <lib-au-pages [templateId]= templateNode?.id ></lib-au-pages>
+      <!-- <lib-au-pages [templateId]= templateNode?.id ></lib-au-pages> -->
+      <lib-au-pages [templateId]= nodeId ></lib-au-pages>
     </div>
 
   </div>

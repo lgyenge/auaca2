@@ -52,3 +52,18 @@ export const auPageQuery = {
 };
 
 export const getAuPagesLoaded = createSelector(selectState, (state: AuPagesData) => state.loaded);
+const selectPagesLoaded = createSelector(selectState, (state) => state.loaded);
+
+export const selectPagesReady = createSelector(selectPagesLoaded, getAuPagesAll, (ready, pages) => ({ ready, pages }));
+export const getAuPagesOfPages = (props: { templateId: string }) =>
+  // 👍 `count` knows that it's a number
+  createSelector(selectState, (state: AuPagesData) => {
+    // props.page;
+    const pages = fromAuPages.selectAll(state);
+    const newPages = pages.filter((page) => page.parentId === props.templateId);
+    if (state.loaded) {
+      return newPages;
+    } else {
+      return null;
+    }
+  });

@@ -22,51 +22,66 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
 import { AuPageComponent } from '../au-page/au-page.component';
 import { DummyComponentComponent } from '../dummy-component/dummy-component.component';
 
 import { Store, select } from '@ngrx/store';
-// import { Store } from '@ngrx/store';
 import * as fromAuPages from '@alfresco/aca-shared/store';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { getAuPagesAll, AuPage, addAuPage, deleteAuPage, moveAuPage, loadAuPages } from '@alfresco/aca-shared/store';
+import {
+  getAuPagesOfPages,
+  AuPage,
+  addAuPage,
+  deleteAuPage,
+  moveAuPage,
+  loadAuPages
+  // clearAuPages,
+  // clearAuCategories,
+  // clearAuItems
+} from '@alfresco/aca-shared/store';
 
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subject, of } from 'rxjs';
+import { filter, take, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'lib-au-pages',
   standalone: true,
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MaterialModule, AuPageComponent, DragDropModule, DummyComponentComponent],
   templateUrl: './au-pages.component.html',
   styleUrls: ['./au-pages.component.css']
 })
-export class AuPagesComponent implements OnInit {
-  /*  protected store = inject<Store<AppStore>>(Store<AppStore>); */
+export class AuPagesComponent implements OnInit, OnDestroy {
+  onDestroy$: Subject<boolean> = new Subject<boolean>();
   @Input() templateId: string;
   auPages$: Observable<AuPage[]>;
   pageNumber: number;
   auPages: AuPage[] = [];
-  dataLoaded$: Observable<boolean>;
+  dataLoaded$: Observable<boolean> = of(false);
 
   constructor(private auStore: Store<fromAuPages.fromPages.AuPagesStore>) {}
 
   ngOnInit() {
-    // this.dataLoding = fromAuPages.getAuPagesLoading;
-    this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuPagesLoaded));
     // eslint-disable-next-line no-console
     console.log(`dispatch loadAuPages from Pages nginit`);
     this.auStore.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
-    this.auPages$ = this.auStore.pipe(select(getAuPagesAll)).pipe(
+    this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuPagesLoaded)).pipe(take(1));
+    this.auPages$ = this.auStore.pipe(select(getAuPagesOfPages({ templateId: this.templateId }))).pipe(
+      filter((res) => res != null),
       // eslint-disable-next-line no-console
-      tap((val) => console.log(`Get all Page from Pages Oservable${val}`))
+      tap((val) => console.log(`Get all Page  from Pages ngOnInit ${val}`)),
+      takeUntil(this.onDestroy$)
     );
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next(true);
+    this.onDestroy$.complete();
   }
 
   getIndex(i: string | number) {

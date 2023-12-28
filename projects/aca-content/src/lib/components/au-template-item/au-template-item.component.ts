@@ -39,16 +39,7 @@ import {
   PaginationDirective,
   ToolbarComponent
 } from '@alfresco/aca-shared';
-import {
-  SetCurrentFolderAction,
-  isAdmin,
-  UploadFileVersionAction,
-  showLoaderSelector
-  // loadAuPages,
-  // loadAuCategories,
-  // loadAuItems
-} from '@alfresco/aca-shared/store';
-// import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector } from '@alfresco/aca-shared/store';
+import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector } from '@alfresco/aca-shared/store';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { FilterSearch, ShareDataRow, FileUploadEvent, BreadcrumbModule, UploadModule, DocumentListModule } from '@alfresco/adf-content-services';
 import { DocumentListPresetRef, ExtensionsModule } from '@alfresco/adf-extensions';
@@ -98,7 +89,7 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
   columns: DocumentListPresetRef[] = [];
   isFilterHeaderActive = false;
   templateNode: Node;
-  // nodeId: string;
+  nodeId: string;
 
   constructor(private route: ActivatedRoute, private contentApi: ContentApiService /* private nodeActionsService: NodeActionsService */) {
     super();
@@ -115,18 +106,11 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
       this.queryParams = queryMap.params;
     });
     this.route.params.subscribe(({ folderId }: Params) => {
-      const nodeId = folderId || data.defaultNodeId;
-      // this.nodeId = folderId;
-      // nodeId = 'f109f9b6-eb63-4cb4-9bb1-3b6bfd0ba8aa';
-      // console.log(`dispatch loadAuPages from template-item nginit`);
-      // this.store.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
-      // this.store.dispatch(loadAuCategories({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
-      // this.store.dispatch(loadAuItems({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
-      /*  setTimeout(() => {
-        this.store.dispatch(loadAuItems({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
-      }, 2000); */
+      this.nodeId = folderId || data.defaultNodeId;
+      // eslint-disable-next-line no-console
+      // console.log(`nodeId: ${this.nodeId}`);
 
-      this.contentApi.getNode(nodeId).subscribe(
+      this.contentApi.getNode(this.nodeId).subscribe(
         (node) => {
           this.isValidPath = true;
 
@@ -165,8 +149,6 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
     if (this.queryParams && Object.keys(this.queryParams).length > 0) {
       this.isFilterHeaderActive = true;
     }
-    // eslint-disable-next-line no-console
-    console.log(`template item component nginit`);
   }
 
   ngOnDestroy() {
@@ -412,17 +394,3 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
     this.isValidPath = false;
   }
 }
-
-/* import { Component, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-@Component({
-  selector: 'lib-au-template-item',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './au-template-item.component.html',
-  styleUrls: ['./au-template-item.component.css'],
-  encapsulation: ViewEncapsulation.None
-})
-export class AuTemplateItemComponent {}
- */

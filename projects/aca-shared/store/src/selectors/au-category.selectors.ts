@@ -26,6 +26,7 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AuCategoryData } from '../reducers/au-category.reducer';
 import * as fromAuCategories from '../reducers/au-category.reducer';
 import { AuPage } from '../models/au-templates.model';
+import { AuCategory } from '../public-api';
 // import { Node, NodeEntry } from '@alfresco/js-api';
 
 // Lookup the 'Categories' feature state managed by NgRx
@@ -54,6 +55,9 @@ export const auCategoryQuery = {
 };
 export const getAuCategoryLoaded = createSelector(selectState, (state: AuCategoryData) => state.loaded);
 
+const selectCategoriesLoaded = createSelector(selectState, (state) => state.loaded);
+export const selectCategoriesReady = createSelector(selectCategoriesLoaded, getAuCategoriesAll, (ready, pages) => ({ ready, pages }));
+
 export const getAuCategoriesOfPage = (props: { page: AuPage }) =>
   // 👍 `count` knows that it's a number
   createSelector(selectState, (state: AuCategoryData) => {
@@ -67,3 +71,34 @@ export const getAuCategoriesOfPage = (props: { page: AuPage }) =>
     }
     // return categories;
   });
+
+export const getAuCategoryIdsOfPage = (props: { page: AuPage }) =>
+  createSelector(getAuCategoriesOfPage({ page: props.page }), (categories: AuCategory[]) => {
+    let Ids: string[] = [];
+    Ids = categories.map((element) => element.id);
+    // eslint-disable-next-line no-console
+    console.log(`PageId:  ${props.page.id}  -  CategoryIdsOfPage:  ${Ids} `);
+    return Ids;
+  });
+
+/* export const getAuCategoryIdsOfPage = (props: { pageId: string }) =>
+  // 👍 `count` knows that it's a number
+  createSelector(selectState, (state: AuCategoryData) => {
+    // eslint-disable-next-line no-console
+    console.log(`PageId:  ${props.pageId} `);
+    // props.page;
+    const categories = fromAuCategories.selectAll(state);
+    // eslint-disable-next-line no-console
+    console.log(`Categories:  ${JSON.stringify(categories)} `);
+
+    const newCategories = categories.filter((category) => category.parentId === props.pageId);
+    // eslint-disable-next-line no-console
+    console.log(`Categories of page:  ${JSON.stringify(newCategories)} `);
+
+    let Ids: string[] = [];
+    Ids = newCategories.map((element) => element.id);
+    // eslint-disable-next-line no-console
+    console.log(`CategoryIdsOfPage:  ${Ids} `);
+
+    return Ids;
+  }); */

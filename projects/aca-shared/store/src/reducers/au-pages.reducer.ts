@@ -58,15 +58,17 @@ export const initialState: AuPagesData = auPagesAdapter.getInitialState({
 
 export const auPagesReducer = createReducer(
   initialState,
-  on(AuPagesActions.addAuPage, (state) => ({ ...state, loaded: false, error: null })),
+  on(AuPagesActions.addAuPage, (state) => ({ ...state })),
   on(AuPagesActions.addAuPageSuccess, (state: AuPagesData, { params: { node, pageNumber } }) => {
     const nodes = selectAll(state);
     nodes.splice(pageNumber, 0, node);
-    return auPagesAdapter.setAll(nodes, { ...state });
+    return auPagesAdapter.setAll(nodes, { ...state, loaded: true, error: null });
   }),
   on(AuPagesActions.addAuPageFailure, (state, { error }) => ({ ...state, error })),
-  on(AuPagesActions.deleteAuPage, (state) => ({ ...state, loaded: false, error: null })),
-  on(AuPagesActions.deleteAuPageSuccess, (state: AuPagesData, { pageId }) => auPagesAdapter.removeOne(pageId, state)),
+  on(AuPagesActions.deleteAuPage, (state) => ({ ...state })),
+  on(AuPagesActions.deleteAuPageSuccess, (state: AuPagesData, { pageId }) =>
+    auPagesAdapter.removeOne(pageId, { ...state, loaded: true, error: null })
+  ),
   on(AuPagesActions.deleteAuPageFailure, (state, { error }) => ({ ...state, error })),
   on(AuPagesActions.moveAuPage, (state, { params: { oldIndex, newIndex } }) => {
     const entities = selectAll(state);
@@ -88,7 +90,7 @@ export const auPagesReducer = createReducer(
     nodePaging.list.entries.forEach((element) => {
       nodes.push(element.entry);
     });
-    /*  const iDs: string[] = node.properties['au:pagesOrder'].split(',');
+    /* const iDs: string[] = node.properties['au:pagesOrder'].split(',');
     const sortedNodes: Node[] = [];
     iDs.forEach((e) => {
       nodePaging.list.entries.find(checkId);
@@ -98,12 +100,12 @@ export const auPagesReducer = createReducer(
           sortedNodes.push(entry.entry);
         }
       }
-    }); */
-    // return auPagesAdapter.setAll(sortedNodes, { ...state, loaded: true });
+    });
+    return auPagesAdapter.setAll(sortedNodes, { ...state, loaded: true }); */
     return auPagesAdapter.setAll(nodes, { ...state, loaded: true });
   }),
   on(AuPagesActions.loadAuPagesFailure, (state, { error }) => ({ ...state, error })),
-  on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll(state))
+  on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll({ ...state, loaded: false, error: null }))
 );
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = auPagesAdapter.getSelectors();

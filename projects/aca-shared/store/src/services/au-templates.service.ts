@@ -27,14 +27,30 @@
 
 import { Injectable } from '@angular/core';
 import { SearchService, NodesApiService, SearchOptions } from '@alfresco/adf-content-services';
-import { forkJoin } from 'rxjs';
-// import { AuPage } from '../models/au-templates.model';
+import { Observable, forkJoin } from 'rxjs';
+
+import { Store, select } from '@ngrx/store';
+import * as fromAuPages from '@alfresco/aca-shared/store';
+import {
+  // getAuCategoriesAll,
+  // loadAuCategories,
+  selectCategoriesReady,
+  selectPagesReady
+} from '@alfresco/aca-shared/store';
+import { concatMap, filter, take, tap } from 'rxjs/operators';
+
+import { AuPage } from '../models/au-templates.model';
+import { NodePaging } from '@alfresco/js-api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class auTemplatesService {
-  constructor(private nodesApi: NodesApiService, private searchService: SearchService) {}
+  constructor(
+    private nodesApi: NodesApiService,
+    private searchService: SearchService,
+    private auPagesStore: Store<fromAuPages.fromPages.AuPagesStore>
+  ) {}
 
   /*  getTemplatePages(nodeId: string) {
     const opts = {
@@ -76,42 +92,46 @@ export class auTemplatesService {
   updateTemplateIds(nodeId: string, iDs: string) {
     const properties = { 'au:pagesOrder': iDs };
     // eslint-disable-next-line no-console
-    // console.log('iDs:' + iDs);
+    console.log('iDs:' + iDs);
     return this.nodesApi.updateNode(nodeId, { properties });
   }
 
   deleteTemplateNode(nodeId: string) {
     // eslint-disable-next-line no-console
-    console.log('nodeId:' + nodeId);
+    console.log('delete nodeId:' + nodeId);
     return this.nodesApi.deleteNode(nodeId);
   }
 
-  /* getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {
-    const searchOptions: SearchOptions = {
-      skipCount: skipCount,
-      maxItems: 100,
-      rootNodeId: rootNodeId,
-      nodeType: 'au:itemCategory',
-      include: [`properties`]
-    };
-
-    term = 'Category';
-    return this.searchService.getNodeQueryResults(term, searchOptions);
-  } */
-
-  getTemplateCategories(nodeId: string) {
+  getTemplateCategories() {
     const opts1 = {
       skipCount: 0,
       maxItems: 20,
       include: [`properties`],
       where: "(nodeType='au:itemCategory')"
     };
-
     const opts2 = {
       include: [`properties`],
       where: "(nodeType='au:page')"
     };
-    return forkJoin([this.nodesApi.getNodeChildren(nodeId, opts1), this.nodesApi.getNode(nodeId, opts2)]);
+
+    return this.auPagesStore.pipe(select(selectPagesReady)).pipe(
+      filter((res) => res.ready),
+      // eslint-disable-next-line no-console
+      // tap((val) => console.log(`selectPagesReady from getTemplateCategories service TAP: - ${JSON.stringify(val)}`)),
+      take(1),
+      concatMap((val) => {
+        const pageObservables: Observable<NodePaging | AuPage>[] = [];
+        val.pages.forEach((page) => {
+          const ob1 = this.nodesApi.getNodeChildren(page.id, opts1);
+          const ob2 = this.nodesApi.getNode(page.id, opts2);
+          pageObservables.push(ob1);
+          pageObservables.push(ob2);
+        });
+        // eslint-disable-next-line no-console
+        console.log(`Load Categories from server (forkJoin Page Observables) ${pageObservables}`);
+        return forkJoin(pageObservables);
+      })
+    );
   }
 
   addTemplateCategory(parentId: string) {
@@ -129,25 +149,12 @@ export class auTemplatesService {
     return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
   }
 
-  /*  getTemplateItems(rootNodeId: string, term: string, skipCount: number) {
-    const searchOptions : SearchOptions = {
-      skipCount: skipCount,
-      maxItems: 100,
-      rootNodeId: rootNodeId,
-      nodeType: 'au:itemQuestion',
-      include: [`properties`]
-    };
-
-    term = 'Item';
-    return this.searchService.getNodeQueryResults(term, searchOptions);
-  } */
-
-  getTemplateItems(nodeId: string) {
+  getTemplateItems() {
     const opts1 = {
       skipCount: 0,
       maxItems: 20,
       include: [`properties`],
-      where: "(nodeType='cm:folder')"
+      where: "(nodeType='au:itemQuestion')"
     };
     // where: "(nodeType='au:itemQuestion')"
 
@@ -155,7 +162,25 @@ export class auTemplatesService {
       include: [`properties`],
       where: "(nodeType='au:itemCategory')"
     };
-    return forkJoin([this.nodesApi.getNodeChildren(nodeId, opts1), this.nodesApi.getNode(nodeId, opts2)]);
+
+    return this.auPagesStore.pipe(select(selectCategoriesReady)).pipe(
+      filter((res) => res.ready),
+      take(1),
+      // eslint-disable-next-line no-console
+      tap((val) => console.log(`selectCategoriesReady from  from getTemplateItems service TAP: - ${JSON.stringify(val)}`)),
+      concatMap((val) => {
+        const categoryObservables: Observable<NodePaging | AuPage>[] = [];
+        val.pages.forEach((category) => {
+          const ob1 = this.nodesApi.getNodeChildren(category.id, opts1);
+          const ob2 = this.nodesApi.getNode(category.id, opts2);
+          categoryObservables.push(ob1);
+          categoryObservables.push(ob2);
+        });
+        // eslint-disable-next-line no-console
+        console.log(`Load Items from server (forkJoin Categories Observables) ${categoryObservables}`);
+        return forkJoin(categoryObservables);
+      })
+    );
   }
 
   addTemplateItem(parentId: string) {

@@ -17,7 +17,8 @@
               <mat-icon>account_circle</mat-icon>
             </mat-panel-description>
           </mat-expansion-panel-header>
-        <lib-au-category [category]="category" ></lib-au-category>
+        <lib-au-category [category]="category" *ngIf="(dataLoaded$ | async)"></lib-au-category>
+        <!-- <lib-au-category [category]="category"></lib-au-category> -->
         </mat-expansion-panel>
       </mat-accordion>
     </div>

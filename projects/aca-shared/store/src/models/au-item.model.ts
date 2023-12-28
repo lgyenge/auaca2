@@ -23,6 +23,7 @@
  */
 
 import { Node, NodePaging } from '@alfresco/js-api';
+import { AuCategory } from './au-category.model';
 
 export type AuItem = Node;
 
@@ -36,6 +37,7 @@ export interface addAuItemSuccessParams {
 }
 
 export interface MoveItemParams {
+  category: AuCategory;
   node: AuItem;
   newIndex: number;
   oldIndex: number;

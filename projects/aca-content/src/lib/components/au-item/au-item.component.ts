@@ -22,7 +22,7 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, ViewChild, ViewEncapsulation, Input } from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
 // import { Store, select } from '@ngrx/store';
@@ -42,6 +42,7 @@ import { MatAccordion } from '@angular/material/expansion';
   imports: [CommonModule, MaterialModule, DragDropModule],
   templateUrl: './au-item.component.html',
   styleUrls: ['./au-item.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
 export class AuItemComponent {

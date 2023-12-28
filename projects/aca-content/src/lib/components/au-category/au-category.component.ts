@@ -22,7 +22,7 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, OnInit, ViewEncapsulation, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, Input, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
 import { AuItemComponent } from '../au-item/au-item.component';
@@ -30,10 +30,10 @@ import { Store, select } from '@ngrx/store';
 import * as fromAuItems from '@alfresco/aca-shared/store';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 // import { getAuItemsAll, AuItem, addAuItem, deleteAuItem, moveAuItem, loadAuItems } from '@alfresco/aca-shared/store';
-import { getAuItemsOfCategories, AuCategory, AuItem, addAuItem, deleteAuItem, moveAuItem, loadAuItems } from '@alfresco/aca-shared/store';
-import { Observable } from 'rxjs';
+import { getAuItemsOfCategories, AuCategory, AuItem, addAuItem, deleteAuItem, moveAuItem } from '@alfresco/aca-shared/store';
+import { Observable, Subject, of } from 'rxjs';
 import { MatAccordion } from '@angular/material/expansion';
-import { shareReplay, tap } from 'rxjs/operators';
+import { filter, take, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -42,14 +42,16 @@ import { shareReplay, tap } from 'rxjs/operators';
   imports: [CommonModule, MaterialModule, AuItemComponent, DragDropModule],
   templateUrl: './au-category.component.html',
   styleUrls: ['./au-category.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class AuCategoryComponent implements OnInit {
+export class AuCategoryComponent implements OnInit, OnDestroy {
+  onDestroy$: Subject<boolean> = new Subject<boolean>();
   @Input() category: AuCategory;
   auItems$: Observable<AuItem[]>;
   itemNumber: number;
   auItems: AuItem[] = [];
-  dataLoaded$: Observable<boolean>;
+  dataLoaded$: Observable<boolean> = of(false);
   @ViewChild(MatAccordion) accordion: MatAccordion;
   displayMode = 'default';
   multi = false;
@@ -62,34 +64,39 @@ export class AuCategoryComponent implements OnInit {
   constructor(private auStore: Store<fromAuItems.fromItem.AuItemStore>) {}
 
   ngOnInit() {
-    this.dataLoaded$ = this.auStore.pipe(select(fromAuItems.getAuItemLoaded));
-    // eslint-disable-next-line no-console
-    console.log(`dispatch loadAuItems from au-category nginit`);
-    this.auStore.dispatch(loadAuItems({ categoryId: this.category.id }));
+    this.dataLoaded$ = this.auStore.pipe(select(fromAuItems.getAuItemLoaded)).pipe(take(1));
     this.auItems$ = this.auStore.pipe(select(getAuItemsOfCategories({ category: this.category }))).pipe(
+      filter((res) => res != null),
       // eslint-disable-next-line no-console
-      tap((val) => console.log(`Get all Item from from Category ${JSON.stringify(val)}`)),
-      shareReplay(1)
+      tap((val) => console.log(`Get all Item from from Category ngOnInit ${this.category.id} -- ${JSON.stringify(val)}`)),
+      takeUntil(this.onDestroy$)
     );
   }
+  ngOnDestroy() {
+    this.onDestroy$.next(true);
+    this.onDestroy$.complete();
+  }
+
   getIndex(i: string | number) {
     this.itemNumber = +i;
   }
 
   createItem(itemNumber: number) {
     const { category } = this;
-    const categoryId = category.id;
+    // const categoryId = category.id;
 
-    this.auStore.dispatch(addAuItem({ categoryId, itemNumber }));
+    this.auStore.dispatch(addAuItem({ category, itemNumber }));
   }
 
   deleteItem(itemId: string) {
     const { category } = this;
-    const categoryId = category.id;
-    this.auStore.dispatch(deleteAuItem({ categoryId, itemId }));
+    // const categoryId = category.id;
+    this.auStore.dispatch(deleteAuItem({ category, itemId }));
   }
 
   drop(event: CdkDragDrop<AuItem[]>) {
-    this.auStore.dispatch(moveAuItem({ params: { node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } }));
+    this.auStore.dispatch(
+      moveAuItem({ params: { category: this.category, node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } })
+    );
   }
 }

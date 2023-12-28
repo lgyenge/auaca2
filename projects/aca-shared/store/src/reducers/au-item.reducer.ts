@@ -26,7 +26,7 @@ import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as AuItemActions from '../actions/au-item.actions';
 import { AuItem } from '../models/au-item.model';
-import { Node } from '@alfresco/js-api';
+import { NodeEntry, NodePaging } from '@alfresco/js-api';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 export const auItemsFeatureKey = 'auItems';
@@ -56,19 +56,36 @@ export const initialState: AuItemData = adapter.getInitialState({
 export const reducer = createReducer(
   initialState,
   // on(AuItemActions.addAuItem, (state, action) => adapter.addOne(action.auItem, state)),
-  on(AuItemActions.addAuItem, (state) => ({ ...state, loaded: false, error: null })),
+  on(AuItemActions.addAuItem, (state) => ({ ...state })),
   on(AuItemActions.addAuItemSuccess, (state: AuItemData, { item, itemNumber }) => {
     const nodes = selectAll(state);
     nodes.splice(itemNumber, 0, item);
-    return adapter.setAll(nodes, { ...state });
+    return adapter.setAll(nodes, { ...state, loaded: true, error: null });
   }),
   on(AuItemActions.addAuItemFailure, (state, { error }) => ({ ...state, error })),
-  on(AuItemActions.deleteAuItem, (state) => ({ ...state, loaded: false, error: null })),
-  on(AuItemActions.deleteAuItemSuccess, (state: AuItemData, { itemId }) => adapter.removeOne(itemId, state)),
+  on(AuItemActions.deleteAuItem, (state) => ({ ...state })),
+  on(AuItemActions.deleteAuItemSuccess, (state: AuItemData, { itemId }) => adapter.removeOne(itemId, { ...state, loaded: true, error: null })),
   on(AuItemActions.deleteAuItemFailure, (state, { error }) => ({ ...state, error })),
-  on(AuItemActions.moveAuItem, (state, { params: { oldIndex, newIndex } }) => {
+  on(AuItemActions.moveAuItem, (state, { params: { node, oldIndex, newIndex } }) => {
     const entities = selectAll(state);
-    moveItemInArray<AuItem>(entities, oldIndex, newIndex);
+    // eslint-disable-next-line no-console
+    console.log(`nodeId:  ${node.id} `);
+    let foundIndex = 0;
+    entities.find(startFn);
+    function startFn(element, index) {
+      if (element.id === node.id) {
+        foundIndex = index;
+      }
+    }
+    // eslint-disable-next-line no-console
+    console.log(`előtte oldIndex:  ${oldIndex} - newIndex: ${newIndex} - foundIndex: ${foundIndex}`);
+    const oldIndex2 = foundIndex;
+    const newIndex2 = foundIndex + (newIndex - oldIndex);
+    // eslint-disable-next-line no-console
+    console.log(`utána oldIndex2:  ${oldIndex2} - newIndex2: ${newIndex2} - foundIndex: ${foundIndex}`);
+    // console.log(`entities:  ${JSON.stringify(entities)}`);
+    moveItemInArray<AuItem>(entities, oldIndex2, newIndex2);
+    // console.log(`entities:  ${JSON.stringify(entities)}`);
     return adapter.setAll(entities, { ...state, loaded: true });
   }),
   on(AuItemActions.upsertAuItem, (state, action) => adapter.upsertOne(action.auItem, state)),
@@ -76,22 +93,54 @@ export const reducer = createReducer(
   on(AuItemActions.upsertAuItems, (state, action) => adapter.upsertMany(action.auItems, state)),
   on(AuItemActions.updateAuItem, (state, action) => adapter.updateOne(action.auItem, state)),
   on(AuItemActions.updateAuItems, (state, action) => adapter.updateMany(action.auItems, state)),
-  // on(AuItemActions.deleteAuItem, (state, action) => adapter.removeOne(action.id, state)),
-  on(AuItemActions.deleteAuItem, (state) => ({ ...state, loaded: false, error: null })),
+  // on(AuItemActions.deleteAuItem, (state) => ({ ...state, loaded: false, error: null })),
 
   on(AuItemActions.deleteAuItems, (state, action) => adapter.removeMany(action.ids, state)),
   on(AuItemActions.loadAuItems, (state) => ({ ...state, loaded: false, error: null })),
-  // on(AuItemActions.loadAuItemsSuccess, (state, action) => adapter.setAll(action.AuItems, { ...state, loaded: true })),
-  on(AuItemActions.loadAuItemsSuccess, (state, action) => {
-    const nodes: Node[] = [];
-    action.nodePaging.list.entries.forEach((element) => {
-      return nodes.push(element.entry);
+
+  /* on(AuItemActions.loadAuItemsSuccess, (state, action) => {
+    const nodes: AuItem[] = [];
+    // eslint-disable-next-line no-console
+    console.log(`item reducer arr: ${JSON.stringify(action.itemArray)}`);
+    const n = action.itemArray as NodePaging[];
+    n.forEach((element, index) => {
+      if (index % 2 === 0) {
+        element.list.entries.forEach((el) => {
+          nodes.push(el.entry);
+        });
+      } else {
+        // const _ord = element as Node;
+      }
     });
     return adapter.upsertMany(nodes, { ...state, loaded: true });
+  }), */
+  on(AuItemActions.loadAuItemsSuccess, (state, action) => {
+    const sortedNodes: AuItem[] = [];
+    // eslint-disable-next-line no-console
+    console.log(`item reducer arr: ${JSON.stringify(action.itemArray)}`);
+    for (let i = 0; i < action.itemArray.length; i = i + 2) {
+      // eslint-disable-next-line no-console
+      console.log(`action.itemArray[${i}]:  ${JSON.stringify(action.itemArray[i])}`);
+      // eslint-disable-next-line no-console
+      console.log(`action.itemArray[${i + 1}]:  ${JSON.stringify(action.itemArray[i + 1])}`);
+      const iDs: string[] = (action.itemArray[i + 1] as AuItem).properties['au:pagesOrder']?.split(',');
+      iDs?.forEach((e) => {
+        (action.itemArray[i] as NodePaging).list.entries.find(checkId);
+        function checkId(entry: NodeEntry) {
+          if (e === entry.entry.id) {
+            sortedNodes.push(entry.entry);
+          }
+        }
+      });
+      // eslint-disable-next-line no-console
+      console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
+    }
+    return adapter.setAll(sortedNodes, { ...state, loaded: true });
+    // return adapter.setAll(nodes, { ...state, loaded: true });
   }),
 
   on(AuItemActions.loadAuItemsFailure, (state, { error }) => ({ ...state, error })),
-  on(AuItemActions.clearAuItems, (state) => adapter.removeAll(state))
+  on(AuItemActions.clearAuItems, (state) => adapter.removeAll({ ...state, loaded: false, error: null }))
 );
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = adapter.getSelectors();
