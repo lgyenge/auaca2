@@ -28,7 +28,7 @@ import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as AuPagesActions from '../actions/au-templates-actions';
 import { AuPage } from '../models/au-templates.model';
-import { Node } from '@alfresco/js-api';
+import { Node, NodeEntry } from '@alfresco/js-api';
 // import { Node, NodeEntry } from '@alfresco/js-api';
 
 import { moveItemInArray } from '@angular/cdk/drag-drop';
@@ -84,15 +84,10 @@ export const auPagesReducer = createReducer(
   on(AuPagesActions.deleteAuPages, (state, action) => auPagesAdapter.removeMany(action.ids, state)),
   on(AuPagesActions.loadAuPages, (state) => ({ ...state, loaded: false, error: null })),
 
-  // on(AuPagesActions.loadAuPagesSuccess, (state: AuPagesData, { params: { nodePaging, node } }) => {
-  on(AuPagesActions.loadAuPagesSuccess, (state: AuPagesData, { params: { nodePaging } }) => {
-    const nodes: Node[] = [];
-    nodePaging.list.entries.forEach((element) => {
-      nodes.push(element.entry);
-    });
-    /* const iDs: string[] = node.properties['au:pagesOrder'].split(',');
+  on(AuPagesActions.loadAuPagesSuccess, (state: AuPagesData, { params: { nodePaging, node } }) => {
+    const iDs: string[] = node.properties['au:pagesOrder']?.split(',');
     const sortedNodes: Node[] = [];
-    iDs.forEach((e) => {
+    iDs?.forEach((e) => {
       nodePaging.list.entries.find(checkId);
 
       function checkId(entry: NodeEntry) {
@@ -101,8 +96,9 @@ export const auPagesReducer = createReducer(
         }
       }
     });
-    return auPagesAdapter.setAll(sortedNodes, { ...state, loaded: true }); */
-    return auPagesAdapter.setAll(nodes, { ...state, loaded: true });
+    // eslint-disable-next-line no-console
+    console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
+    return auPagesAdapter.setAll(sortedNodes, { ...state, loaded: true });
   }),
   on(AuPagesActions.loadAuPagesFailure, (state, { error }) => ({ ...state, error })),
   on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll({ ...state, loaded: false, error: null }))

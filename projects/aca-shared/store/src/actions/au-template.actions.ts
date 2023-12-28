@@ -22,22 +22,11 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { AppService } from '@alfresco/aca-shared';
+import { createAction, props } from '@ngrx/store';
+import { Node } from '@alfresco/js-api';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.None
-})
-export class AppComponent {
-  onDestroy$: Subject<boolean> = new Subject<boolean>();
-  pageHeading: Observable<string>;
+export const loadAuTemplate = createAction('[AuTemplate] Load AuTemplate');
 
-  constructor(private appService: AppService) {
-    this.pageHeading = this.appService.pageHeading$;
-    this.appService.init();
-  }
-}
+export const loadAuTemplateSuccess = createAction('[AuTemplate] Load AuTemplate Success', props<{ data: Node }>());
+
+export const loadAuTemplateFailure = createAction('[AuTemplate] Load AuTemplate Failure', props<{ error: any }>());

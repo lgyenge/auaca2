@@ -22,22 +22,49 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { AppService } from '@alfresco/aca-shared';
+import { createReducer, on } from '@ngrx/store';
+import { Node } from '@alfresco/js-api';
+import * as AuTemplateActions from '../actions/au-template.actions';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.None
-})
-export class AppComponent {
-  onDestroy$: Subject<boolean> = new Subject<boolean>();
-  pageHeading: Observable<string>;
+export const auTemplateFeatureKey = 'auTemplate';
 
-  constructor(private appService: AppService) {
-    this.pageHeading = this.appService.pageHeading$;
-    this.appService.init();
-  }
+/* export interface TemplateData {
+  // loaded: boolean;
+  // templ: Node;
+  // error: string | null;
+} */
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface TemplateState {
+  // readonly template: TemplateData;
+  loaded: boolean;
+  template: Node;
+  error: string | null;
 }
+
+export interface AuTemplateStore {
+  readonly auTemplate: TemplateState;
+}
+
+export const initialState: TemplateState = {
+  template: null,
+  loaded: false,
+  error: null
+};
+
+export const reducer = createReducer(
+  initialState,
+
+  on(AuTemplateActions.loadAuTemplate, (state) => state),
+  on(AuTemplateActions.loadAuTemplateSuccess, (state, action) => ({
+    ...state,
+    template: action.data,
+    loaded: true
+  })),
+  on(AuTemplateActions.loadAuTemplateFailure, (state, action) => ({
+    ...state,
+    error: action.error,
+    template: null,
+    loaded: false
+  }))
+);

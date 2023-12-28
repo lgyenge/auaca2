@@ -97,16 +97,6 @@ export const reducer = createReducer(
     const sortedNodes: AuCategory[] = [];
     // eslint-disable-next-line no-console
     console.log(`category reducer arr: ${JSON.stringify(action.catArray)}`);
-    /* const n = action.catArray as NodePaging[];
-    n.forEach((element, index) => {
-      if (index % 2 === 0) {
-        element.list.entries.forEach((el) => {
-          sortedNodes.push(el.entry);
-        });
-      } else {
-        // const _ord = element as Node;
-      }
-    }); */
     for (let i = 0; i < action.catArray.length; i = i + 2) {
       // eslint-disable-next-line no-console
       console.log(`action.catArray[${i}]:  ${JSON.stringify(action.catArray[i])}`);

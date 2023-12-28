@@ -37,15 +37,18 @@ import * as fromAuGlobalResponseSet from './reducers/au-global-response-set.redu
 import * as fromAuResposeSet from './reducers/au-response-set.reducer';
 
 import { AuPagesEffects, AuCategoryEffects, AuItemEffects } from './effects/au-templates.effects';
+import * as fromAuTemplate from './reducers/au-template.reducer';
+import { AuTemplateEffects } from './effects/au-template.effects';
 
 @NgModule({
   imports: [
-    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPagesEffects, AuCategoryEffects, AuItemEffects]),
+    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPagesEffects, AuCategoryEffects, AuItemEffects, AuTemplateEffects]),
     StoreModule.forFeature('auPages', auPagesReducer),
     StoreModule.forFeature('auCategories', fromAuCategory.reducer),
     StoreModule.forFeature('auItems', fromAuItem.reducer),
     StoreModule.forFeature('auResponeSet', fromAuResposeSet.reducer),
-    StoreModule.forFeature('auGlobalResponseSet', fromAuGlobalResponseSet.reducer)
+    StoreModule.forFeature('auGlobalResponseSet', fromAuGlobalResponseSet.reducer),
+    StoreModule.forFeature(fromAuTemplate.auTemplateFeatureKey, fromAuTemplate.reducer)
   ]
 })
 export class SharedStoreModule {}

@@ -22,22 +22,16 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { AppService } from '@alfresco/aca-shared';
+import { reducer, initialState } from './au-template.reducer';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.None
-})
-export class AppComponent {
-  onDestroy$: Subject<boolean> = new Subject<boolean>();
-  pageHeading: Observable<string>;
+describe('AuTemplate Reducer', () => {
+  describe('an unknown action', () => {
+    it('should return the previous state', () => {
+      const action = {} as any;
 
-  constructor(private appService: AppService) {
-    this.pageHeading = this.appService.pageHeading$;
-    this.appService.init();
-  }
-}
+      const result = reducer(initialState, action);
+
+      expect(result).toBe(initialState);
+    });
+  });
+});

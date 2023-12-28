@@ -1,11 +1,13 @@
-<mat-accordion class="example-headers-align" multi>
+<mat-accordion class="example-headers-align au-item" multi>
   <mat-expansion-panel>
     <mat-expansion-panel-header>
       <mat-panel-title>
+        <button mat-button (click)="createItem()">Add Item</button>
+        <button mat-button (click)="deleteItem()">Delete Item</button>
       ITEM:
       </mat-panel-title>
       <mat-panel-description>
-        {{itemName}}
+        {{item.name}}
         <mat-icon>account_circle</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
@@ -23,3 +25,7 @@
   </mat-expansion-panel>
 
 </mat-accordion>
+
+ <!-- <p class="au-item">
+  <div>ITEM </div>
+ -->

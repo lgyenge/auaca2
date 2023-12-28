@@ -1,11 +1,9 @@
-<div class="example-action-buttons">
+<!-- <div class="example-action-buttons">
   <button mat-button (click)="accordion.openAll()">Expand All</button>
   <button mat-button (click)="accordion.closeAll()">Collapse All</button>
-</div>
+</div> -->
 <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
   <ng-container *ngFor="let category of auCategories$ | async; let i = index" ;>
-    <button mat-button (click)="createCategory(i)">Add Category</button>
-    <button mat-button (click)="deleteCategory(category.id)">Delete Category</button>
     <div class="example-box" cdkDrag [cdkDragData]="category">
       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
       <mat-accordion class="example-headers-align" multi>
@@ -13,6 +11,8 @@
           <mat-expansion-panel-header>
             <mat-panel-title> CATEGORY NAME: {{ category.name }} </mat-panel-title>
             <mat-panel-description>
+              <button mat-button (click)="createCategory(i)">Add Category</button>
+              <button mat-button (click)="deleteCategory(category.id)">Delete Category</button>
               {{ category.name }}
               <mat-icon>account_circle</mat-icon>
             </mat-panel-description>

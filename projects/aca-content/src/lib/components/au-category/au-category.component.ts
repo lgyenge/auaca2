@@ -27,7 +27,7 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
 import { AuItemComponent } from '../au-item/au-item.component';
 import { Store, select } from '@ngrx/store';
-import * as fromAuItems from '@alfresco/aca-shared/store';
+import * as fromAuPages from '@alfresco/aca-shared/store';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 // import { getAuItemsAll, AuItem, addAuItem, deleteAuItem, moveAuItem, loadAuItems } from '@alfresco/aca-shared/store';
 import { getAuItemsOfCategories, AuCategory, AuItem, addAuItem, deleteAuItem, moveAuItem } from '@alfresco/aca-shared/store';
@@ -43,7 +43,8 @@ import { filter, take, takeUntil, tap } from 'rxjs/operators';
   templateUrl: './au-category.component.html',
   styleUrls: ['./au-category.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  // eslint-disable-next-line @alfresco/eslint-angular/use-none-component-view-encapsulation
+  encapsulation: ViewEncapsulation.Emulated
 })
 export class AuCategoryComponent implements OnInit, OnDestroy {
   onDestroy$: Subject<boolean> = new Subject<boolean>();
@@ -61,10 +62,10 @@ export class AuCategoryComponent implements OnInit, OnDestroy {
   expandedHeight: string;
   collapsedHeight: string;
 
-  constructor(private auStore: Store<fromAuItems.fromItem.AuItemStore>) {}
+  constructor(private auStore: Store<fromAuPages.fromItem.AuItemStore>) {}
 
   ngOnInit() {
-    this.dataLoaded$ = this.auStore.pipe(select(fromAuItems.getAuItemLoaded)).pipe(take(1));
+    this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuItemLoaded)).pipe(take(1));
     this.auItems$ = this.auStore.pipe(select(getAuItemsOfCategories({ category: this.category }))).pipe(
       filter((res) => res != null),
       // eslint-disable-next-line no-console

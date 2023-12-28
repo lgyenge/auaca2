@@ -25,14 +25,10 @@
 import { Component, ViewChild, ViewEncapsulation, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
-// import { Store, select } from '@ngrx/store';
-// import * as fromAuItems from '@alfresco/aca-shared/store';
-// import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { AuItem, AuCategory, addAuItem, deleteAuItem } from '@alfresco/aca-shared/store';
+import { Store } from '@ngrx/store';
+import * as fromAuPages from '@alfresco/aca-shared/store';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-// import { getAuItemsAll, AuCategory, addAuCategory, deleteAuCategory, moveAuCategory } from '@alfresco/aca-shared/store';
-// import { getAuItemsAll, AuItem } from '@alfresco/aca-shared/store';
-
-// import { Observable, Subscription } from 'rxjs';
 import { MatAccordion } from '@angular/material/expansion';
 
 @Component({
@@ -43,10 +39,14 @@ import { MatAccordion } from '@angular/material/expansion';
   templateUrl: './au-item.component.html',
   styleUrls: ['./au-item.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  // eslint-disable-next-line @alfresco/eslint-angular/use-none-component-view-encapsulation
+  encapsulation: ViewEncapsulation.Emulated
 })
 export class AuItemComponent {
-  @Input() itemName: string;
+  @Input() item: AuItem;
+  @Input() itemNumber: number;
+  @Input() category: AuCategory;
+
   categoryNumber: number;
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
@@ -58,23 +58,22 @@ export class AuItemComponent {
   expandedHeight: string;
   collapsedHeight: string;
 
+  constructor(private auStore: Store<fromAuPages.fromItem.AuItemStore>) {}
+
   getIndex(i: string | number) {
     this.categoryNumber = +i;
   }
-  /*
-  createCategory(categoryNumber: number) {
-    const { pageId } = this;
-    this.auStore.dispatch(addAuCategory({ pageId, categoryNumber }));
+  createItem() {
+    const { category, itemNumber } = this;
+    // const categoryId = category.id;
+
+    this.auStore.dispatch(addAuItem({ category, itemNumber }));
   }
 
-  deleteCategory(categoryId: string) {
-    const { pageId } = this;
-    this.auStore.dispatch(deleteAuCategory({ pageId, categoryId }));
+  deleteItem() {
+    const { category, item } = this;
+    const itemId = item.id;
+    // const categoryId = category.id;
+    this.auStore.dispatch(deleteAuItem({ category, itemId }));
   }
-
-  drop(event: CdkDragDrop<AuCategory[]>) {
-    this.auStore.dispatch(
-      moveAuCategory({ params: { node: this.auCategories[event.previousIndex], oldIndex: event.previousIndex, newIndex: event.currentIndex } })
-    );
-  } */
 }

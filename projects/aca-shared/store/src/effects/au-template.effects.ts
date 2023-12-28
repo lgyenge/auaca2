@@ -22,22 +22,26 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { AppService } from '@alfresco/aca-shared';
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { catchError, map, concatMap } from 'rxjs/operators';
+import { EMPTY, of } from 'rxjs';
+import * as AuTemplateActions from '../actions/au-template.actions';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.None
-})
-export class AppComponent {
-  onDestroy$: Subject<boolean> = new Subject<boolean>();
-  pageHeading: Observable<string>;
+@Injectable()
+export class AuTemplateEffects {
+  loadAuTemplates$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuTemplateActions.loadAuTemplate),
+      concatMap(() =>
+        /** An EMPTY observable only emits completion. Replace with your own observable API request */
+        EMPTY.pipe(
+          map((data) => AuTemplateActions.loadAuTemplateSuccess({ data })),
+          catchError((error) => of(AuTemplateActions.loadAuTemplateFailure({ error })))
+        )
+      )
+    );
+  });
 
-  constructor(private appService: AppService) {
-    this.pageHeading = this.appService.pageHeading$;
-    this.appService.init();
-  }
+  constructor(private actions$: Actions) {}
 }

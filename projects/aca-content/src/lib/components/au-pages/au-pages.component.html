@@ -1,8 +1,6 @@
 <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
   <ng-container *ngFor="let page of auPages$ | async; let i = index" ;>
-    {{ page.id }}
-    <button mat-button (click)="createPage(i)">Add Page</button>
-    <button mat-button (click)="deletePage(page.id)">Delete Page</button>
+  <!--   {{ page.id }} -->
     <div class="example-box" cdkDrag [cdkDragData]="page">
       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
       <mat-accordion class="example-headers-align" multi>
@@ -10,13 +8,13 @@
           <mat-expansion-panel-header>
             <mat-panel-title> PAGE NAME: </mat-panel-title>
             <mat-panel-description>
+              <button mat-button (click)="createPage(i)">Add Page</button>
+              <button mat-button (click)="deletePage(page.id)">Delete Page</button>
               {{ page.name }}
               <mat-icon>account_circle</mat-icon>
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <!-- <lib-au-page [page]="page" [pageNumber]="i" *ngIf="(dataLoaded$ | async)"></lib-au-page> -->
           <lib-au-page [page]="page" *ngIf="(dataLoaded$ | async)"></lib-au-page>
-          <!-- <lib-au-page [page]="page"></lib-au-page> -->
         </mat-expansion-panel>
       </mat-accordion>
     </div>

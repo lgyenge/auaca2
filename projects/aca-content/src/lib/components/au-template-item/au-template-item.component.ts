@@ -39,7 +39,7 @@ import {
   PaginationDirective,
   ToolbarComponent
 } from '@alfresco/aca-shared';
-import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector } from '@alfresco/aca-shared/store';
+import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector, loadAuTemplateSuccess } from '@alfresco/aca-shared/store';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { FilterSearch, ShareDataRow, FileUploadEvent, BreadcrumbModule, UploadModule, DocumentListModule } from '@alfresco/adf-content-services';
 import { DocumentListPresetRef, ExtensionsModule } from '@alfresco/adf-extensions';
@@ -49,7 +49,8 @@ import { TranslateModule } from '@ngx-translate/core';
 // import { DocumentListDirective } from '@alfresco/aca-content';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuPagesComponent } from '../au-pages/au-pages.component';
-
+import * as fromAuPages from '@alfresco/aca-shared/store';
+import { Store } from '@ngrx/store';
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'lib-au-template-item',
@@ -91,7 +92,11 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
   templateNode: Node;
   nodeId: string;
 
-  constructor(private route: ActivatedRoute, private contentApi: ContentApiService /* private nodeActionsService: NodeActionsService */) {
+  constructor(
+    private route: ActivatedRoute,
+    private contentApi: ContentApiService,
+    private auStore: Store<fromAuPages.fromPages.AuPagesStore> /* private nodeActionsService: NodeActionsService */
+  ) {
     super();
   }
 
@@ -118,6 +123,7 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.updateCurrentNode(node.entry);
             this.templateNode = node.entry;
+            this.auStore.dispatch(loadAuTemplateSuccess({ data: this.templateNode }));
           } else {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.router.navigate(['/personal-files', node.entry.parentId], {

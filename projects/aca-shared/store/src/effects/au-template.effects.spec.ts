@@ -22,22 +22,25 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { AppService } from '@alfresco/aca-shared';
+import { TestBed } from '@angular/core/testing';
+import { provideMockActions } from '@ngrx/effects/testing';
+import { Observable } from 'rxjs';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.None
-})
-export class AppComponent {
-  onDestroy$: Subject<boolean> = new Subject<boolean>();
-  pageHeading: Observable<string>;
+import { AuTemplateEffects } from './au-template.effects';
 
-  constructor(private appService: AppService) {
-    this.pageHeading = this.appService.pageHeading$;
-    this.appService.init();
-  }
-}
+describe('AuTemplateEffects', () => {
+  let actions$: Observable<any>;
+  let effects: AuTemplateEffects;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [AuTemplateEffects, provideMockActions(() => actions$)]
+    });
+
+    effects = TestBed.inject(AuTemplateEffects);
+  });
+
+  it('should be created', () => {
+    expect(effects).toBeTruthy();
+  });
+});

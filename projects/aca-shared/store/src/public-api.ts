@@ -54,6 +54,7 @@ export * from './states/app.state';
 export * from './store.module';
 
 // !!gyl add
+export * from './actions/au-template.actions';
 export * from './actions/au-templates-actions';
 export * from './actions/au-item.actions';
 export * from './actions/au-category.actions';
@@ -76,6 +77,7 @@ export * from './effects/au-templates.effects';
 export * from './selectors/au-templates.selectors';
 export * from './selectors/au-category.selectors';
 export * from './selectors/au-item.selectors';
+export * from './selectors/au-template.selectors';
 
 export * from './services/au-templates.service';
 

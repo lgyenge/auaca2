@@ -29,35 +29,17 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
 import { AuCategoryComponent } from '../au-category/au-category.component';
 import { Store, select } from '@ngrx/store';
-
-// import { Store } from '@ngrx/store';
-
-import * as fromAuCategories from '@alfresco/aca-shared/store';
+import * as fromAuPages from '@alfresco/aca-shared/store';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-// import { DragDropModule } from '@angular/cdk/drag-drop';
-// import { getAuCategoriesAll, AuCategory, addAuCategory, deleteAuCategory, moveAuCategory, loadAuCategories } from '@alfresco/aca-shared/store';
-import {
-  AuPage,
-  AuCategory,
-  addAuCategory,
-  deleteAuCategory,
-  moveAuCategory,
-  getAuCategoriesOfPage
-  // addAuPage,
-  // getAuCategoriesAll,
-  // loadAuCategories
-} from '@alfresco/aca-shared/store';
-
-// import { getAuCategoriesAll, AuCategory } from '@alfresco/aca-shared/store';
-
+import { AuPage, AuCategory, addAuCategory, deleteAuCategory, moveAuCategory, getAuCategoriesOfPage } from '@alfresco/aca-shared/store';
 import { Observable, Subject, Subscription, of } from 'rxjs';
 import { MatAccordion } from '@angular/material/expansion';
 import { filter, take, takeUntil, tap } from 'rxjs/operators';
-// import { MatAccordion } from '@angular/material/expansion';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
+  // eslint-disable-next-line @alfresco/eslint-angular/use-none-component-view-encapsulation
+  encapsulation: ViewEncapsulation.Emulated,
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'lib-au-page',
   standalone: true,
@@ -68,8 +50,6 @@ import { filter, take, takeUntil, tap } from 'rxjs/operators';
 export class AuPageComponent implements OnInit, OnDestroy {
   onDestroy$: Subject<boolean> = new Subject<boolean>();
   @Input() page: AuPage;
-  // @Input() pageNumber: number;
-  // pageId = '9ecc7e49-9c0d-4418-bf2a-e3337dc4ba6e';
   auCategories$: Observable<AuCategory[]>;
   categoryNumber: number;
   auCategories: AuCategory[] = [];
@@ -85,10 +65,10 @@ export class AuPageComponent implements OnInit, OnDestroy {
   expandedHeight: string;
   collapsedHeight: string;
 
-  constructor(private auStore: Store<fromAuCategories.fromCategory.AuCategoryStore>) {}
+  constructor(private auStore: Store<fromAuPages.fromCategory.AuCategoryStore>) {}
 
   ngOnInit() {
-    this.dataLoaded$ = this.auStore.pipe(select(fromAuCategories.getAuCategoryLoaded)).pipe(take(1));
+    this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuCategoryLoaded)).pipe(take(1));
     this.auCategories$ = this.auStore.pipe(select(getAuCategoriesOfPage({ page: this.page }))).pipe(
       filter((res) => res != null),
       // eslint-disable-next-line no-console
@@ -124,10 +104,4 @@ export class AuPageComponent implements OnInit, OnDestroy {
       moveAuCategory({ params: { page: this.page, node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } })
     );
   }
-
-  /* createPage(pageNumber: number) {
-    const { templateId } = this;
-
-    this.auStore.dispatch(addAuPage({ templateId, pageNumber }));
-  } */
 }

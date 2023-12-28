@@ -22,22 +22,15 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { AppService } from '@alfresco/aca-shared';
+import * as fromAuTemplate from '../reducers/au-template.reducer';
+import { selectAuTemplateState } from './au-template.selectors';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.None
-})
-export class AppComponent {
-  onDestroy$: Subject<boolean> = new Subject<boolean>();
-  pageHeading: Observable<string>;
+describe('AuTemplate Selectors', () => {
+  it('should select the feature state', () => {
+    const result = selectAuTemplateState({
+      [fromAuTemplate.auTemplateFeatureKey]: {}
+    });
 
-  constructor(private appService: AppService) {
-    this.pageHeading = this.appService.pageHeading$;
-    this.appService.init();
-  }
-}
+    expect(result).toEqual({});
+  });
+});

@@ -25,6 +25,8 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
+import { Node } from '@alfresco/js-api';
+
 import { AuPageComponent } from '../au-page/au-page.component';
 import { DummyComponentComponent } from '../dummy-component/dummy-component.component';
 
@@ -63,13 +65,15 @@ export class AuPagesComponent implements OnInit, OnDestroy {
   pageNumber: number;
   auPages: AuPage[] = [];
   dataLoaded$: Observable<boolean> = of(false);
+  template: Node;
 
   constructor(private auStore: Store<fromAuPages.fromPages.AuPagesStore>) {}
 
   ngOnInit() {
     // eslint-disable-next-line no-console
     console.log(`dispatch loadAuPages from Pages nginit`);
-    this.auStore.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
+    this.auStore.dispatch(loadAuPages({ templateId: this.templateId }));
+    // this.auStore.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
     this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuPagesLoaded)).pipe(take(1));
     this.auPages$ = this.auStore.pipe(select(getAuPagesOfPages({ templateId: this.templateId }))).pipe(
       filter((res) => res != null),
@@ -77,6 +81,13 @@ export class AuPagesComponent implements OnInit, OnDestroy {
       tap((val) => console.log(`Get all Page  from Pages ngOnInit ${val}`)),
       takeUntil(this.onDestroy$)
     );
+
+    this.auStore
+      .select(fromAuPages.selectTemplate)
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((value) => {
+        this.template = value;
+      });
   }
 
   ngOnDestroy() {

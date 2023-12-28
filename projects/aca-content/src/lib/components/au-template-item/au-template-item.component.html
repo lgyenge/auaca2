@@ -10,6 +10,17 @@
       <!-- <lib-au-pages [templateId]= templateNode?.id ></lib-au-pages> -->
       <lib-au-pages [templateId]= nodeId ></lib-au-pages>
     </div>
+    <mat-progress-spinner *ngIf="showLoader$ | async"
+    id="adf-document-list-loading"
+    class="adf-document-list-loading-margin"
+    [color]="'primary'"
+    [mode]="'indeterminate'">
+  </mat-progress-spinner>
+
+  <div class="aca-sidebar" *ngIf="infoDrawerOpened$ | async">
+    <aca-info-drawer [node]="selection.last"></aca-info-drawer>
+  </div>
+
 
   </div>
 </aca-page-layout>
