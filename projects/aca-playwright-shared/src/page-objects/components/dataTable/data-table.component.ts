@@ -26,6 +26,7 @@ import { Locator, Page } from '@playwright/test';
 import { BaseComponent } from '../base.component';
 import { MatMenuComponent } from './mat-menu.component';
 import { PaginationActionsType, PaginationComponent } from '../pagination.component';
+import { timeouts } from '../../../utils';
 
 export class DataTableComponent extends BaseComponent {
   private static rootElement = 'adf-datatable';
@@ -40,6 +41,14 @@ export class DataTableComponent extends BaseComponent {
   getEmptyContentTitleLocator = this.getChild('adf-empty-content .adf-empty-content__title');
   getEmptyContentSubTitleLocator = this.getChild('adf-empty-content .adf-empty-content__subtitle');
   getSelectedRow = this.getChild('.adf-datatable-row.adf-is-selected');
+  sortedColumnHeader = this.getChild(`.adf-datatable__header--sorted-asc .adf-datatable-cell-header-content .adf-datatable-cell-value,
+                                      .adf-datatable__header--sorted-desc .adf-datatable-cell-header-content .adf-datatable-cell-value`);
+  columnHeaders = this.getChild('.adf-datatable-row .adf-datatable-cell-header .adf-datatable-cell-value');
+  emptyList = this.getChild('div.adf-no-content-container');
+  emptyListTitle = this.getChild('.adf-empty-content__title');
+  emptyListSubtitle = this.getChild('.adf-empty-content__subtitle');
+  emptySearchText = this.getChild('.empty-search__text');
+  emptyListTest = this.getChild('adf-custom-empty-content-template');
 
   /** Locator for row (or rows) */
   getRowLocator = this.getChild(`adf-datatable-row`);
@@ -119,17 +128,21 @@ export class DataTableComponent extends BaseComponent {
 
   getSearchResultLinkByName = (name: string): Locator => this.getChild('.aca-search-results-row span[role="link"]', { hasText: name });
 
-  async sortBy(columnTitle: string, order: 'Ascending' | 'Descending'): Promise<void> {
-    const columnHeaderLocator = this.getColumnHeaderByTitleLocator(columnTitle);
-    await this.spinnerWaitForReload();
-    await columnHeaderLocator.click();
+  getColumnValuesByName = (name: string): Locator => this.getChild(`div[title="${name}"] span`);
 
-    const sortAttribute = await columnHeaderLocator.getAttribute('aria-sort');
-    if (sortAttribute !== order) {
-      await columnHeaderLocator.click();
+  getColumnHeaderByName = (headerTitle: string): Locator =>
+    this.getChild('.adf-datatable-row .adf-datatable-cell-header .adf-datatable-cell-value', { hasText: headerTitle });
+
+  async sortBy(label: string, order: 'asc' | 'desc'): Promise<void> {
+    const sortColumn = await this.getSortedColumnHeaderText();
+    let sortOrder = await this.getSortingOrder();
+    if (sortColumn !== label) {
+      await this.getColumnHeaderByName(label).click({ force: true });
+      sortOrder = await this.getSortingOrder();
     }
-
-    await this.spinnerWaitForReload();
+    if (sortOrder !== order) {
+      await this.getChild('span[class*="adf-datatable__header--sorted"]').click();
+    }
   }
 
   /**
@@ -192,18 +205,22 @@ export class DataTableComponent extends BaseComponent {
       return null;
     }
 
-    if ((await this.pagination.currentPageLocator.textContent()) !== ' Page 1 ') {
-      await this.pagination.navigateToPage(1);
-    }
-
-    const maxPages = (await this.pagination.totalPageLocator.textContent()).match(/\d/)[0];
-    for (let page = 1; page <= Number(maxPages); page++) {
-      if (await this.getRowByName(name).isVisible()) {
-        break;
+    if (await this.pagination.currentPageLocator.isVisible()) {
+      if ((await this.pagination.currentPageLocator.textContent()) === ' of 1 ') {
+        return null;
       }
-      await this.pagination.getArrowLocatorFor(PaginationActionsType.NextPageSelector).isEnabled();
-      await this.pagination.getArrowLocatorFor(PaginationActionsType.NextPageSelector).click();
-      await this.spinnerWaitForReload();
+    }
+    if (await this.pagination.totalPageLocator.isVisible()) {
+      const maxPages = (await this.pagination.totalPageLocator?.textContent())?.match(/\d/)[0];
+      for (let page = 1; page <= Number(maxPages); page++) {
+        if (await this.getRowByName(name).isVisible()) {
+          break;
+        }
+        if (await this.pagination.getArrowLocatorFor(PaginationActionsType.NextPageSelector).isEnabled()) {
+          await this.pagination.getArrowLocatorFor(PaginationActionsType.NextPageSelector).click();
+        }
+        await this.spinnerWaitForReload();
+      }
     }
   }
 
@@ -229,5 +246,77 @@ export class DataTableComponent extends BaseComponent {
   async hasCheckMarkIcon(itemName: string): Promise<boolean> {
     const row = this.getRowByName(itemName);
     return await row.locator('.adf-datatable-selected').isVisible();
+  }
+
+  async getColumnHeaders(): Promise<Array<string>> {
+    const columnNameLocator = this.columnHeaders;
+    await this.columnHeaders.nth(0).waitFor({ state: 'attached' });
+    return columnNameLocator.allTextContents();
+  }
+
+  async getSortedColumnHeaderText(): Promise<string> {
+    return this.sortedColumnHeader.innerText();
+  }
+
+  private getItemLocationEl(name: string): Locator {
+    return this.getRowByName(name).locator('.aca-location-link');
+  }
+
+  async getItemLocationText(name: string): Promise<string> {
+    await this.getItemLocationEl(name).locator('a').waitFor({ state: 'attached' });
+    return this.getItemLocationEl(name).innerText();
+  }
+
+  async getItemLocationTooltip(name: string): Promise<string> {
+    const location = this.getItemLocationEl(name);
+    await location.hover();
+    return location.locator('a').getAttribute('title', { timeout: timeouts.normal });
+  }
+
+  async clickItemLocation(name: string): Promise<void> {
+    await this.getItemLocationEl(name).click();
+  }
+
+  async getSortingOrder(): Promise<string> {
+    const str = await this.sortedColumnHeader.locator('../..').getAttribute('class');
+    if (str.includes('asc')) {
+      return 'asc';
+    } else if (str.includes('desc')) {
+      return 'desc';
+    }
+    return 'none';
+  }
+
+  async getRowAllInnerTexts(name: string): Promise<string> {
+    return (await this.getRowByName(name).locator('span').allInnerTexts()).toString();
+  }
+
+  async getFirstElementDetail(name: string): Promise<string> {
+    const firstNode = this.getColumnValuesByName(name).first();
+    return firstNode.innerText();
+  }
+
+  async isEmpty(): Promise<boolean> {
+    return this.emptyList.isVisible();
+  }
+
+  async getEmptyStateTitle(): Promise<string> {
+    return (await this.isEmpty()) ? this.emptyListTitle.innerText() : '';
+  }
+
+  async getEmptyStateSubtitle(): Promise<string> {
+    return (await this.isEmpty()) ? this.emptyListSubtitle.innerText() : '';
+  }
+
+  async getEmptyListText(): Promise<string> {
+    return (await this.isEmpty()) ? this.emptyListTest.innerText() : '';
+  }
+
+  async getRowsCount(): Promise<number> {
+    return this.getRowLocator.count();
+  }
+
+  async rightClickOnItem(itemName: string): Promise<void> {
+    await this.getCellByColumnNameAndRowItem(itemName, 'Name').click({ button: 'right' });
   }
 }

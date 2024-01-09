@@ -50,12 +50,12 @@ export class SharedLinksApi {
     }
   }
 
-  async shareFilesByIds(ids: string[]): Promise<SharedLinkEntry[]> {
+  async shareFilesByIds(ids: string[], expireDate?: Date): Promise<SharedLinkEntry[]> {
     const sharedLinks: SharedLinkEntry[] = [];
     try {
       if (ids && ids.length > 0) {
         for (const id of ids) {
-          const sharedLink = await this.shareFileById(id);
+          const sharedLink = await this.shareFileById(id, expireDate);
           sharedLinks.push(sharedLink);
         }
       }
@@ -73,7 +73,7 @@ export class SharedLinksApi {
       return await this.apiService.share.listSharedLinks(opts);
     } catch (error) {
       console.error(`SharedLinksApi getSharedLinks : catch : `, error);
-      return new SharedLinkPaging;
+      return new SharedLinkPaging();
     }
   }
 
@@ -89,10 +89,53 @@ export class SharedLinksApi {
         }
       };
 
-      return Utils.retryCall(sharedFile);
+      return await Utils.retryCall(sharedFile);
     } catch (error) {
       console.error(`SharedLinksApi waitForFilesToBeShared :  catch : ${error}`);
       console.error(`\tWait timeout reached waiting for files to be shared`);
+    }
+  }
+
+  private async getSharedIdOfNode(fileId: string): Promise<string> {
+    try {
+      const sharedLinksEntries = (await this.getSharedLinks())?.list.entries;
+      const found = sharedLinksEntries.find((sharedLink) => sharedLink.entry.nodeId === fileId);
+      return found?.entry.id;
+    } catch (error) {
+      console.error(`SharedLinksApi getSharedIdOfNode : catch : `, error);
+      return null;
+    }
+  }
+
+  async unshareFileById(fileId: string): Promise<void> {
+    try {
+      const sharedId = await this.getSharedIdOfNode(fileId);
+      return await this.apiService.share.deleteSharedLink(sharedId);
+    } catch (error) {
+      console.error(`SharedLinksApi unshareFileById : catch : `, error);
+    }
+  }
+
+  async waitForFilesToNotBeShared(filesIds: string[]): Promise<any> {
+    try {
+      const sharedFile = async () => {
+        const sharedFiles = (await this.getSharedLinks()).list.entries.map((link) => link.entry.nodeId);
+
+        const foundItems = filesIds.some((id) => {
+          return sharedFiles.includes(id);
+        });
+
+        if (foundItems) {
+          return Promise.reject(foundItems);
+        } else {
+          return Promise.resolve(foundItems);
+        }
+      };
+
+      return await Utils.retryCall(sharedFile);
+    } catch (error) {
+      console.error(`SharedLinksApi waitForFilesToNotBeShared :  catch : ${error}`);
+      console.error(`\tWait timeout reached waiting for files to no longer be shared`);
     }
   }
 }

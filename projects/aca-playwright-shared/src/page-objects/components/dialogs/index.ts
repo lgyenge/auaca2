@@ -28,3 +28,5 @@ export * from './password-overlay-dialog.component';
 export * from './viewer-overlay-dialog.component';
 export * from './content-node-selector-dialog';
 export * from './create-from-template-dialog-component';
+export * from './adf-confirm-dialog.component';
+export * from './share-dialog.component';

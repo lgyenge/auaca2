@@ -36,7 +36,10 @@ import {
   MatMenuComponent,
   ViewerComponent,
   SidenavComponent,
-  PaginationComponent
+  PaginationComponent,
+  ErrorComponent,
+  ShareDialogComponent,
+  AdfConfirmDialogComponent
 } from '../components';
 
 export class PersonalFilesPage extends BasePage {
@@ -58,6 +61,9 @@ export class PersonalFilesPage extends BasePage {
   public sidenav = new SidenavComponent(this.page);
   public createFromTemplateDialogComponent = new CreateFromTemplateDialogComponent(this.page);
   public pagination = new PaginationComponent(this.page);
+  public errorDialog = new ErrorComponent(this.page);
+  public shareDialog= new ShareDialogComponent(this.page);
+  public confirmDialog = new AdfConfirmDialogComponent(this.page);
 
   async selectCreateFolder(): Promise<void> {
     await this.acaHeader.createButton.click();
@@ -70,5 +76,21 @@ export class PersonalFilesPage extends BasePage {
 
   async waitForPageLoad() {
     await this.page.waitForURL(`**/${PersonalFilesPage.pageUrl}`);
+  }
+
+  async clickMoreActionsButton(buttonLabel: string): Promise<void> {
+    await this.acaHeader.clickMoreActions();
+    await this.matMenu.clickMenuItem(buttonLabel);
+  }
+
+  async copyOrMoveContentInDatatable(sourceFileList: string[], destinationName: string, operation = 'Copy'): Promise<void> {
+    await this.page.keyboard.down('Control');
+    for (const sourceName of sourceFileList) {
+      await this.dataTable.selectItem(sourceName);
+    }
+    await this.page.keyboard.up('Control');
+    await this.clickMoreActionsButton(operation);
+    await this.contentNodeSelector.selectDestination(destinationName);
+    await this.contentNodeSelector.actionButton.click();
   }
 }
