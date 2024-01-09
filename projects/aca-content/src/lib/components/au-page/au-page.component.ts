@@ -31,10 +31,22 @@ import { AuCategoryComponent } from '../au-category/au-category.component';
 import { Store, select } from '@ngrx/store';
 import * as fromAuPages from '@alfresco/aca-shared/store';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { AuPage, AuCategory, addAuCategory, deleteAuCategory, moveAuCategory, getAuCategoriesOfPage } from '@alfresco/aca-shared/store';
+import {
+  AuPage,
+  AuCategory,
+  addAuCategory,
+  deleteAuCategory,
+  moveAuCategory,
+  getAuCategoriesOfPage,
+  selectAuCategory,
+  unSelectAuCategory,
+  unSelectAuPage,
+  unSelectAuItem,
+  toggleAuCategorySelection
+} from '@alfresco/aca-shared/store';
 import { Observable, Subject, Subscription, of } from 'rxjs';
 import { MatAccordion } from '@angular/material/expansion';
-import { filter, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,6 +63,7 @@ export class AuPageComponent implements OnInit, OnDestroy {
   onDestroy$: Subject<boolean> = new Subject<boolean>();
   @Input() page: AuPage;
   auCategories$: Observable<AuCategory[]>;
+  selectedAuCategory$: Observable<string | number>;
   categoryNumber: number;
   auCategories: AuCategory[] = [];
   dataLoaded$: Observable<boolean> = of(false);
@@ -68,11 +81,12 @@ export class AuPageComponent implements OnInit, OnDestroy {
   constructor(private auStore: Store<fromAuPages.fromCategory.AuCategoryStore>) {}
 
   ngOnInit() {
+    this.selectedAuCategory$ = this.auStore.pipe(select(fromAuPages.getSelectedAuCategory));
     this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuCategoryLoaded)).pipe(take(1));
     this.auCategories$ = this.auStore.pipe(select(getAuCategoriesOfPage({ page: this.page }))).pipe(
       filter((res) => res != null),
       // eslint-disable-next-line no-console
-      tap((val) => console.log(`Get all Categories from Page ngOnInit:${this.page.id} - ${JSON.stringify(val)}`)),
+      // tap((val) => console.log(`Get all Categories from Page ngOnInit:${this.page.id} - ${JSON.stringify(val)}`)),
       takeUntil(this.onDestroy$)
     );
   }
@@ -103,5 +117,24 @@ export class AuPageComponent implements OnInit, OnDestroy {
     this.auStore.dispatch(
       moveAuCategory({ params: { page: this.page, node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } })
     );
+  }
+
+  public toggleCategorySelection(_event: any, page: AuCategory) {
+    this.auStore.dispatch(toggleAuCategorySelection({ id: page.id }));
+
+    // alert('Select ' + page.id);
+  }
+
+  public selectCategory(_event: any, category: AuCategory) {
+    this.auStore.dispatch(selectAuCategory({ id: category.id }));
+    this.auStore.dispatch(unSelectAuPage());
+    this.auStore.dispatch(unSelectAuItem());
+    // alert('Select ' + page.id);
+  }
+
+  public unSelectCategory() {
+    this.auStore.dispatch(unSelectAuCategory());
+
+    // alert('Select ' + page.id);
   }
 }

@@ -82,6 +82,9 @@ export const getAuItemsIdsOfCategories = (props: { category: AuCategory }) =>
     console.log(`CategoryId:  ${props.category.id}  -  ItemIdsOfCategory:  ${Ids} `);
     return Ids;
   });
+
+export const getSelectedAuItem = createSelector(selectState, (state: AuItemData) => state.selectedAuItemId);
+
 /*
 export const getAuItemsIdsOfCategories = (props: { categoryId: string }) =>
   // 👍 `count` knows that it's a number

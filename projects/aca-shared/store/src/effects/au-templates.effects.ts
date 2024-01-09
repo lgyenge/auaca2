@@ -68,7 +68,7 @@ export class AuPagesEffects {
       concatMap((action) =>
         this.auTemplates.getTemplatePages(action.templateId).pipe(
           // eslint-disable-next-line no-console
-          tap((value) => console.log('loadAuPages effect (Pages loaded from server):' + value)),
+          // tap((value) => console.log('loadAuPages effect (Pages loaded from server):' + value)),
           map((data) => {
             const obj = { nodePaging: data[0], node: data[1] };
             return obj;
@@ -99,7 +99,7 @@ export class AuPagesEffects {
             return { node: node, pageNumber: action.pageNumber };
           }),
           // eslint-disable-next-line no-console
-          tap((value) => console.log('page added effect:' + value)),
+          // tap((value) => console.log('page added effect:' + value)),
           map((data) => AuPageActions.addAuPageSuccess({ params: data })),
           catchError((error) => of(AuPageActions.addAuPageFailure({ error })))
         );
@@ -116,7 +116,7 @@ export class AuPagesEffects {
             return { templateId: action.templateId, pageId: action.pageId };
           }),
           // eslint-disable-next-line no-console
-          tap((value) => console.log('valami' + value)),
+          // tap((value) => console.log('valami' + value)),
           map(({ templateId, pageId }) => AuPageActions.deleteAuPageSuccess({ templateId, pageId })),
 
           catchError((error) => of(AuPageActions.deleteAuPageFailure({ error })))
@@ -180,7 +180,7 @@ export class AuPagesEffects {
           return this.auStore.pipe(select(getAuPagesIds)).pipe(
             take(1),
             // eslint-disable-next-line no-console
-            tap((response) => console.log('response:' + response)),
+            // tap((response) => console.log('response:' + response)),
             map((iDs) => {
               return { action: action, iDs: iDs };
             })
@@ -209,7 +209,7 @@ export class AuCategoryEffects {
       concatMap((_action) =>
         this.auTemplates.getTemplateCategories().pipe(
           // eslint-disable-next-line no-console
-          tap((catArray) => console.log('loadAuCategories effect (Categories loaded from server):' + catArray)),
+          // tap((catArray) => console.log('loadAuCategories effect (Categories loaded from server):' + catArray)),
           map((catArray) => AuCategoryActions.loadAuCategoriesSuccess({ catArray })),
           catchError((error) => of(AuCategoryActions.loadAuCategoriesFailure({ error })))
         )
@@ -237,7 +237,7 @@ export class AuCategoryEffects {
             return { page: action.page, category: node, categoryNumber: action.categoryNumber };
           }),
           // eslint-disable-next-line no-console
-          tap((value) => console.log('addAuCategory:' + value)),
+          // tap((value) => console.log('addAuCategory:' + value)),
           map((data) => AuCategoryActions.addAuCategorySuccess(data)),
           catchError((error) => of(AuCategoryActions.addAuCategoryFailure({ error })))
         );
@@ -254,7 +254,7 @@ export class AuCategoryEffects {
             return { page: action.page, categoryId: action.categoryId };
           }),
           // eslint-disable-next-line no-console
-          tap((value) => console.log(`deleteAuCategory pageId: ${value.page} categoryId: ${value.categoryId}`)),
+          // tap((value) => console.log(`deleteAuCategory pageId: ${value.page} categoryId: ${value.categoryId}`)),
           map(({ page, categoryId }) => AuCategoryActions.deleteAuCategorySuccess({ categoryId, page })),
 
           catchError((error) => of(AuCategoryActions.deleteAuCategoryFailure({ error })))
@@ -272,7 +272,7 @@ export class AuCategoryEffects {
           return this.auStore.pipe(select(getAuCategoryIdsOfPage({ page: action.params.page }))).pipe(
             take(1),
             // eslint-disable-next-line no-console
-            tap((response) => console.log('moveAuCategoryEffect CategoriesIds:' + response)),
+            // tap((response) => console.log('moveAuCategoryEffect CategoriesIds:' + response)),
             map((iDs) => {
               return { action: action, iDs: iDs };
             })
@@ -317,7 +317,7 @@ export class AuCategoryEffects {
           return this.auStore.pipe(select(getAuCategoryIdsOfPage({ page: action.page }))).pipe(
             take(1),
             // eslint-disable-next-line no-console
-            tap((response) => console.log('CategoryIdsOfPage:' + response)),
+            // tap((response) => console.log('CategoryIdsOfPage:' + response)),
             map((iDs) => {
               return { action: action, iDs: iDs };
             })
@@ -340,7 +340,7 @@ export class AuCategoryEffects {
           return this.auStore.pipe(select(getAuCategoryIdsOfPage({ page: action.page }))).pipe(
             take(1),
             // eslint-disable-next-line no-console
-            tap((response) => console.log('CategoryIdsOfPage:' + response)),
+            // tap((response) => console.log('CategoryIdsOfPage:' + response)),
             map((iDs) => {
               return { action: action, iDs: iDs };
             })
@@ -371,7 +371,7 @@ export class AuItemEffects {
         // this.auTemplates.getTemplateItems('91f74719-c33e-4814-a630-d78022a6cc04', 'aaa*', 0).pipe(
         this.auTemplates.getTemplateItems().pipe(
           // eslint-disable-next-line no-console
-          tap((itemArray) => console.log('loadAuCategories effect (Items loaded from server:' + itemArray)),
+          // tap((itemArray) => console.log('loadAuCategories effect (Items loaded from server:' + itemArray)),
           map((itemArray) => AuItemActions.loadAuItemsSuccess({ itemArray })),
           catchError((error) => of(AuItemActions.loadAuItemsFailure({ error })))
         )
@@ -389,7 +389,7 @@ export class AuItemEffects {
             return { category: action.category, item: node, itemNumber: action.itemNumber };
           }),
           // eslint-disable-next-line no-console
-          tap((value) => console.log('addAuItem:' + value)),
+          // tap((value) => console.log('addAuItem:' + value)),
           map((data) => AuItemActions.addAuItemSuccess(data)),
           catchError((error) => of(AuItemActions.addAuItemFailure({ error })))
         );
@@ -406,7 +406,7 @@ export class AuItemEffects {
             return { category: action.category, itemId: action.itemId };
           }),
           // eslint-disable-next-line no-console
-          tap((value) => console.log('deleteAuItem categoryId' + value)),
+          // tap((value) => console.log('deleteAuItem categoryId' + value)),
           map(({ category, itemId }) => AuItemActions.deleteAuItemSuccess({ itemId, category })),
 
           catchError((error) => of(AuItemActions.deleteAuItemFailure({ error })))
@@ -470,7 +470,7 @@ export class AuItemEffects {
           return this.auStore.pipe(select(getAuItemsIdsOfCategories({ category: action.category }))).pipe(
             take(1),
             // eslint-disable-next-line no-console
-            tap((response) => console.log('response:' + response)),
+            // tap((response) => console.log('response:' + response)),
             map((iDs) => {
               return { action: action, iDs: iDs };
             })
@@ -504,7 +504,7 @@ export class AuResponseSetEffects {
           // eslint-disable-next-line no-console
           // tap(console.log('salami')),
           // eslint-disable-next-line no-console
-          tap((value) => console.log('category effect:' + value)),
+          // tap((value) => console.log('category effect:' + value)),
           map((nodePaging) => nodePaging.list.entries.map((x) => x.entry)),
           map((data) => AuResponseSetActions.loadAuResponseSetsSuccess({ AuResponseSets: data })),
           catchError((error) => of(AuResponseSetActions.loadAuResponseSetsFailure({ error })))
@@ -533,7 +533,7 @@ export class AuGlobalResponseSetEffects {
           // eslint-disable-next-line no-console
           // tap(console.log('salami')),
           // eslint-disable-next-line no-console
-          tap((value) => console.log('category effect:' + value)),
+          // tap((value) => console.log('category effect:' + value)),
           map((nodePaging) => nodePaging.list.entries.map((x) => x.entry)),
           map((data) => AuGlobalResponseSetActions.loadAuGlobalResponseSetsSuccess({ AuGlobalResponseSets: data })),
           catchError((error) => of(AuGlobalResponseSetActions.loadAuGlobalResponseSetsFailure({ error })))

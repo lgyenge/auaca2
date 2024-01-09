@@ -22,14 +22,25 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Component, ViewChild, ViewEncapsulation, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation, Input, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
-import { AuItem, AuCategory, addAuItem, deleteAuItem } from '@alfresco/aca-shared/store';
-import { Store } from '@ngrx/store';
+import {
+  AuItem,
+  AuCategory,
+  addAuItem,
+  deleteAuItem,
+  selectAuItem,
+  unSelectAuItem,
+  unSelectAuPage,
+  unSelectAuCategory,
+  toggleAuItemSelection
+} from '@alfresco/aca-shared/store';
+import { Store, select } from '@ngrx/store';
 import * as fromAuPages from '@alfresco/aca-shared/store';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatAccordion } from '@angular/material/expansion';
+import { Observable } from 'rxjs';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -42,10 +53,11 @@ import { MatAccordion } from '@angular/material/expansion';
   // eslint-disable-next-line @alfresco/eslint-angular/use-none-component-view-encapsulation
   encapsulation: ViewEncapsulation.Emulated
 })
-export class AuItemComponent {
+export class AuItemComponent implements OnInit {
   @Input() item: AuItem;
   @Input() itemNumber: number;
   @Input() category: AuCategory;
+  selectedAuItem$: Observable<string | number>;
 
   categoryNumber: number;
 
@@ -59,6 +71,12 @@ export class AuItemComponent {
   collapsedHeight: string;
 
   constructor(private auStore: Store<fromAuPages.fromItem.AuItemStore>) {}
+
+  ngOnInit() {
+    this.selectedAuItem$ = this.auStore.pipe(select(fromAuPages.getSelectedAuItem));
+  }
+
+  // ngOnDestroy() {}
 
   getIndex(i: string | number) {
     this.categoryNumber = +i;
@@ -75,5 +93,24 @@ export class AuItemComponent {
     const itemId = item.id;
     // const categoryId = category.id;
     this.auStore.dispatch(deleteAuItem({ category, itemId }));
+  }
+
+  public toggleItemSelection(_event: any, item: AuItem) {
+    this.auStore.dispatch(toggleAuItemSelection({ id: item.id }));
+
+    // alert('Select ' + page.id);
+  }
+
+  public selectItem(_event: any, item: AuItem) {
+    this.auStore.dispatch(selectAuItem({ id: item.id }));
+    this.auStore.dispatch(unSelectAuCategory());
+    this.auStore.dispatch(unSelectAuPage());
+    // alert('Select ' + page.id);
+  }
+
+  public unSelectItem() {
+    this.auStore.dispatch(unSelectAuItem());
+
+    // alert('Select ' + page.id);
   }
 }

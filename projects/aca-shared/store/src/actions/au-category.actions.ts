@@ -61,3 +61,7 @@ export const updateAuCategories = createAction('[AuCategory/API] Update AuCatego
 export const deleteAuCategories = createAction('[AuCategory/API] Delete AuCategories', props<{ ids: string[] }>());
 
 export const clearAuCategories = createAction('[AuCategory/API] Clear AuCategories');
+
+export const selectAuCategory = createAction('[AuCategory/API] Select AuCategory', props<{ id: string }>());
+export const unSelectAuCategory = createAction('[AuCategory/API] UnSelect AuCategory');
+export const toggleAuCategorySelection = createAction('[AuCategory/API] Toggle AuCategory Selection', props<{ id: string }>());

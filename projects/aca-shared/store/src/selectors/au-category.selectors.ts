@@ -81,6 +81,8 @@ export const getAuCategoryIdsOfPage = (props: { page: AuPage }) =>
     return Ids;
   });
 
+export const getSelectedAuCategory = createSelector(selectState, (state: AuCategoryData) => state.selectedAuCategoryId);
+
 /* export const getAuCategoryIdsOfPage = (props: { pageId: string }) =>
   // 👍 `count` knows that it's a number
   createSelector(selectState, (state: AuCategoryData) => {

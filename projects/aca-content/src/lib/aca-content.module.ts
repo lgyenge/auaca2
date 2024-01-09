@@ -246,7 +246,12 @@ export class ContentServiceExtensionModule {
       'app.canCreateLibrary': rules.canCreateLibrary,
       'app.isSearchSupported': rules.isSearchSupported,
       'app.areTagsEnabled': rules.areTagsEnabled,
-      'app.areCategoriesEnabled': rules.areCategoriesEnabled
+      'app.areCategoriesEnabled': rules.areCategoriesEnabled,
+
+      // !! gyl add
+      'au.navigation.isAuTemplate': rules.isAuTemplate,
+      'au.navigation.isAuTemplateType': rules.isAuTemplateType,
+      'au.isAuPageSelected': rules.isAuPageSelected
     });
   }
 }

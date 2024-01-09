@@ -57,6 +57,7 @@ import { Badge, SettingsGroupRef } from '../models/types';
 import { NodePermissionService } from '../services/node-permission.service';
 import { filter, map } from 'rxjs/operators';
 import { SearchCategory } from '@alfresco/adf-content-services';
+// import * as fromAuPages from '@alfresco/aca-shared/store';
 
 @Injectable({
   providedIn: 'root'
@@ -108,6 +109,12 @@ export class AppExtensionService implements RuleContext {
   repository: RepositoryInfo;
   withCredentials: boolean;
 
+  /** !!!Gyladd!!!
+   * handled from au components
+   * used in au.rules
+   */
+  auPageSelectionId: string | number = null;
+
   references$: Observable<ExtensionRef[]>;
   filesDocumentListPreset$: Observable<DocumentListPresetRef[]> = this._filesDocumentListPreset.asObservable();
 
@@ -136,7 +143,30 @@ export class AppExtensionService implements RuleContext {
         this.setup(this.config);
       }
     });
+
+    // eslint-disable-next-line no-console
+    console.log('app.extension service');
+
+    /** !!!Gyladd */
+    /* this.auStore.select(getSelectedAuPage).subscribe(() => {
+      this.auPageSelectionId = 'abc';
+      if (this.config) {
+        this.setup(this.config);
+      }
+    });  */
   }
+
+  /* getAuPageSelections(): Observable<string> {
+    return this._createActions.pipe(
+      map((createActions) =>
+        createActions
+          .filter((action) => this.filterVisible(action))
+          .map((action) => this.copyAction(action))
+          .map((action) => this.buildMenu(action))
+          .map((action) => this.setActionDisabledFromRule(action))
+      )
+    );
+  } */
 
   async load() {
     this.config = await this.extensions.load();

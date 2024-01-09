@@ -58,3 +58,7 @@ export const updateAuItems = createAction('[AuItem/API] Update AuItems', props<{
 export const deleteAuItems = createAction('[AuItem/API] Delete AuItems', props<{ ids: string[] }>());
 
 export const clearAuItems = createAction('[AuItem/API] Clear AuItems');
+
+export const selectAuItem = createAction('[AuItem/API] Select AuItem', props<{ id: string }>());
+export const unSelectAuItem = createAction('[AuItem/API] UnSelect AuItem');
+export const toggleAuItemSelection = createAction('[AuItem/API] Toggle AuItem Selection', props<{ id: string }>());

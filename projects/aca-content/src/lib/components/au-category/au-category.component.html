@@ -1,39 +1,8 @@
-<!-- <div class="example-action-buttons">
-  <button mat-button (click)="accordion.openAll()">Expand All</button>
-  <button mat-button (click)="accordion.closeAll()">Collapse All</button>
-</div> -->
-<!-- <div cdkDropList class="example-list"  (cdkDropListDropped)="drop($event)"> -->
-<!-- <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-  <ng-container *ngFor="let item of auItems$ | async; let i = index" ;>
-    <div class="example-box" cdkDrag [cdkDragData]="item">
-      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-      <mat-accordion class="example-headers-align" multi>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title> ITEM NAME: </mat-panel-title>
-            <mat-panel-description>
-              <button mat-button (click)="createItem(i)">Add Item</button>
-              <button mat-button (click)="deleteItem(item.id)">Delete Item</button>
-              {{ item.name }}
-              <mat-icon>account_circle</mat-icon>
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-        <lib-au-item [itemName]="item.name" *ngIf="(dataLoaded$ | async)"></lib-au-item>
-        </mat-expansion-panel>
-      </mat-accordion>
-    </div>
-  </ng-container>
-</div> -->
-
 <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
   <ng-container *ngFor="let item of auItems$ | async; let i = index" ;>
     <div class="example-box" cdkDrag [cdkDragData]="item">
       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-     <!--  <button mat-button (click)="createItem(i)">Add Item</button>
-      <button mat-button (click)="deleteItem(item.id)">Delete Item</button> -->
-     <!--  {{ item.name }}
-      <mat-icon>account_circle</mat-icon> -->
-      <lib-au-item [item]="item"  [itemNumber]="i" [category]="category" *ngIf="dataLoaded$ | async"></lib-au-item>
+      <lib-au-item [item]="item" [itemNumber]="i" [category]="category" *ngIf="dataLoaded$ | async"></lib-au-item>
     </div>
   </ng-container>
 </div>

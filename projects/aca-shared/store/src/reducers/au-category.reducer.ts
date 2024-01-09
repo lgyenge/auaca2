@@ -48,7 +48,7 @@ export const adapter: EntityAdapter<AuCategory> = createEntityAdapter<AuCategory
 });
 export const initialState: AuCategoryData = adapter.getInitialState({
   error: '',
-  selectedCategoryId: null,
+  selectedAuCategoryId: null,
   loaded: false
 });
 
@@ -96,12 +96,12 @@ export const reducer = createReducer(
   on(AuCategoryActions.loadAuCategoriesSuccess, (state, action) => {
     const sortedNodes: AuCategory[] = [];
     // eslint-disable-next-line no-console
-    console.log(`category reducer arr: ${JSON.stringify(action.catArray)}`);
+    // console.log(`category reducer arr: ${JSON.stringify(action.catArray)}`);
     for (let i = 0; i < action.catArray.length; i = i + 2) {
       // eslint-disable-next-line no-console
-      console.log(`action.catArray[${i}]:  ${JSON.stringify(action.catArray[i])}`);
+      // console.log(`action.catArray[${i}]:  ${JSON.stringify(action.catArray[i])}`);
       // eslint-disable-next-line no-console
-      console.log(`action.catArray[${i + 1}]:  ${JSON.stringify(action.catArray[i + 1])}`);
+      // console.log(`action.catArray[${i + 1}]:  ${JSON.stringify(action.catArray[i + 1])}`);
       const iDs: string[] = (action.catArray[i + 1] as AuCategory).properties['au:pagesOrder']?.split(',');
       iDs?.forEach((e) => {
         (action.catArray[i] as NodePaging).list.entries.find(checkId);
@@ -112,13 +112,23 @@ export const reducer = createReducer(
         }
       });
       // eslint-disable-next-line no-console
-      console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
+      // console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
     }
     return adapter.setAll(sortedNodes, { ...state, loaded: true });
     // return adapter.setAll(nodes, { ...state, loaded: true });
   }),
   on(AuCategoryActions.loadAuCategoriesFailure, (state, { error }) => ({ ...state, error })),
-  on(AuCategoryActions.clearAuCategories, (state) => adapter.removeAll({ ...state, loaded: false, error: null }))
+  on(AuCategoryActions.clearAuCategories, (state) => adapter.removeAll({ ...state, loaded: false, error: null })),
+
+  on(AuCategoryActions.selectAuCategory, (state, action) => ({ ...state, selectedAuCategoryId: action.id })),
+  on(AuCategoryActions.unSelectAuCategory, (state) => ({ ...state, selectedAuCategoryId: null })),
+  on(AuCategoryActions.toggleAuCategorySelection, (state, action) => {
+    if (state.selectedAuCategoryId) {
+      return { ...state, selectedAuCategoryId: null };
+    } else {
+      return { ...state, selectedAuCategoryId: action.id };
+    }
+  })
 );
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = adapter.getSelectors();

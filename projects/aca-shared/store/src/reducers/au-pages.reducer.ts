@@ -35,11 +35,11 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 export const auPagesFeatureKey = 'auPages';
 export interface AuPagesData extends EntityState<AuPage> {
-  selectedAuPageId?: string | number;
+  selectedAuPageId: string | number;
   // loading: boolean;
   // eslint-disable-next-line @cspell/spellchecker
   loaded: boolean;
-  error?: string | null;
+  error: string | null;
 }
 
 export interface AuPagesStore {
@@ -51,7 +51,7 @@ export const auPagesAdapter: EntityAdapter<AuPage> = createEntityAdapter<AuPage>
 });
 export const initialState: AuPagesData = auPagesAdapter.getInitialState({
   error: '',
-  selectedProductId: null,
+  selectedAuPageId: null,
   // loading: false
   loaded: false
 });
@@ -97,11 +97,21 @@ export const auPagesReducer = createReducer(
       }
     });
     // eslint-disable-next-line no-console
-    console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
+    // console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
     return auPagesAdapter.setAll(sortedNodes, { ...state, loaded: true });
   }),
   on(AuPagesActions.loadAuPagesFailure, (state, { error }) => ({ ...state, error })),
-  on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll({ ...state, loaded: false, error: null }))
+  on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll({ ...state, loaded: false, error: null })),
+  // on(AuPagesActions.selectAuPage, (state, { id }) => Object.assign({ ...state, selectedPageId: id })),
+  on(AuPagesActions.selectAuPage, (state, action) => ({ ...state, selectedAuPageId: action.id })),
+  on(AuPagesActions.unSelectAuPage, (state) => ({ ...state, selectedAuPageId: null })),
+  on(AuPagesActions.toggleAuPageSelection, (state, action) => {
+    if (state.selectedAuPageId) {
+      return { ...state, selectedAuPageId: null };
+    } else {
+      return { ...state, selectedAuPageId: action.id };
+    }
+  })
 );
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = auPagesAdapter.getSelectors();

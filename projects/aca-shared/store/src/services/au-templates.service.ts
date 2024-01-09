@@ -37,7 +37,7 @@ import {
   selectCategoriesReady,
   selectPagesReady
 } from '../public-api';
-import { concatMap, filter, take, tap } from 'rxjs/operators';
+import { concatMap, filter, take } from 'rxjs/operators';
 
 import { AuPage } from '../models/au-templates.model';
 import { NodePaging } from '@alfresco/js-api';
@@ -92,13 +92,13 @@ export class auTemplatesService {
   updateTemplateIds(nodeId: string, iDs: string) {
     const properties = { 'au:pagesOrder': iDs };
     // eslint-disable-next-line no-console
-    console.log('iDs:' + iDs);
+    // console.log('iDs:' + iDs);
     return this.nodesApi.updateNode(nodeId, { properties });
   }
 
   deleteTemplateNode(nodeId: string) {
     // eslint-disable-next-line no-console
-    console.log('delete nodeId:' + nodeId);
+    // console.log('delete nodeId:' + nodeId);
     return this.nodesApi.deleteNode(nodeId);
   }
 
@@ -128,7 +128,7 @@ export class auTemplatesService {
           pageObservables.push(ob2);
         });
         // eslint-disable-next-line no-console
-        console.log(`Load Categories from server (forkJoin Page Observables) ${pageObservables}`);
+        // console.log(`Load Categories from server (forkJoin Page Observables) ${pageObservables}`);
         return forkJoin(pageObservables);
       })
     );
@@ -145,7 +145,7 @@ export class auTemplatesService {
     const properties = { 'cm:description': 'ordLinDescription' };
 
     // eslint-disable-next-line no-console
-    console.log('category parent id:' + parentId);
+    // console.log('category parent id:' + parentId);
     return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
   }
 
@@ -167,7 +167,7 @@ export class auTemplatesService {
       filter((res) => res.ready),
       take(1),
       // eslint-disable-next-line no-console
-      tap((val) => console.log(`selectCategoriesReady from  from getTemplateItems service TAP: - ${JSON.stringify(val)}`)),
+      // tap((val) => console.log(`selectCategoriesReady from  from getTemplateItems service TAP: - ${JSON.stringify(val)}`)),
       concatMap((val) => {
         const categoryObservables: Observable<NodePaging | AuPage>[] = [];
         val.pages.forEach((category) => {
@@ -177,7 +177,7 @@ export class auTemplatesService {
           categoryObservables.push(ob2);
         });
         // eslint-disable-next-line no-console
-        console.log(`Load Items from server (forkJoin Categories Observables) ${categoryObservables}`);
+        // console.log(`Load Items from server (forkJoin Categories Observables) ${categoryObservables}`);
         return forkJoin(categoryObservables);
       })
     );
@@ -194,7 +194,7 @@ export class auTemplatesService {
     const properties = { 'cm:description': 'ordLinDescription' };
 
     // eslint-disable-next-line no-console
-    console.log('category parent id:' + parentId);
+    // console.log('category parent id:' + parentId);
     return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
   }
 

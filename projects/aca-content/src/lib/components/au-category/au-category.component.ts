@@ -33,7 +33,7 @@ import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { getAuItemsOfCategories, AuCategory, AuItem, addAuItem, deleteAuItem, moveAuItem } from '@alfresco/aca-shared/store';
 import { Observable, Subject, of } from 'rxjs';
 import { MatAccordion } from '@angular/material/expansion';
-import { filter, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -50,6 +50,7 @@ export class AuCategoryComponent implements OnInit, OnDestroy {
   onDestroy$: Subject<boolean> = new Subject<boolean>();
   @Input() category: AuCategory;
   auItems$: Observable<AuItem[]>;
+  selectedAuItem$: Observable<string | number>;
   itemNumber: number;
   auItems: AuItem[] = [];
   dataLoaded$: Observable<boolean> = of(false);
@@ -65,11 +66,12 @@ export class AuCategoryComponent implements OnInit, OnDestroy {
   constructor(private auStore: Store<fromAuPages.fromItem.AuItemStore>) {}
 
   ngOnInit() {
+    this.selectedAuItem$ = this.auStore.pipe(select(fromAuPages.getSelectedAuItem));
     this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuItemLoaded)).pipe(take(1));
     this.auItems$ = this.auStore.pipe(select(getAuItemsOfCategories({ category: this.category }))).pipe(
       filter((res) => res != null),
       // eslint-disable-next-line no-console
-      tap((val) => console.log(`Get all Item from from Category ngOnInit ${this.category.id} -- ${JSON.stringify(val)}`)),
+      // tap((val) => console.log(`Get all Item from from Category ngOnInit ${this.category.id} -- ${JSON.stringify(val)}`)),
       takeUntil(this.onDestroy$)
     );
   }

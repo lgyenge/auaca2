@@ -49,7 +49,7 @@ export const adapter: EntityAdapter<AuItem> = createEntityAdapter<AuItem>({
 
 export const initialState: AuItemData = adapter.getInitialState({
   error: '',
-  selectedItemId: null,
+  selectedAuItemId: null,
   loaded: false
 });
 
@@ -69,7 +69,7 @@ export const reducer = createReducer(
   on(AuItemActions.moveAuItem, (state, { params: { node, oldIndex, newIndex } }) => {
     const entities = selectAll(state);
     // eslint-disable-next-line no-console
-    console.log(`nodeId:  ${node.id} `);
+    // console.log(`nodeId:  ${node.id} `);
     let foundIndex = 0;
     entities.find(startFn);
     function startFn(element, index) {
@@ -78,11 +78,11 @@ export const reducer = createReducer(
       }
     }
     // eslint-disable-next-line no-console
-    console.log(`előtte oldIndex:  ${oldIndex} - newIndex: ${newIndex} - foundIndex: ${foundIndex}`);
+    // console.log(`előtte oldIndex:  ${oldIndex} - newIndex: ${newIndex} - foundIndex: ${foundIndex}`);
     const oldIndex2 = foundIndex;
     const newIndex2 = foundIndex + (newIndex - oldIndex);
     // eslint-disable-next-line no-console
-    console.log(`utána oldIndex2:  ${oldIndex2} - newIndex2: ${newIndex2} - foundIndex: ${foundIndex}`);
+    // console.log(`utána oldIndex2:  ${oldIndex2} - newIndex2: ${newIndex2} - foundIndex: ${foundIndex}`);
     // console.log(`entities:  ${JSON.stringify(entities)}`);
     moveItemInArray<AuItem>(entities, oldIndex2, newIndex2);
     // console.log(`entities:  ${JSON.stringify(entities)}`);
@@ -117,12 +117,12 @@ export const reducer = createReducer(
   on(AuItemActions.loadAuItemsSuccess, (state, action) => {
     const sortedNodes: AuItem[] = [];
     // eslint-disable-next-line no-console
-    console.log(`item reducer arr: ${JSON.stringify(action.itemArray)}`);
+    // console.log(`item reducer arr: ${JSON.stringify(action.itemArray)}`);
     for (let i = 0; i < action.itemArray.length; i = i + 2) {
       // eslint-disable-next-line no-console
-      console.log(`action.itemArray[${i}]:  ${JSON.stringify(action.itemArray[i])}`);
+      // console.log(`action.itemArray[${i}]:  ${JSON.stringify(action.itemArray[i])}`);
       // eslint-disable-next-line no-console
-      console.log(`action.itemArray[${i + 1}]:  ${JSON.stringify(action.itemArray[i + 1])}`);
+      // console.log(`action.itemArray[${i + 1}]:  ${JSON.stringify(action.itemArray[i + 1])}`);
       const iDs: string[] = (action.itemArray[i + 1] as AuItem).properties['au:pagesOrder']?.split(',');
       iDs?.forEach((e) => {
         (action.itemArray[i] as NodePaging).list.entries.find(checkId);
@@ -133,14 +133,23 @@ export const reducer = createReducer(
         }
       });
       // eslint-disable-next-line no-console
-      console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
+      // console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
     }
     return adapter.setAll(sortedNodes, { ...state, loaded: true });
     // return adapter.setAll(nodes, { ...state, loaded: true });
   }),
 
   on(AuItemActions.loadAuItemsFailure, (state, { error }) => ({ ...state, error })),
-  on(AuItemActions.clearAuItems, (state) => adapter.removeAll({ ...state, loaded: false, error: null }))
+  on(AuItemActions.clearAuItems, (state) => adapter.removeAll({ ...state, loaded: false, error: null })),
+  on(AuItemActions.selectAuItem, (state, action) => ({ ...state, selectedAuItemId: action.id })),
+  on(AuItemActions.unSelectAuItem, (state) => ({ ...state, selectedAuItemId: null })),
+  on(AuItemActions.toggleAuItemSelection, (state, action) => {
+    if (state.selectedAuItemId) {
+      return { ...state, selectedAuItemId: null };
+    } else {
+      return { ...state, selectedAuItemId: action.id };
+    }
+  })
 );
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = adapter.getSelectors();

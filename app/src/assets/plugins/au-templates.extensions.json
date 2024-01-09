@@ -1,11 +1,33 @@
 {
-  "$schema": "../../../extension.schema.json",
+  "$schema": "../../../../extension.schema.json",
   "$id": "au-templates",
   "$version": "1.0.0",
   "$vendor": "Your name or company name",
   "$name": "plugin1",
   "$description": "demo plugin",
   "$license": "MIT",
+  "$app.navigation.isNotTrashcan":"",
+
+
+  "rules": [
+    {
+      "id": "flsrv.canCreateArea",
+      "type": "core.every",
+      "parameters": [
+        { "type": "rule", "value": "app.navigation.folder.canCreate" },
+        { "type": "rule", "value": "flsrv.navigation.isFlAreas" }
+      ]
+    },
+    {
+      "id": "au.canCreatePage",
+      "type": "core.every",
+      "parameters": [
+        { "type": "rule", "value": "au.navigation.isAuTemplate" },
+        { "type": "rule", "value": "au.isAuPageSelected" }
+      ]
+    }
+
+  ],
 
   "routes": [
     {
@@ -28,6 +50,26 @@
           }
         ]
       }
+    ],
+    "toolbar": [
+      {
+        "disabled": false,
+        "id": "au.toolbar.canCreatePage",
+        "type": "button",
+        "order": 10,
+        "title": "Új",
+        "description": "Új",
+        "icon": "add",
+        "actions": {
+          "click": "FL_CREATE_AREA"
+        },
+        "rules": {
+          "visible": "au.canCreatePage"
+        }
+      }
+
     ]
+
+
   }
 }

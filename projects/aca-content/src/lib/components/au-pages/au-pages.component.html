@@ -1,20 +1,31 @@
 <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-  <ng-container *ngFor="let page of auPages$ | async; let i = index" ;>
-  <!--   {{ page.id }} -->
+  <ng-container *ngFor="let page of auPages$ | async; let i = index">
+    <!--  {{ page.id }} -- {{ selectedId }} -->
     <div class="example-box" cdkDrag [cdkDragData]="page">
       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
       <mat-accordion class="example-headers-align" multi>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title> PAGE NAME: </mat-panel-title>
-            <mat-panel-description>
+            <mat-panel-title (click)="$event.stopPropagation()">
+              <div *ngIf="page.id === (selectedAuPage$ | async); else notSelected">
+                <button mat-icon-button color="primary" aria-label="Clear selection" (click)="unSelectPage()">
+                  <mat-icon>check_box</mat-icon>
+                </button>
+              </div>
+
+              <ng-template #notSelected>
+                <button mat-icon-button color="primary" aria-label="Select" (click)="selectPage($event, page)">
+                  <mat-icon>check_box_outline_blank</mat-icon>
+                </button>
+              </ng-template>
+              Oldal:{{ page.name }}
+            </mat-panel-title>
+            <mat-panel-description >
               <button mat-button (click)="createPage(i)">Add Page</button>
               <button mat-button (click)="deletePage(page.id)">Delete Page</button>
-              {{ page.name }}
-              <mat-icon>account_circle</mat-icon>
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <lib-au-page [page]="page" *ngIf="(dataLoaded$ | async)"></lib-au-page>
+          <lib-au-page [page]="page" *ngIf="dataLoaded$ | async"></lib-au-page>
         </mat-expansion-panel>
       </mat-accordion>
     </div>

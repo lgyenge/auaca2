@@ -67,3 +67,5 @@ export const getAuPagesOfPages = (props: { templateId: string }) =>
       return null;
     }
   });
+
+export const getSelectedAuPage = createSelector(selectState, (state: AuPagesData) => state.selectedAuPageId);

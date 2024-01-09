@@ -39,17 +39,25 @@ import {
   addAuPage,
   deleteAuPage,
   moveAuPage,
-  loadAuPages
+  loadAuPages,
+  selectAuPage,
+  unSelectAuPage,
+  unSelectAuCategory,
+  unSelectAuItem,
+  toggleAuPageSelection,
+  SetSelectedNodesAction
   // clearAuPages,
   // clearAuCategories,
   // clearAuItems
 } from '@alfresco/aca-shared/store';
+import { AppExtensionService } from '@alfresco/aca-shared';
 
 import { Observable, Subject, of } from 'rxjs';
-import { filter, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 
 @Component({
-  encapsulation: ViewEncapsulation.None,
+  // eslint-disable-next-line @alfresco/eslint-angular/use-none-component-view-encapsulation
+  encapsulation: ViewEncapsulation.Emulated,
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'lib-au-pages',
   standalone: true,
@@ -62,23 +70,28 @@ export class AuPagesComponent implements OnInit, OnDestroy {
   onDestroy$: Subject<boolean> = new Subject<boolean>();
   @Input() templateId: string;
   auPages$: Observable<AuPage[]>;
+  selectedAuPage$: Observable<string | number>;
+  selectedId: string | number;
   pageNumber: number;
   auPages: AuPage[] = [];
   dataLoaded$: Observable<boolean> = of(false);
   template: Node;
+  panelOpenState = false;
 
-  constructor(private auStore: Store<fromAuPages.fromPages.AuPagesStore>) {}
+  constructor(private auStore: Store<fromAuPages.fromPages.AuPagesStore>, private extensions: AppExtensionService, private store: Store) {}
+  // protected extensions = inject(AppExtensionService);
 
   ngOnInit() {
     // eslint-disable-next-line no-console
-    console.log(`dispatch loadAuPages from Pages nginit`);
+    // console.log(`dispatch loadAuPages from Pages nginit`);
+    this.selectedAuPage$ = this.auStore.pipe(select(fromAuPages.getSelectedAuPage));
     this.auStore.dispatch(loadAuPages({ templateId: this.templateId }));
     // this.auStore.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
     this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuPagesLoaded)).pipe(take(1));
     this.auPages$ = this.auStore.pipe(select(getAuPagesOfPages({ templateId: this.templateId }))).pipe(
       filter((res) => res != null),
       // eslint-disable-next-line no-console
-      tap((val) => console.log(`Get all Page  from Pages ngOnInit ${val}`)),
+      // tap((val) => console.log(`Get all Page  from Pages ngOnInit ${val}`)),
       takeUntil(this.onDestroy$)
     );
 
@@ -87,6 +100,18 @@ export class AuPagesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe((value) => {
         this.template = value;
+      });
+
+    this.auStore
+      .select(fromAuPages.getSelectedAuPage)
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((value) => {
+        this.selectedId = value;
+        this.extensions.auPageSelectionId = value;
+        // eslint-disable-next-line no-console
+        console.log(`page selection changed: ${value}`);
+        // to init change
+        this.store.dispatch(new SetSelectedNodesAction([]));
       });
   }
 
@@ -112,5 +137,19 @@ export class AuPagesComponent implements OnInit, OnDestroy {
 
   drop(event: CdkDragDrop<AuPage[]>) {
     this.auStore.dispatch(moveAuPage({ params: { node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } }));
+  }
+
+  public togglePageSelection(_event: any, page: AuPage) {
+    this.auStore.dispatch(toggleAuPageSelection({ id: page.id }));
+  }
+
+  public selectPage(_event: any, page: AuPage) {
+    this.auStore.dispatch(selectAuPage({ id: page.id }));
+    this.auStore.dispatch(unSelectAuCategory());
+    this.auStore.dispatch(unSelectAuItem());
+  }
+
+  public unSelectPage() {
+    this.auStore.dispatch(unSelectAuPage());
   }
 }

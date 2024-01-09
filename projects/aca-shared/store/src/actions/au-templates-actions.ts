@@ -55,3 +55,7 @@ export const updateAuPages = createAction('[AuPage/API] Update AuPages', props<{
 export const deleteAuPages = createAction('[AuPage/API] Delete AuPages', props<{ ids: string[] }>());
 
 export const clearAuPages = createAction('[AuPage/API] Clear AuPages');
+
+export const selectAuPage = createAction('[AuPage/API] Select AuPage', props<{ id: string }>());
+export const unSelectAuPage = createAction('[AuPage/API] UnSelect AuPage');
+export const toggleAuPageSelection = createAction('[AuPage/API] Toggle AuPage Selection', props<{ id: string }>());

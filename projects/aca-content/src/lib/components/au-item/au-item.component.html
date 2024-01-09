@@ -1,29 +1,34 @@
 <mat-accordion class="example-headers-align au-item" multi>
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-panel-title>
-        <button mat-button (click)="createItem()">Add Item</button>
-        <button mat-button (click)="deleteItem()">Delete Item</button>
-      ITEM:
+      <mat-panel-title (click)="$event.stopPropagation()">
+        <div *ngIf="item.id === (selectedAuItem$ | async); else notSelected">
+          <button mat-icon-button color="primary" aria-label="Clear selection" (click)="unSelectItem()">
+            <mat-icon>check_box</mat-icon>
+          </button>
+        </div>
+
+        <ng-template #notSelected>
+          <button mat-icon-button color="primary" aria-label="Select" (click)="selectItem($event, item)">
+            <mat-icon>check_box_outline_blank</mat-icon>
+          </button>
+        </ng-template>
+        Item:{{ item.name }}
       </mat-panel-title>
       <mat-panel-description>
-        {{item.name}}
-        <mat-icon>account_circle</mat-icon>
+        <button mat-button (click)="createItem()">Add Item</button>
+        <button mat-button (click)="deleteItem()">Delete Item</button>
       </mat-panel-description>
     </mat-expansion-panel-header>
-
     <mat-form-field>
       <mat-label>First name</mat-label>
       <input matInput>
     </mat-form-field>
-
     <mat-form-field>
       <mat-label>Age</mat-label>
       <input matInput type="number" min="1">
     </mat-form-field>
-
   </mat-expansion-panel>
-
 </mat-accordion>
 
  <!-- <p class="au-item">
