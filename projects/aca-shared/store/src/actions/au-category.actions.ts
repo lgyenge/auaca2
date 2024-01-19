@@ -25,25 +25,25 @@
 import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
 import { AuCategory, MoveCategoryParams } from '../models/au-category.model';
-import { NodePaging } from '@alfresco/js-api';
-import { AuPage } from '../models/au-templates.model';
+import { NodePaging, Node } from '@alfresco/js-api';
+// import { AuPage } from '../models/au-templates.model';
 
 export const loadAuCategories = createAction('[AuCategory/API] Load AuCategories');
-export const loadAuCategoriesSuccess = createAction('[AuCategories/API] Load AuCategories Success', props<{ catArray: (NodePaging | AuPage)[] }>());
+export const loadAuCategoriesSuccess = createAction('[AuCategories/API] Load AuCategories Success', props<{ catArray: (NodePaging | Node)[] }>());
 export const loadAuCategoriesFailure = createAction('[AuCategories/API] Load AuCategories Failure', props<{ error: any }>());
 
 // export const addAuCategory = createAction('[AuCategory/API] Add AuCategory', props<{ auCategory: AuCategory }>());
-export const addAuCategory = createAction('[AuCategory/API] Add AuCategory', props<{ page: AuPage; categoryNumber: number }>());
+export const addAuCategory = createAction('[AuCategory/API] Add AuCategory', props<{ page: Node; categoryNumber: number }>());
 export const addAuCategorySuccess = createAction(
   '[AuCategory/API] Add AuCategory Success',
-  props<{ page: AuPage; category: AuCategory; categoryNumber: number }>()
+  props<{ page: Node; category: AuCategory; categoryNumber: number }>()
 );
 export const addAuCategoryFailure = createAction('[AuCategory/API] Add AuCategory Failure', props<{ error: any }>());
 
 export const moveAuCategory = createAction('[AuCategory/API] Move AuCategory', props<{ params: MoveCategoryParams }>());
 
-export const deleteAuCategory = createAction('[AuCategory/API] Delete AuCategory', props<{ page: AuPage; categoryId: string }>());
-export const deleteAuCategorySuccess = createAction('[AuCategory/API] Delete AuCategory Success', props<{ page: AuPage; categoryId: string }>());
+export const deleteAuCategory = createAction('[AuCategory/API] Delete AuCategory', props<{ page: Node; categoryId: string }>());
+export const deleteAuCategorySuccess = createAction('[AuCategory/API] Delete AuCategory Success', props<{ page: Node; categoryId: string }>());
 export const deleteAuCategoryFailure = createAction('[AuCategory/API] Delete AuCategory Failure', props<{ error: any }>());
 
 export const upsertAuCategory = createAction('[AuCategory/API] Upsert AuCategory', props<{ auCategory: AuCategory }>());

@@ -27,17 +27,17 @@
 import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as AuPagesActions from '../actions/au-templates-actions';
-import { AuPage } from '../models/au-templates.model';
-import { Node, NodeEntry } from '@alfresco/js-api';
+// import { AuPage } from '../models/au-templates.model';
+import { Node } from '@alfresco/js-api';
 // import { Node, NodeEntry } from '@alfresco/js-api';
 
-import { moveItemInArray } from '@angular/cdk/drag-drop';
+// import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 export const auPagesFeatureKey = 'auPages';
-export interface AuPagesData extends EntityState<AuPage> {
+export interface AuPagesData extends EntityState<Node> {
   selectedAuPageId: string | number;
-  // loading: boolean;
-  // eslint-disable-next-line @cspell/spellchecker
+  //  loading: boolean;
+  //  eslint-disable-next-line @cspell/spellchecker
   loaded: boolean;
   error: string | null;
 }
@@ -46,7 +46,7 @@ export interface AuPagesStore {
   readonly auPages: AuPagesData;
 }
 
-export const auPagesAdapter: EntityAdapter<AuPage> = createEntityAdapter<AuPage>({
+export const auPagesAdapter: EntityAdapter<Node> = createEntityAdapter<Node>({
   sortComparer: false
 });
 export const initialState: AuPagesData = auPagesAdapter.getInitialState({
@@ -58,8 +58,8 @@ export const initialState: AuPagesData = auPagesAdapter.getInitialState({
 
 export const auPagesReducer = createReducer(
   initialState,
-  on(AuPagesActions.addAuPage, (state) => ({ ...state })),
-  on(AuPagesActions.addAuPageSuccess, (state: AuPagesData, { params: { node, pageNumber } }) => {
+  // on(AuPagesActions.addAuPage, (state) => ({ ...state })),
+  /*  on(AuPagesActions.addAuPageSuccess, (state: AuPagesData, { params: { node, pageNumber } }) => {
     const nodes = selectAll(state);
     nodes.splice(pageNumber, 0, node);
     return auPagesAdapter.setAll(nodes, { ...state, loaded: true, error: null });
@@ -72,9 +72,9 @@ export const auPagesReducer = createReducer(
   on(AuPagesActions.deleteAuPageFailure, (state, { error }) => ({ ...state, error })),
   on(AuPagesActions.moveAuPage, (state, { params: { oldIndex, newIndex } }) => {
     const entities = selectAll(state);
-    moveItemInArray<AuPage>(entities, oldIndex, newIndex);
+    moveItemInArray<Node>(entities, oldIndex, newIndex);
     return auPagesAdapter.setAll(entities, { ...state, loaded: true });
-  }),
+  }), */
   on(AuPagesActions.upsertAuPage, (state, action) => auPagesAdapter.upsertOne(action.auPage, state)),
   on(AuPagesActions.addAuPages, (state, action) => auPagesAdapter.addMany(action.auPages, state)),
   on(AuPagesActions.upsertAuPages, (state, action) => auPagesAdapter.upsertMany(action.auPages, state)),
@@ -84,7 +84,7 @@ export const auPagesReducer = createReducer(
   on(AuPagesActions.deleteAuPages, (state, action) => auPagesAdapter.removeMany(action.ids, state)),
   on(AuPagesActions.loadAuPages, (state) => ({ ...state, loaded: false, error: null })),
 
-  on(AuPagesActions.loadAuPagesSuccess, (state: AuPagesData, { params: { nodePaging, node } }) => {
+  /*  on(AuPagesActions.loadAuPagesSuccess, (state: AuPagesData, { params: { nodePaging, node } }) => {
     const iDs: string[] = node.properties['au:pagesOrder']?.split(',');
     const sortedNodes: Node[] = [];
     iDs?.forEach((e) => {
@@ -96,10 +96,10 @@ export const auPagesReducer = createReducer(
         }
       }
     });
-    // eslint-disable-next-line no-console
+    // es lint-disable-next-line no-console
     // console.log(`sorted nodes:  ${JSON.stringify(sortedNodes)}`);
     return auPagesAdapter.setAll(sortedNodes, { ...state, loaded: true });
-  }),
+  }), */
   on(AuPagesActions.loadAuPagesFailure, (state, { error }) => ({ ...state, error })),
   on(AuPagesActions.clearAuPages, (state) => auPagesAdapter.removeAll({ ...state, loaded: false, error: null })),
   // on(AuPagesActions.selectAuPage, (state, { id }) => Object.assign({ ...state, selectedPageId: id })),

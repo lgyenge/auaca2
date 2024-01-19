@@ -66,5 +66,17 @@ export const reducer = createReducer(
     error: action.error,
     template: null,
     loaded: false
-  }))
+  })),
+  on(AuTemplateActions.addAuTemplate, (state) => ({ ...state })),
+  on(AuTemplateActions.addAuTemplateSuccess, (state: TemplateState, { params: { template } }) => ({
+    ...state,
+    template: template,
+    loaded: true
+  })),
+  on(AuTemplateActions.addAuTemplateFailure, (state, { error }) => ({ ...state, error }))
+  /* on(AuTemplateActions.deleteAuTemplate, (state) => ({ ...state })),
+  on(AuTemplateActions.deleteAuTemplateSuccess, (state: AuTemplatesData, { pageId }) =>
+    auTemplatesAdapter.removeOne(pageId, { ...state, loaded: true, error: null })
+  ),
+  on(AuTemplateActions.deleteAuTemplateFailure, (state, { error }) => ({ ...state, error })), */
 );

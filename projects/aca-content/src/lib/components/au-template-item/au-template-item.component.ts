@@ -39,7 +39,7 @@ import {
   PaginationDirective,
   ToolbarComponent
 } from '@alfresco/aca-shared';
-import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector, loadAuTemplateSuccess } from '@alfresco/aca-shared/store';
+import { SetCurrentFolderAction, isAdmin, UploadFileVersionAction, showLoaderSelector, loadAuTemplSuccess } from '@alfresco/aca-shared/store';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { FilterSearch, ShareDataRow, FileUploadEvent, BreadcrumbModule, UploadModule, DocumentListModule } from '@alfresco/adf-content-services';
 import { DocumentListPresetRef, ExtensionsModule } from '@alfresco/adf-extensions';
@@ -49,7 +49,7 @@ import { TranslateModule } from '@ngx-translate/core';
 // import { DocumentListDirective } from '@alfresco/aca-content';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuPagesComponent } from '../au-pages/au-pages.component';
-import * as fromAuPages from '@alfresco/aca-shared/store';
+import * as fromStorePublicApi from '@alfresco/aca-shared/store';
 import { Store } from '@ngrx/store';
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -95,7 +95,8 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
   constructor(
     private route: ActivatedRoute,
     private contentApi: ContentApiService,
-    private auStore: Store<fromAuPages.fromPages.AuPagesStore> /* private nodeActionsService: NodeActionsService */
+    // private auStore: Store<fromAuPages.fromPages.AuPagesStore>
+    private auStore: Store<fromStorePublicApi.AuTemplsStore>
   ) {
     super();
   }
@@ -123,7 +124,7 @@ export class AuTemplateItemComponent extends PageComponent implements OnInit, On
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.updateCurrentNode(node.entry);
             this.templateNode = node.entry;
-            this.auStore.dispatch(loadAuTemplateSuccess({ data: this.templateNode }));
+            this.auStore.dispatch(loadAuTemplSuccess({ data: this.templateNode }));
           } else {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.router.navigate(['/personal-files', node.entry.parentId], {

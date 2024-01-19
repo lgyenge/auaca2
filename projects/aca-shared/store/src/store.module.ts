@@ -30,25 +30,37 @@ import { SnackbarEffects } from './effects/snackbar.effects';
 import { DialogEffects } from './effects/dialog.effects';
 import { RouterEffects } from './effects/router.effects';
 import { StoreModule } from '@ngrx/store';
-import { auPagesReducer } from './reducers/au-pages.reducer';
-import * as fromAuCategory from './reducers/au-category.reducer';
-import * as fromAuItem from './reducers/au-item.reducer';
+// import { auPagesReducer } from './reducers/au-pages.reducer';
+// import * as fromAuCategory from './reducers/au-category.reducer';
+// import * as fromAuItem from './reducers/au-item.reducer';
 import * as fromAuGlobalResponseSet from './reducers/au-global-response-set.reducer';
 import * as fromAuResposeSet from './reducers/au-response-set.reducer';
 
-import { AuPagesEffects, AuCategoryEffects, AuItemEffects } from './effects/au-templates.effects';
-import * as fromAuTemplate from './reducers/au-template.reducer';
-import { AuTemplateEffects } from './effects/au-template.effects';
+// import { AuPagesEffects, AuCategoryEffects, AuItemEffects } from './effects/au-templates.effects';
+// import * as fromAuTemplate from './reducers/au-template.reducer';
+// import { AuTemplateEffects } from './effects/au-template.effects';
+import * as fromAuTempl from './reducers/au-templ.reducer';
+import { AuTemplEffects } from './effects/au-templ.effects';
 
 @NgModule({
   imports: [
-    EffectsModule.forFeature([SnackbarEffects, DialogEffects, RouterEffects, AuPagesEffects, AuCategoryEffects, AuItemEffects, AuTemplateEffects]),
-    StoreModule.forFeature('auPages', auPagesReducer),
-    StoreModule.forFeature('auCategories', fromAuCategory.reducer),
-    StoreModule.forFeature('auItems', fromAuItem.reducer),
+    EffectsModule.forFeature([
+      SnackbarEffects,
+      DialogEffects,
+      RouterEffects,
+      // AuPagesEffects,
+      // AuCategoryEffects,
+      // AuItemEffects,
+      // AuTemplateEffects,
+      AuTemplEffects
+    ]),
+    // StoreModule.forFeature('auPages', auPagesReducer),
+    // StoreModule.forFeature('auCategories', fromAuCategory.reducer),
+    // StoreModule.forFeature('auItems', fromAuItem.reducer),
     StoreModule.forFeature('auResponeSet', fromAuResposeSet.reducer),
     StoreModule.forFeature('auGlobalResponseSet', fromAuGlobalResponseSet.reducer),
-    StoreModule.forFeature(fromAuTemplate.auTemplateFeatureKey, fromAuTemplate.reducer)
+    // StoreModule.forFeature(fromAuTemplate.auTemplateFeatureKey, fromAuTemplate.reducer),
+    StoreModule.forFeature(fromAuTempl.auTemplsFeatureKey, fromAuTempl.reducer)
   ]
 })
 export class SharedStoreModule {}

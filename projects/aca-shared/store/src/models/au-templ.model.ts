@@ -22,15 +22,45 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as fromAuTemplate from '../reducers/au-template.reducer';
-import { selectAuTemplateState } from './au-template.selectors';
+import { Node } from '@alfresco/js-api';
 
-describe('AuTemplate Selectors', () => {
-  it('should select the feature state', () => {
-    const result = selectAuTemplateState({
-      [fromAuTemplate.auTemplateFeatureKey]: {}
-    });
+// export type AuTempl = Node;
 
-    expect(result).toEqual({});
-  });
-});
+export interface addAuTemplateSuccessParams {
+  template: Node;
+  nodes: Node[];
+}
+
+export interface addAuItemSuccessParams {
+  prevItem: Node;
+  newItem: Node;
+}
+
+/* export interface addAuPageSuccessParams {
+  node: Node;
+  nodePaging: NodePaging;
+} */
+
+export interface addPageSuccessParams {
+  nodePrev: Node;
+  newPage: Node;
+}
+
+export interface AuEntitiesParams {
+  prevItem: Node;
+  firstItem: Node;
+  lastItem: Node;
+  itemsInGroup: Node[];
+  newItem: Node;
+}
+
+export interface MovePageParams {
+  node: Node;
+  newIndex: number;
+  oldIndex: number;
+}
+
+export interface GetAddPageStateParams {
+  prev: Node;
+  next: Node | null;
+}

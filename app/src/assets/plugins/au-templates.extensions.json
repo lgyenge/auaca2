@@ -2,9 +2,9 @@
   "$schema": "../../../../extension.schema.json",
   "$id": "au-templates",
   "$version": "1.0.0",
-  "$vendor": "Your name or company name",
-  "$name": "plugin1",
-  "$description": "demo plugin",
+  "$vendor": "Dinet Kft",
+  "$name": "auplugin",
+  "$description": "au plugin",
   "$license": "MIT",
   "$app.navigation.isNotTrashcan":"",
 
@@ -19,13 +19,37 @@
       ]
     },
     {
-      "id": "au.canCreatePage",
+      "id": "au.template.canCreate",
       "type": "core.every",
       "parameters": [
-        { "type": "rule", "value": "au.navigation.isAuTemplate" },
+        { "type": "rule", "value": "au.isAuTemplates" }
+      ]
+    },
+    {
+      "id": "au.page.canCreate",
+      "type": "core.every",
+      "parameters": [
+        { "type": "rule", "value": "au.isAuTemplate" },
         { "type": "rule", "value": "au.isAuPageSelected" }
       ]
+    },
+    {
+      "id": "au.section.canCreate",
+      "type": "core.every",
+      "parameters": [
+        { "type": "rule", "value": "au.isAuTemplate" },
+        { "type": "rule", "value": "au.isAuSectionSelected" }
+      ]
+    },
+    {
+      "id": "au.item.canCreate",
+      "type": "core.every",
+      "parameters": [
+        { "type": "rule", "value": "au.isAuTemplate" },
+        { "type": "rule", "value": "au.isAuItemQuestionSelected" }
+      ]
     }
+
 
   ],
 
@@ -53,6 +77,33 @@
     ],
     "toolbar": [
       {
+        "id": "au.toolbar.create",
+        "type": "menu",
+        "order": 15,
+        "title": "APP.HEADER.BUTTONS.CREATE",
+        "description": "APP.HEADER.BUTTONS.CREATE_TOOLTIP",
+        "data": {
+          "menuType": "flat-button",
+          "color": "primary"
+        },
+        "children": [
+          {
+            "id": "au.create.template",
+            "order": 100,
+            "icon": "create_new_folder",
+            "title": "New template",
+            "description": "APP.NEW_MENU.TOOLTIPS.CREATE_FOLDER",
+            "description-disabled": "APP.NEW_MENU.TOOLTIPS.CREATE_FOLDER_NOT_ALLOWED",
+            "actions": {
+              "click": "[AuTempl] Add AuTempl"
+            },
+            "rules": {
+              "visible": "au.template.canCreate"
+            }
+          }
+        ]
+      },
+      {
         "disabled": false,
         "id": "au.toolbar.canCreatePage",
         "type": "button",
@@ -64,9 +115,67 @@
           "click": "FL_CREATE_AREA"
         },
         "rules": {
-          "visible": "au.canCreatePage"
+          "visible": "au.page.canCreate"
         }
+      },
+      {
+        "id": "au.toolbar.createItem",
+        "type": "menu",
+        "order": 10,
+        "title": "APP.HEADER.BUTTONS.CREATE",
+        "description": "APP.HEADER.BUTTONS.CREATE_TOOLTIP",
+        "data": {
+          "menuType": "flat-button",
+          "color": "primary"
+        },
+        "children": [
+          {
+            "id": "au.create.page",
+            "order": 100,
+            "icon": "create_new_folder",
+            "title": "New Page",
+            "description": "APP.NEW_MENU.TOOLTIPS.CREATE_FOLDER",
+            "description-disabled": "APP.NEW_MENU.TOOLTIPS.CREATE_FOLDER_NOT_ALLOWED",
+            "actions": {
+              "click": "[AuTempl/API] Add AuPage"
+            },
+            "rules": {
+              "visible": "au.page.canCreate"
+            }
+          },
+          {
+            "id": "au.create.section",
+            "order": 200,
+            "icon": "create_new_folder",
+            "title": "New Section",
+            "description": "APP.NEW_MENU.TOOLTIPS.CREATE_FOLDER",
+            "description-disabled": "APP.NEW_MENU.TOOLTIPS.CREATE_FOLDER_NOT_ALLOWED",
+            "actions": {
+              "click": "[AuTempl] Add AuTempl"
+            },
+            "rules": {
+              "visible": "au.section.canCreate"
+            }
+          },
+          {
+            "id": "au.create.item",
+            "order": 300,
+            "icon": "create_new_folder",
+            "title": "New question",
+            "description": "APP.NEW_MENU.TOOLTIPS.CREATE_FOLDER",
+            "description-disabled": "APP.NEW_MENU.TOOLTIPS.CREATE_FOLDER_NOT_ALLOWED",
+            "actions": {
+              "click": "[AuTempl] Add AuTempl"
+            },
+            "rules": {
+              "visible": "au.item.canCreate"
+            }
+          }
+
+
+        ]
       }
+
 
     ]
 

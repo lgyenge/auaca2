@@ -22,24 +22,16 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AuCategoryComponent } from './au-category.component';
+import { reducer, initialState } from '../reducers/au-templ.reducer';
 
-describe('AuCategoryComponent', () => {
-  let component: AuCategoryComponent;
-  let fixture: ComponentFixture<AuCategoryComponent>;
+describe('AuTempl Reducer', () => {
+  describe('unknown action', () => {
+    it('should return the previous state', () => {
+      const action = {} as any;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AuCategoryComponent]
-    }).compileComponents();
+      const result = reducer(initialState, action);
 
-    fixture = TestBed.createComponent(AuCategoryComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+      expect(result).toBe(initialState);
+    });
   });
 });

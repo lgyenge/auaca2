@@ -1,9 +1,31 @@
-<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-  <ng-container *ngFor="let page of auPages$ | async; let i = index">
-    <!--  {{ page.id }} -- {{ selectedId }} -->
-    <div class="example-box" cdkDrag [cdkDragData]="page">
+<!-- <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)"> -->
+<div cdkDropList class="example-list">
+  <ng-container *ngFor="let item of auItems$ | async; let i = index">
+    <!--  {{ item.id }} -- {{ selectedId }} -->
+    <div class="example-box" cdkDrag [cdkDragData]="item">
       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-      <mat-accordion class="example-headers-align" multi>
+      <mat-card>
+        <mat-card-content>
+          <button
+            mat-icon-button
+            color="primary"
+            aria-label="Clear selection"
+            *ngIf="item === (selectedAuItem$ | async); else notSelected"
+            (click)="unSelectItem()"
+          >
+            <mat-icon>check_box</mat-icon>
+          </button>
+          <ng-template #notSelected>
+            <button mat-icon-button color="primary" aria-label="Select" (click)="selectItem($event, item)">
+              <mat-icon>check_box_outline_blank</mat-icon>
+            </button>
+          </ng-template>
+          <button mat-button (click)="createPage()">Add Page</button>
+          <button mat-button (click)="deletePage(item)">Delete Page</button>
+          Item:{{ item.name }}
+        </mat-card-content>
+      </mat-card>
+      <!-- <mat-accordion class="example-headers-align" multi>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title (click)="$event.stopPropagation()">
@@ -25,9 +47,9 @@
               <button mat-button (click)="deletePage(page.id)">Delete Page</button>
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <lib-au-page [page]="page" *ngIf="dataLoaded$ | async"></lib-au-page>
+         <lib-au-page [page]="page" *ngIf="dataLoaded$ | async"></lib-au-page>
         </mat-expansion-panel>
-      </mat-accordion>
+      </mat-accordion> -->
     </div>
   </ng-container>
 </div>

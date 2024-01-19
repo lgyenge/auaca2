@@ -23,39 +23,26 @@
  */
 
 import { RuleContext } from '@alfresco/adf-extensions';
-// import * as fromAuPages from '@alfresco/aca-shared/store';
+import { Node } from '@alfresco/js-api';
 
 export interface AuRuleContext extends RuleContext {
-  auPageSelectionId: string | number;
+  auItemSelection: Node;
 }
 
 export function isAuTemplate(context: RuleContext): boolean {
   const { url } = context.navigation;
   // eslint-disable-next-line no-console
   // console.log('isAuTemplate context.navigation.url:' + context.navigation.url);
-  return url?.startsWith('/templates');
+  return url?.startsWith('/templates') && !url?.endsWith('/templates');
 }
 
-/**
- * Checks if a **Personal Files** route is activated.
- * JSON ref: `app.navigation.isPersonalFiles`
- */
-/* export function isPersonalFiles(context: RuleContext): boolean {
+export function isAuTemplates(context: RuleContext): boolean {
   const { url } = context.navigation;
-  return url?.startsWith('/personal-files');
-} */
-
-/* export function isAuTemplateType(context: RuleContext): boolean {
-  const node = context.navigation.currentFolder;
   // eslint-disable-next-line no-console
   // console.log('isAuTemplate context.navigation.url:' + context.navigation.url);
-  if (node) {
-    return node.nodeType === 'cm:folder' ? true : false;
-  } else {
-    return false;
-  }
+  return url?.endsWith('/templates');
 }
- */
+
 export function isAuTemplateType(context: RuleContext): boolean {
   const node = context.navigation.currentFolder;
   // eslint-disable-next-line no-console
@@ -68,12 +55,31 @@ export function isAuTemplateType(context: RuleContext): boolean {
 }
 
 export function isAuPageSelected(auContext: AuRuleContext): boolean {
-  // const selectionID = auContext.auPageSelectionId;
-  /* this.auStore.pipe(select(fromAuPages.getSelectedAuPage)).subscribe((value: string | number) => {
-    auContext.auPageSelectionId = value;
-  }); */
-
   // eslint-disable-next-line no-console
-  console.log('isAuPageSelected:' + auContext.auPageSelectionId);
-  return auContext.auPageSelectionId ? true : false;
+  // console.log('isAuPageSelected:' + auContext.auItemSelection.id);
+  if (auContext.auItemSelection && (auContext.auItemSelection.nodeType === 'au:page' || auContext.auItemSelection.nodeType === 'au:firstPage')) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function isAuSectionSelected(auContext: AuRuleContext): boolean {
+  // eslint-disable-next-line no-console
+  // console.log('isAuSectionSelected:' + auContext.auItemSelection.id);
+  if (auContext.auItemSelection && auContext.auItemSelection.nodeType === 'au:section') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function isAuItemQuestion(auContext: AuRuleContext): boolean {
+  // eslint-disable-next-line no-console
+  // console.log('isAuitemQuestionSelected:' + auContext.auItemSelection.id);
+  if (auContext.auItemSelection && auContext.auItemSelection.nodeType === 'au:itemQuestion') {
+    return true;
+  } else {
+    return false;
+  }
 }

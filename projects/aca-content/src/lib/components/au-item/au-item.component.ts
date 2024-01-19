@@ -26,14 +26,14 @@ import { Component, ViewChild, ViewEncapsulation, Input, ChangeDetectionStrategy
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
 import {
-  AuItem,
-  AuCategory,
-  addAuItem,
-  deleteAuItem,
+  // AuItem,
+  // AuCategory,
+  // addAuItem,
+  // deleteAuItem,
   selectAuItem,
   unSelectAuItem,
   unSelectAuPage,
-  unSelectAuCategory,
+  // unSelectAuCategory,
   toggleAuItemSelection
 } from '@alfresco/aca-shared/store';
 import { Store, select } from '@ngrx/store';

@@ -32,7 +32,7 @@ import { of } from 'rxjs';
 
 import * as AuPageActions from '../actions/au-templates-actions';
 import * as AuCategoryActions from '../actions/au-category.actions';
-import { loadAuCategories } from '../actions/au-category.actions';
+// import { loadAuCategories } from '../actions/au-category.actions';
 import * as AuItemActions from '../actions/au-item.actions';
 import { loadAuItems } from '../actions/au-item.actions';
 
@@ -40,7 +40,7 @@ import * as AuGlobalResponseSetActions from '../actions/au-global-response-set.a
 import * as AuResponseSetActions from '../actions/au-response-set.actions';
 // import { getAuPagesIds, AuPage, addAuPage } from '@alfresco/aca-shared/store';
 import { getAuPagesIds } from '../selectors/au-templates.selectors';
-import { getAuCategoryIdsOfPage } from '../selectors/au-category.selectors';
+// import { getAuCategoryIdsOfPage } from '../selectors/au-category.selectors';
 // import { getAuItemsIds, getAuItemsIdsOfCategories } from '../selectors/au-item.selectors';
 import { getAuItemsIdsOfCategories } from '../selectors/au-item.selectors';
 
@@ -62,7 +62,7 @@ export class AuPagesEffects {
   private actions$ = inject(Actions);
   private auStore = inject(Store<AuPagesStore>);
 
-  loadAuPages$ = createEffect(() => {
+  /*  loadAuPages$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuPageActions.loadAuPages),
       concatMap((action) =>
@@ -79,17 +79,17 @@ export class AuPagesEffects {
         )
       )
     );
-  });
+  }); */
 
-  loadAuPagesSuccess$ = createEffect(
+  /*  loadAuPagesSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(AuPageActions.loadAuPagesSuccess),
         tap(() => this.auStore.dispatch(loadAuCategories()))
       ),
     { dispatch: false }
-  );
-
+  ); */
+  /*
   addAuPage$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuPageActions.addAuPage),
@@ -105,8 +105,8 @@ export class AuPagesEffects {
         );
       })
     );
-  });
-
+  }); */
+  /*
   deleteAuPage$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuPageActions.deleteAuPage),
@@ -123,7 +123,7 @@ export class AuPagesEffects {
         );
       })
     );
-  });
+  }); */
 
   moveAuPage$ = createEffect(
     () =>
@@ -147,13 +147,14 @@ export class AuPagesEffects {
       ),
     { dispatch: false }
   );
-
+  /*
   saveAuPageIds$ = createEffect(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       this.actions$.pipe(
         ofType(AuPageActions.addAuPageSuccess),
         concatMap((action) => {
+          // lehet hogy a pipe nem kell!!
           return this.auStore.pipe(select(getAuPagesIds)).pipe(
             take(1),
             // eslint-disable-next-line no-console
@@ -169,9 +170,9 @@ export class AuPagesEffects {
         concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
       ),
     { dispatch: false }
-  );
+  ); */
 
-  deleteAuPageIds$ = createEffect(
+  /*  deleteAuPageIds$ = createEffect(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       this.actions$.pipe(
@@ -192,18 +193,18 @@ export class AuPagesEffects {
         concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
       ),
     { dispatch: false }
-  );
+  ); */
 
   constructor() {}
 }
 
 @Injectable()
 export class AuCategoryEffects {
-  private auTemplates = inject(auTemplatesService);
+  // private auTemplates = inject(auTemplatesService);
   private actions$ = inject(Actions);
   private auStore = inject(Store<AuPagesStore>);
 
-  loadAuCategories$ = createEffect(() => {
+  /*  loadAuCategories$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuCategoryActions.loadAuCategories),
       concatMap((_action) =>
@@ -215,7 +216,7 @@ export class AuCategoryEffects {
         )
       )
     );
-  });
+  }); */
 
   loadAuCategoriesSuccess$ = createEffect(
     () =>
@@ -225,7 +226,7 @@ export class AuCategoryEffects {
       ),
     { dispatch: false }
   );
-
+  /*
   addAuCategory$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuCategoryActions.addAuCategory),
@@ -243,9 +244,9 @@ export class AuCategoryEffects {
         );
       })
     );
-  });
+  }); */
 
-  deleteAuCategory$ = createEffect(() => {
+  /*  deleteAuCategory$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuCategoryActions.deleteAuCategory),
       concatMap((action) => {
@@ -262,8 +263,8 @@ export class AuCategoryEffects {
       })
     );
   });
-
-  moveAuCategory$ = createEffect(
+ */
+  /*  moveAuCategory$ = createEffect(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       this.actions$.pipe(
@@ -284,7 +285,7 @@ export class AuCategoryEffects {
         concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
       ),
     { dispatch: false }
-  );
+  ); */
 
   /*  saveAuCategoryIds$ = createEffect(
     () =>
@@ -307,7 +308,7 @@ export class AuCategoryEffects {
       ),
     { dispatch: false }
   ); */
-
+  /*
   saveAuCategoryIds$ = createEffect(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -329,9 +330,9 @@ export class AuCategoryEffects {
         concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
       ),
     { dispatch: false }
-  );
+  ); */
 
-  deleteAuCategoryIds$ = createEffect(
+  /*  deleteAuCategoryIds$ = createEffect(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       this.actions$.pipe(
@@ -352,7 +353,7 @@ export class AuCategoryEffects {
         concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
       ),
     { dispatch: false }
-  );
+  ); */
 
   constructor() {}
 }
@@ -364,7 +365,7 @@ export class AuItemEffects {
   private actions$ = inject(Actions);
   private auStore = inject(Store<AuPagesStore>);
 
-  loadAuItems$ = createEffect(() => {
+  /*   loadAuItems$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuItemActions.loadAuItems),
       concatMap((_action) =>
@@ -377,7 +378,7 @@ export class AuItemEffects {
         )
       )
     );
-  });
+  }); */
 
   addAuItem$ = createEffect(() => {
     return this.actions$.pipe(

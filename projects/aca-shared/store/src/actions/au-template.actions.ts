@@ -24,9 +24,16 @@
 
 import { createAction, props } from '@ngrx/store';
 import { Node } from '@alfresco/js-api';
+import { addAuTemplateSuccessParams } from '../models/au-templ.model';
 
 export const loadAuTemplate = createAction('[AuTemplate] Load AuTemplate');
-
 export const loadAuTemplateSuccess = createAction('[AuTemplate] Load AuTemplate Success', props<{ data: Node }>());
-
 export const loadAuTemplateFailure = createAction('[AuTemplate] Load AuTemplate Failure', props<{ error: any }>());
+
+export const addAuTemplate = createAction('[AuTemplate] Add AuTemplate', props<{ templateId: string; pageNumber: number }>());
+export const addAuTemplateSuccess = createAction('[AuTemplate] Add AuTemplate Success', props<{ params: addAuTemplateSuccessParams }>());
+export const addAuTemplateFailure = createAction('[AuTemplate] Add AuTemplate Failure', props<{ error: any }>());
+
+export const deleteAuTemplate = createAction('[AuTemplate] Delete AuTemplate', props<{ templateId: string; pageId: string }>());
+export const deleteAuTemplateSuccess = createAction('[AuTemplate] Delete AuTemplate Success', props<{ templateId: string; pageId: string }>());
+export const deleteAuTemplateFailure = createAction('[AuTemplate] Delete AuTemplate Failure', props<{ error: any }>());

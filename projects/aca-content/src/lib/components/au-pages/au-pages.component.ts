@@ -31,20 +31,21 @@ import { AuPageComponent } from '../au-page/au-page.component';
 import { DummyComponentComponent } from '../dummy-component/dummy-component.component';
 
 import { Store, select } from '@ngrx/store';
-import * as fromAuPages from '@alfresco/aca-shared/store';
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import * as fromStorePublicApi from '@alfresco/aca-shared/store';
+// import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import {
-  getAuPagesOfPages,
-  AuPage,
+  getAuTemplsAll,
+  // AuPage,
   addAuPage,
   deleteAuPage,
-  moveAuPage,
-  loadAuPages,
-  selectAuPage,
-  unSelectAuPage,
-  unSelectAuCategory,
+  // moveAuItem,
+  loadAuItems,
+  selectAuItem,
   unSelectAuItem,
-  toggleAuPageSelection,
+  // unSelectAuCategory,
+  // unSelectAuItem,
+  toggleAuItemSelection,
   SetSelectedNodesAction
   // clearAuPages,
   // clearAuCategories,
@@ -69,53 +70,53 @@ import { filter, take, takeUntil } from 'rxjs/operators';
 export class AuPagesComponent implements OnInit, OnDestroy {
   onDestroy$: Subject<boolean> = new Subject<boolean>();
   @Input() templateId: string;
-  auPages$: Observable<AuPage[]>;
-  selectedAuPage$: Observable<string | number>;
-  selectedId: string | number;
+  auItems$: Observable<Node[]>;
+  selectedAuItem$: Observable<Node>;
+  selectedItem: Node;
   pageNumber: number;
-  auPages: AuPage[] = [];
+  auItems: Node[] = [];
   dataLoaded$: Observable<boolean> = of(false);
   template: Node;
   panelOpenState = false;
 
-  constructor(private auStore: Store<fromAuPages.fromPages.AuPagesStore>, private extensions: AppExtensionService, private store: Store) {}
+  constructor(private auStore: Store<fromStorePublicApi.AuTemplsStore>, private extensions: AppExtensionService, private store: Store) {}
   // protected extensions = inject(AppExtensionService);
 
   ngOnInit() {
     // eslint-disable-next-line no-console
     // console.log(`dispatch loadAuPages from Pages nginit`);
-    this.selectedAuPage$ = this.auStore.pipe(select(fromAuPages.getSelectedAuPage));
-    this.auStore.dispatch(loadAuPages({ templateId: this.templateId }));
-    // this.auStore.dispatch(loadAuPages({ templateId: '91f74719-c33e-4814-a630-d78022a6cc04' }));
-    this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuPagesLoaded)).pipe(take(1));
-    this.auPages$ = this.auStore.pipe(select(getAuPagesOfPages({ templateId: this.templateId }))).pipe(
+    this.selectedAuItem$ = this.auStore.pipe(select(fromStorePublicApi.getSelectedAuItem));
+    this.auStore.dispatch(loadAuItems({ templateId: this.templateId }));
+    this.dataLoaded$ = this.auStore.pipe(select(fromStorePublicApi.getAuTemplsLoaded)).pipe(take(1));
+    this.auItems$ = this.auStore.pipe(select(getAuTemplsAll)).pipe(
       filter((res) => res != null),
       // eslint-disable-next-line no-console
-      // tap((val) => console.log(`Get all Page  from Pages ngOnInit ${val}`)),
+      // tap((val) => console.log(`Get all Item  from Items ngOnInit ${val}`)),
       takeUntil(this.onDestroy$)
     );
 
     this.auStore
-      .select(fromAuPages.selectTemplate)
+      .select(fromStorePublicApi.selectTemplate)
       .pipe(takeUntil(this.onDestroy$))
       .subscribe((value) => {
         this.template = value;
       });
 
     this.auStore
-      .select(fromAuPages.getSelectedAuPage)
+      .select(fromStorePublicApi.getSelectedAuItem)
       .pipe(takeUntil(this.onDestroy$))
       .subscribe((value) => {
-        this.selectedId = value;
-        this.extensions.auPageSelectionId = value;
+        this.selectedItem = value;
+        this.extensions.auItemSelection = value;
         // eslint-disable-next-line no-console
-        console.log(`page selection changed: ${value}`);
+        console.log(`page selection changed: ${value?.id}`);
         // to init change
         this.store.dispatch(new SetSelectedNodesAction([]));
       });
   }
 
   ngOnDestroy() {
+    this.auStore.dispatch(unSelectAuItem());
     this.onDestroy$.next(true);
     this.onDestroy$.complete();
   }
@@ -124,32 +125,32 @@ export class AuPagesComponent implements OnInit, OnDestroy {
     this.pageNumber = +i;
   }
 
-  createPage(pageNumber: number) {
+  createPage() {
+    // const { templateId } = this;
+
+    this.auStore.dispatch(addAuPage());
+  }
+
+  deletePage(item: Node) {
     const { templateId } = this;
-
-    this.auStore.dispatch(addAuPage({ templateId, pageNumber }));
+    this.auStore.dispatch(deleteAuPage({ templateId, item }));
   }
 
-  deletePage(pageId: string) {
-    const { templateId } = this;
-    this.auStore.dispatch(deleteAuPage({ templateId, pageId }));
+  /*  drop(event: CdkDragDrop<Node[]>) {
+    this.auStore.dispatch(moveAuItem({ params: { node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } }));
+  } */
+
+  public toggleItemSelection(_event: any, item: Node) {
+    this.auStore.dispatch(toggleAuItemSelection({ item: item }));
   }
 
-  drop(event: CdkDragDrop<AuPage[]>) {
-    this.auStore.dispatch(moveAuPage({ params: { node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } }));
+  public selectItem(_event: any, item: Node) {
+    this.auStore.dispatch(selectAuItem({ item: item }));
+    // this.auStore.dispatch(unSelectAuCategory());
+    // this.auStore.dispatch(unSelectAuItem());
   }
 
-  public togglePageSelection(_event: any, page: AuPage) {
-    this.auStore.dispatch(toggleAuPageSelection({ id: page.id }));
-  }
-
-  public selectPage(_event: any, page: AuPage) {
-    this.auStore.dispatch(selectAuPage({ id: page.id }));
-    this.auStore.dispatch(unSelectAuCategory());
+  public unSelectItem() {
     this.auStore.dispatch(unSelectAuItem());
-  }
-
-  public unSelectPage() {
-    this.auStore.dispatch(unSelectAuPage());
   }
 }

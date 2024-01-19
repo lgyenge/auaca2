@@ -251,9 +251,12 @@ export class ContentServiceExtensionModule {
       'app.areCategoriesEnabled': rules.areCategoriesEnabled,
 
       // !! gyl add
-      'au.navigation.isAuTemplate': rules.isAuTemplate,
-      'au.navigation.isAuTemplateType': rules.isAuTemplateType,
-      'au.isAuPageSelected': rules.isAuPageSelected
+      'au.isAuTemplate': rules.isAuTemplate,
+      'au.isAuTemplateType': rules.isAuTemplateType,
+      'au.isAuTemplates': rules.isAuTemplates,
+      'au.isAuPageSelected': rules.isAuPageSelected,
+      'au.isAuSectionSelected': rules.isAuSectionSelected,
+      'au.isAuItemQuestionSelected': rules.isAuItemQuestion
     });
   }
 }

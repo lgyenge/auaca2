@@ -22,21 +22,25 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Node, NodePaging } from '@alfresco/js-api';
+import { TestBed } from '@angular/core/testing';
+import { provideMockActions } from '@ngrx/effects/testing';
+import { Observable } from 'rxjs';
 
-export type AuPage = Node;
-export interface addAuPagesSuccessParams {
-  node: AuPage;
-  pageNumber: number;
-}
+import { AuTemplEffects } from './au-templ.effects';
 
-export interface addAuPageSuccessParams {
-  node: AuPage;
-  nodePaging: NodePaging;
-}
+describe('AuTemplEffects', () => {
+  let actions$: Observable<any>;
+  let effects: AuTemplEffects;
 
-export interface MovePageParams {
-  node: AuPage;
-  newIndex: number;
-  oldIndex: number;
-}
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [AuTemplEffects, provideMockActions(() => actions$)]
+    });
+
+    effects = TestBed.inject(AuTemplEffects);
+  });
+
+  it('should be created', () => {
+    expect(effects).toBeTruthy();
+  });
+});

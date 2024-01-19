@@ -16,5 +16,8 @@
   "stylelint.validate": [
     "css",
     "scss"
+  ],
+  "cSpell.words": [
+    "Templs"
   ]
 }

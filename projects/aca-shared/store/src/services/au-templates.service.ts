@@ -27,20 +27,24 @@
 
 import { Injectable } from '@angular/core';
 import { SearchService, NodesApiService, SearchOptions } from '@alfresco/adf-content-services';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 
 import { Store, select } from '@ngrx/store';
 import * as fromAuPages from '../public-api';
 import {
   // getAuCategoriesAll,
   // loadAuCategories,
-  selectCategoriesReady,
-  selectPagesReady
+  // selectCategoriesReady,
+  selectPagesReady,
+  AppStore,
+  SnackbarErrorAction,
+  GetAddPageStateParams
 } from '../public-api';
-import { concatMap, filter, take } from 'rxjs/operators';
 
-import { AuPage } from '../models/au-templates.model';
-import { NodePaging } from '@alfresco/js-api';
+import { catchError, concatMap, filter, map, take, tap } from 'rxjs/operators';
+
+// import { AuPage } from '../models/au-templates.model';
+import { NodePaging, Node } from '@alfresco/js-api';
 
 @Injectable({
   providedIn: 'root'
@@ -49,43 +53,137 @@ export class auTemplatesService {
   constructor(
     private nodesApi: NodesApiService,
     private searchService: SearchService,
-    private auPagesStore: Store<fromAuPages.fromPages.AuPagesStore>
+    private auPagesStore: Store<fromAuPages.fromPages.AuPagesStore>,
+    private store: Store<AppStore>
   ) {}
 
-  /*  getTemplatePages(nodeId: string) {
-    const opts = {
-      skipCount: 0,
-      maxItems: 20,
-      include: [`properties`],
-      where: "(nodeType='au:page')"
-    };
-    return this.nodesApi.getNodeChildren(nodeId, opts);
-  } */
-
-  getTemplatePages(nodeId: string) {
-    const opts1 = {
-      skipCount: 0,
-      maxItems: 20,
-      include: [`properties`],
-      where: "(nodeType='au:page')"
-    };
-
-    const opts2 = {
-      include: [`properties`],
-      where: "(nodeType='cm:folder')"
-    };
-    return forkJoin([this.nodesApi.getNodeChildren(nodeId, opts1), this.nodesApi.getNode(nodeId, opts2)]);
-  }
-
-  addTemplatePage(parentId: string, pageId: number) {
-    // const { ordLinName, properties, nodesApi, parentNode } = this;
-    const name = 'Oldal';
-    const nodeType = 'au:page';
+  addTemplate(templatesId: string): Observable<{ template: Node; nodes: [Node, Node] }> {
+    const name = 'Template';
+    const nodeType = 'au:template';
     const opts = {
       ['autoRename']: true
     };
-    const properties = { 'cm:description': 'ordLinDescription', 'au:pageId': pageId };
-    return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
+    const properties = { 'cm:description': 'Audit template' };
+    const nameItem = 'Site conducted';
+
+    return this.nodesApi.createFolder(templatesId, { name, properties, nodeType }, opts).pipe(
+      // eslint-disable-next-line no-console
+      tap((template) => console.log('addAuTemplate:' + template.id)),
+      concatMap((template) => {
+        return forkJoin([
+          this.nodesApi.createFolder(
+            template.id,
+            {
+              name: 'Title Page',
+              properties: {
+                'cm:description': 'The Title Page is the first page of your inspection report. You can customize the Title Page below'
+              },
+              nodeType: 'au:firstPage'
+            },
+            opts
+          ),
+          this.nodesApi.createFolder(
+            template.id,
+            {
+              name: nameItem,
+              properties: {
+                'cm:description': 'Site conducted'
+              },
+              nodeType: 'au:itemQuestion'
+            },
+            opts
+          )
+        ]).pipe(
+          map((nodes) => {
+            return { template: template, nodes: nodes };
+          })
+        );
+      }),
+      concatMap((values) => {
+        return forkJoin([
+          this.nodesApi.updateNode(values.nodes[0].id, {
+            properties: {
+              'au:pageId': values.nodes[0].id,
+              'au:nextItemId': values.nodes[1].id
+            }
+          }),
+          this.nodesApi.updateNode(values.nodes[1].id, {
+            properties: {
+              'au:pageId': values.nodes[0].id,
+              'au:nextItemId': ''
+            }
+          })
+        ]).pipe(
+          map((nodes) => {
+            return { template: values.template, nodes: nodes };
+          })
+        );
+      }),
+
+      catchError((error) => this.handleError(error))
+    );
+  }
+
+  getTemplateItems(nodeId: string) {
+    /*  const opts1 = {
+      skipCount: 0,
+      maxItems: 20,
+      include: [`properties`],
+      where: "(nodeType='au:folder')"
+    }; */
+
+    const opts1 = {
+      skipCount: 0,
+      maxItems: 200,
+      include: [`properties`]
+    };
+
+    return this.nodesApi.getNodeChildren(nodeId, opts1);
+  }
+
+  addTemplatePage(result: GetAddPageStateParams) {
+    // const { ordLinName, properties, nodesApi, parentNode } = this;
+    const name = 'Oldal';
+    const nodeTypePage = 'au:page';
+    const opts = {
+      ['autoRename']: true
+    };
+
+    const nextId = result.next ? result.next.id : '';
+    return this.nodesApi
+      .createFolder(
+        result.prev.parentId,
+        {
+          name: name,
+          properties: {
+            'cm:description': 'You can customize the Page below',
+            'au:nextItemId': nextId
+          },
+          nodeType: nodeTypePage
+        },
+        opts
+      )
+      .pipe(
+        concatMap((newPage) => {
+          return forkJoin([
+            this.nodesApi.updateNode(result.prev.id, {
+              properties: {
+                'au:nextItemId': newPage.id
+              }
+            }),
+            this.nodesApi.updateNode(newPage.id, {
+              properties: {
+                'au:pageId': newPage.id
+              }
+            })
+          ]).pipe(
+            map((nodes) => {
+              return { prevNode: nodes[0], newPage: newPage };
+            })
+          );
+        }),
+        catchError((error) => this.handleError(error))
+      );
   }
 
   // updateNode(nodeId: string, nodeBody: any, options?: any): Observable<Node>;
@@ -120,7 +218,7 @@ export class auTemplatesService {
       // tap((val) => console.log(`selectPagesReady from getTemplateCategories service TAP: - ${JSON.stringify(val)}`)),
       take(1),
       concatMap((val) => {
-        const pageObservables: Observable<NodePaging | AuPage>[] = [];
+        const pageObservables: Observable<NodePaging | Node>[] = [];
         val.pages.forEach((page) => {
           const ob1 = this.nodesApi.getNodeChildren(page.id, opts1);
           const ob2 = this.nodesApi.getNode(page.id, opts2);
@@ -149,7 +247,7 @@ export class auTemplatesService {
     return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
   }
 
-  getTemplateItems() {
+  /* getTemplateItems() {
     const opts1 = {
       skipCount: 0,
       maxItems: 20,
@@ -181,7 +279,7 @@ export class auTemplatesService {
         return forkJoin(categoryObservables);
       })
     );
-  }
+  } */
 
   addTemplateItem(parentId: string) {
     // const { ordLinName, properties, nodesApi, parentNode } = this;
@@ -222,6 +320,25 @@ export class auTemplatesService {
     term = 'item';
     return this.searchService.getNodeQueryResults(term, searchOptions);
   }
+
+  private handleError(error: Error): Observable<null> {
+    let statusCode: number;
+
+    try {
+      statusCode = JSON.parse(error.message).error.statusCode;
+    } catch (e) {
+      statusCode = null;
+    }
+
+    if (statusCode !== 409) {
+      this.store.dispatch(new SnackbarErrorAction('APP.MESSAGES.ERRORS.GENERIC'));
+    } else {
+      this.store.dispatch(new SnackbarErrorAction('APP.MESSAGES.ERRORS.CONFLICT'));
+    }
+
+    return of(null);
+  }
+
   /* getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {
     const searchOptions: SearchOptions = {
       skipCount: skipCount,

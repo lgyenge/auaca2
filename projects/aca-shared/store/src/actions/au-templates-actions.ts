@@ -24,31 +24,32 @@
 
 import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
-import { AuPage, addAuPagesSuccessParams, addAuPageSuccessParams, MovePageParams } from '../models/au-templates.model';
+import { MovePageParams } from '../models/au-templ.model';
+import { Node } from '@alfresco/js-api';
 
 export const loadAuPages = createAction('[AuPage/API] Load AuPages', props<{ templateId: string }>());
-export const loadAuPagesSuccess = createAction('[AuPages/API] Load AuPages Success', props<{ params: addAuPageSuccessParams }>());
+// export const loadAuPagesSuccess = createAction('[AuPages/API] Load AuPages Success', props<{ params: addAuPageSuccessParams }>());
 export const loadAuPagesFailure = createAction('[AuPages/API] Load AuPages Failure', props<{ error: any }>());
 
-export const addAuPage = createAction('[AuPage/API] Add AuPage', props<{ templateId: string; pageNumber: number }>());
-export const addAuPageSuccess = createAction('[AuPages/API] Add AuPage Success', props<{ params: addAuPagesSuccessParams }>());
-export const addAuPageFailure = createAction('[AuPages/API] Add AuPage Failure', props<{ error: any }>());
+// export const addAuPage = createAction('[AuPage/API] Add AuPage', props<{ templateId: string; pageNumber: number }>());
+// export const addAuPageSuccess = createAction('[AuPages/API] Add AuPage Success', props<{ params: addAuPagesSuccessParams }>());
+// export const addAuPageFailure = createAction('[AuPages/API] Add AuPage Failure', props<{ error: any }>());
 
 export const moveAuPage = createAction('[AuPage/API] Move AuPage', props<{ params: MovePageParams }>());
 
-export const deleteAuPage = createAction('[AuPage/API] Delete AuPage', props<{ templateId: string; pageId: string }>());
-export const deleteAuPageSuccess = createAction('[AuPages/API] Delete AuPage Success', props<{ templateId: string; pageId: string }>());
-export const deleteAuPageFailure = createAction('[AuPages/API] Delete AuPage Failure', props<{ error: any }>());
+// export const deleteAuPage = createAction('[AuPage/API] Delete AuPage', props<{ templateId: string; pageId: string }>());
+// export const deleteAuPageSuccess = createAction('[AuPages/API] Delete AuPage Success', props<{ templateId: string; pageId: string }>());
+// export const deleteAuPageFailure = createAction('[AuPages/API] Delete AuPage Failure', props<{ error: any }>());
 
-export const upsertAuPage = createAction('[AuPage/API] Upsert AuPage', props<{ auPage: AuPage }>());
+export const upsertAuPage = createAction('[AuPage/API] Upsert AuPage', props<{ auPage: Node }>());
 
-export const addAuPages = createAction('[AuPage/API] Add AuPages', props<{ auPages: AuPage[] }>());
+export const addAuPages = createAction('[AuPage/API] Add AuPages', props<{ auPages: Node[] }>());
 
-export const upsertAuPages = createAction('[AuPage/API] Upsert AuPages', props<{ auPages: AuPage[] }>());
+export const upsertAuPages = createAction('[AuPage/API] Upsert AuPages', props<{ auPages: Node[] }>());
 
-export const updateAuPage = createAction('[AuPage/API] Update AuPage', props<{ auPage: Update<AuPage> }>());
+export const updateAuPage = createAction('[AuPage/API] Update AuPage', props<{ auPage: Update<Node> }>());
 
-export const updateAuPages = createAction('[AuPage/API] Update AuPages', props<{ auPages: Update<AuPage>[] }>());
+export const updateAuPages = createAction('[AuPage/API] Update AuPages', props<{ auPages: Update<Node>[] }>());
 
 // export const deleteAuPage = createAction('[AuPage/API] Delete AuPage', props<{ id: string }>());
 

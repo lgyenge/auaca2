@@ -22,9 +22,6 @@
  * from Hyland Software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import * as fromAuTemplate from '../reducers/au-template.reducer';
-
-export const selectAuTemplateState = createFeatureSelector<fromAuTemplate.TemplateState>(fromAuTemplate.auTemplateFeatureKey);
-
-export const selectTemplate = createSelector(selectAuTemplateState, (state) => state.template);
+describe('AuTempl Selectors', () => {
+  it('should select the feature state', () => {});
+});

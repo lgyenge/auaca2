@@ -1,8 +1,4 @@
-<!-- <div class="example-action-buttons">
-  <button mat-button (click)="accordion.openAll()">Expand All</button>
-  <button mat-button (click)="accordion.closeAll()">Collapse All</button>
-</div> -->
-<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+<!-- <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
   <ng-container *ngFor="let category of auCategories$ | async; let i = index" ;>
     <div class="example-box" cdkDrag [cdkDragData]="category">
       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
@@ -29,10 +25,11 @@
               <button mat-button (click)="deleteCategory(category.id)">Delete Category</button>
             </mat-panel-description>
           </mat-expansion-panel-header>
-        <lib-au-category [category]="category" *ngIf="(dataLoaded$ | async)"></lib-au-category>
-        <!-- <lib-au-category [category]="category"></lib-au-category> -->
+       <lib-au-category [category]="category" *ngIf="(dataLoaded$ | async)"></lib-au-category>
+      <lib-au-category [category]="category"></lib-au-category>
         </mat-expansion-panel>
       </mat-accordion>
     </div>
   </ng-container>
 </div>
+ -->

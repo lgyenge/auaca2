@@ -25,9 +25,9 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AuCategoryData } from '../reducers/au-category.reducer';
 import * as fromAuCategories from '../reducers/au-category.reducer';
-import { AuPage } from '../models/au-templates.model';
-import { AuCategory } from '../public-api';
-// import { Node, NodeEntry } from '@alfresco/js-api';
+// import { AuPage } from '../models/au-templates.model';
+// import { AuCategory } from '../public-api';
+// import { Node } from '@alfresco/js-api';
 
 // Lookup the 'Categories' feature state managed by NgRx
 const selectState = createFeatureSelector<AuCategoryData>(fromAuCategories.auCategoriesFeatureKey);
@@ -46,21 +46,21 @@ export const getAuCategoriesEntities = createSelector(selectState, (state: AuCat
 /* export const getEntity = createSelector(selectCategoriesEntities, selectSelectedId, (entities, selectedId) =>
   selectedId ? entities[selectedId] : undefined
 ); */
-
+/*
 export const auCategoryQuery = {
   getAuCategoriesAll,
   getAuCategoriesEntities
   // getSelectedProductId,
   // getSelectedProduct,
-};
-export const getAuCategoryLoaded = createSelector(selectState, (state: AuCategoryData) => state.loaded);
+}; */
+// export const getAuCategoryLoaded = createSelector(selectState, (state: AuCategoryData) => state.loaded);
 
-const selectCategoriesLoaded = createSelector(selectState, (state) => state.loaded);
-export const selectCategoriesReady = createSelector(selectCategoriesLoaded, getAuCategoriesAll, (ready, pages) => ({ ready, pages }));
+// const selectCategoriesLoaded = createSelector(selectState, (state) => state.loaded);
+// export const selectCategoriesReady = createSelector(selectCategoriesLoaded, getAuCategoriesAll, (ready, pages) => ({ ready, pages }));
 
-export const getAuCategoriesOfPage = (props: { page: AuPage }) =>
-  // 👍 `count` knows that it's a number
-  createSelector(selectState, (state: AuCategoryData) => {
+// export const getAuCategoriesOfPage = (props: { page: Node }) =>
+// 👍 `count` knows that it's a number
+/*   createSelector(selectState, (state: AuCategoryData) => {
     // props.page;
     const categories = fromAuCategories.selectAll(state);
     const newCategories = categories.filter((category) => category.parentId === props.page.id);
@@ -70,18 +70,18 @@ export const getAuCategoriesOfPage = (props: { page: AuPage }) =>
       return null;
     }
     // return categories;
-  });
+  }); */
 
-export const getAuCategoryIdsOfPage = (props: { page: AuPage }) =>
-  createSelector(getAuCategoriesOfPage({ page: props.page }), (categories: AuCategory[]) => {
+/* export const getAuCategoryIdsOfPage = (props: { page: Node }) =>
+  createSelector(getAuCategoriesOfPage({ page: props.page }), (categories: Node[]) => {
     let Ids: string[] = [];
     Ids = categories.map((element) => element.id);
     // eslint-disable-next-line no-console
     console.log(`PageId:  ${props.page.id}  -  CategoryIdsOfPage:  ${Ids} `);
     return Ids;
-  });
+  }); */
 
-export const getSelectedAuCategory = createSelector(selectState, (state: AuCategoryData) => state.selectedAuCategoryId);
+// export const getSelectedAuCategory = createSelector(selectState, (state: AuCategoryData) => state.selectedAuCategoryId);
 
 /* export const getAuCategoryIdsOfPage = (props: { pageId: string }) =>
   // 👍 `count` knows that it's a number

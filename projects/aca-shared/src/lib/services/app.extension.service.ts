@@ -51,7 +51,7 @@ import {
 } from '@alfresco/adf-extensions';
 import { AppConfigService, AuthenticationService, LogService } from '@alfresco/adf-core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { RepositoryInfo, NodeEntry } from '@alfresco/js-api';
+import { RepositoryInfo, NodeEntry, Node } from '@alfresco/js-api';
 import { ViewerRules } from '../models/viewer.rules';
 import { Badge, SettingsGroupRef } from '../models/types';
 import { NodePermissionService } from '../services/node-permission.service';
@@ -113,7 +113,7 @@ export class AppExtensionService implements RuleContext {
    * handled from au components
    * used in au.rules
    */
-  auPageSelectionId: string | number = null;
+  auItemSelection: Node = null;
 
   references$: Observable<ExtensionRef[]>;
   filesDocumentListPreset$: Observable<DocumentListPresetRef[]> = this._filesDocumentListPreset.asObservable();

@@ -24,29 +24,30 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Component, OnInit, OnDestroy, ViewEncapsulation, Input, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, ViewEncapsulation, Input, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
-import { AuCategoryComponent } from '../au-category/au-category.component';
-import { Store, select } from '@ngrx/store';
-import * as fromAuPages from '@alfresco/aca-shared/store';
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import {
-  AuPage,
-  AuCategory,
-  addAuCategory,
-  deleteAuCategory,
-  moveAuCategory,
-  getAuCategoriesOfPage,
-  selectAuCategory,
-  unSelectAuCategory,
-  unSelectAuPage,
-  unSelectAuItem,
-  toggleAuCategorySelection
-} from '@alfresco/aca-shared/store';
+// import { AuCategoryComponent } from '../au-category/au-category.component';
+// import { Store } from '@ngrx/store';
+// import * as fromAuPages from '@alfresco/aca-shared/store';
+// import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { Node } from '@alfresco/js-api';
+import // AuPage,
+// AuCategory,
+// addAuCategory,
+// deleteAuCategory,
+// moveAuCategory,
+// getAuCategoriesOfPage,
+// selectAuCategory,
+// unSelectAuCategory,
+// unSelectAuPage,
+// unSelectAuItem,
+// toggleAuCategorySelection
+'@alfresco/aca-shared/store';
 import { Observable, Subject, Subscription, of } from 'rxjs';
 import { MatAccordion } from '@angular/material/expansion';
-import { filter, take, takeUntil } from 'rxjs/operators';
+// import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,17 +56,18 @@ import { filter, take, takeUntil } from 'rxjs/operators';
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'lib-au-page',
   standalone: true,
-  imports: [CommonModule, MaterialModule, AuCategoryComponent, DragDropModule],
+  // imports: [CommonModule, MaterialModule, AuCategoryComponent, DragDropModule],
+  imports: [CommonModule, MaterialModule, DragDropModule],
   templateUrl: './au-page.component.html',
   styleUrls: ['./au-page.component.css']
 })
-export class AuPageComponent implements OnInit, OnDestroy {
+export class AuPageComponent implements OnDestroy {
   onDestroy$: Subject<boolean> = new Subject<boolean>();
-  @Input() page: AuPage;
-  auCategories$: Observable<AuCategory[]>;
+  @Input() page: Node;
+  auCategories$: Observable<Node[]>;
   selectedAuCategory$: Observable<string | number>;
   categoryNumber: number;
-  auCategories: AuCategory[] = [];
+  auCategories: Node[] = [];
   dataLoaded$: Observable<boolean> = of(false);
   subscription: Subscription;
 
@@ -78,18 +80,18 @@ export class AuPageComponent implements OnInit, OnDestroy {
   expandedHeight: string;
   collapsedHeight: string;
 
-  constructor(private auStore: Store<fromAuPages.fromCategory.AuCategoryStore>) {}
+  // constructor(private auStore: Store<fromAuPages.fromCategory.AuCategoryStore>) {}
 
-  ngOnInit() {
-    this.selectedAuCategory$ = this.auStore.pipe(select(fromAuPages.getSelectedAuCategory));
-    this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuCategoryLoaded)).pipe(take(1));
-    this.auCategories$ = this.auStore.pipe(select(getAuCategoriesOfPage({ page: this.page }))).pipe(
+  /* ngOnInit() {
+    // this.selectedAuCategory$ = this.auStore.pipe(select(fromAuPages.getSelectedAuCategory));
+    // this.dataLoaded$ = this.auStore.pipe(select(fromAuPages.getAuCategoryLoaded)).pipe(take(1));
+    // this.auCategories$ = this.auStore.pipe(select(getAuCategoriesOfPage({ page: this.page }))).pipe(
       filter((res) => res != null),
       // eslint-disable-next-line no-console
       // tap((val) => console.log(`Get all Categories from Page ngOnInit:${this.page.id} - ${JSON.stringify(val)}`)),
       takeUntil(this.onDestroy$)
     );
-  }
+  } */
   ngOnDestroy() {
     this.onDestroy$.next(true);
     this.onDestroy$.complete();
@@ -99,7 +101,7 @@ export class AuPageComponent implements OnInit, OnDestroy {
     this.categoryNumber = +i;
   }
 
-  createCategory(categoryNumber: number) {
+  /* createCategory(categoryNumber: number) {
     const { page } = this;
     // const pageId = page.id;
     this.auStore.dispatch(addAuCategory({ page, categoryNumber }));
@@ -111,7 +113,7 @@ export class AuPageComponent implements OnInit, OnDestroy {
     this.auStore.dispatch(deleteAuCategory({ page, categoryId }));
   }
 
-  drop(event: CdkDragDrop<AuCategory[]>) {
+  drop(event: CdkDragDrop<Node[]>) {
     // eslint-disable-next-line no-console
     console.log(`category drop ${event.item.data.id}`);
     this.auStore.dispatch(
@@ -119,22 +121,22 @@ export class AuPageComponent implements OnInit, OnDestroy {
     );
   }
 
-  public toggleCategorySelection(_event: any, page: AuCategory) {
+  public toggleCategorySelection(_event: any, page: Node) {
     this.auStore.dispatch(toggleAuCategorySelection({ id: page.id }));
+ */
+  // alert('Select ' + page.id);
+  // }
 
+  /*  public selectCategory(_event: any, category: AuCategory) {
+    // this.auStore.dispatch(selectAuCategory({ id: category.id }));
+    // this.auStore.dispatch(unSelectAuPage());
+    // this.auStore.dispatch(unSelectAuItem());
     // alert('Select ' + page.id);
-  }
+  } */
 
-  public selectCategory(_event: any, category: AuCategory) {
-    this.auStore.dispatch(selectAuCategory({ id: category.id }));
-    this.auStore.dispatch(unSelectAuPage());
-    this.auStore.dispatch(unSelectAuItem());
-    // alert('Select ' + page.id);
-  }
-
-  public unSelectCategory() {
+  /*  public unSelectCategory() {
     this.auStore.dispatch(unSelectAuCategory());
 
     // alert('Select ' + page.id);
-  }
+  } */
 }
