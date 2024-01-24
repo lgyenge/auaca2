@@ -38,7 +38,7 @@ import {
   selectPagesReady,
   AppStore,
   SnackbarErrorAction,
-  GetAddPageStateParams
+  AuSelectionState
 } from '../public-api';
 
 import { catchError, concatMap, filter, map, take, tap } from 'rxjs/operators';
@@ -141,7 +141,7 @@ export class auTemplatesService {
     return this.nodesApi.getNodeChildren(nodeId, opts1);
   }
 
-  addTemplatePage(result: GetAddPageStateParams) {
+  addTemplatePage(result: AuSelectionState) {
     // const { ordLinName, properties, nodesApi, parentNode } = this;
     const name = 'Oldal';
     const nodeTypePage = 'au:page';
@@ -149,10 +149,10 @@ export class auTemplatesService {
       ['autoRename']: true
     };
 
-    const nextId = result.next ? result.next.id : '';
+    const nextId = result.nextItem ? result.nextItem.id : '';
     return this.nodesApi
       .createFolder(
-        result.prev.parentId,
+        result.page.parentId,
         {
           name: name,
           properties: {
@@ -166,7 +166,7 @@ export class auTemplatesService {
       .pipe(
         concatMap((newPage) => {
           return forkJoin([
-            this.nodesApi.updateNode(result.prev.id, {
+            this.nodesApi.updateNode(result.lastItem.id, {
               properties: {
                 'au:nextItemId': newPage.id
               }
@@ -178,12 +178,118 @@ export class auTemplatesService {
             })
           ]).pipe(
             map((nodes) => {
-              return { prevNode: nodes[0], newPage: newPage };
+              return { modifiedItem: nodes[0], newItem: nodes[1] };
             })
           );
         }),
         catchError((error) => this.handleError(error))
       );
+  }
+
+  addTemplateItem(result: AuSelectionState) {
+    // const { ordLinName, properties, nodesApi, parentNode } = this;
+    const name = 'Question';
+    const nodeType = 'au:itemQuestion';
+    const opts = {
+      ['autoRename']: true
+    };
+
+    const nextId = result.item.properties['au:nextItemId'];
+    return this.nodesApi
+      .createFolder(
+        result.item.parentId,
+        {
+          name: name,
+          properties: {
+            'cm:description': 'You can customize audit question',
+            'au:nextItemId': nextId,
+            'au:pageId': result.item.properties['au:pageId'],
+            'au:sectionId': result.item.properties['au:sectionId']
+          },
+          nodeType: nodeType
+        },
+        opts
+      )
+      .pipe(
+        concatMap((newItem) => {
+          return this.nodesApi
+            .updateNode(result.item.id, {
+              properties: {
+                'au:nextItemId': newItem.id
+              }
+            })
+            .pipe(
+              map((modifiedItem) => {
+                return { modifiedItem: modifiedItem, newItem: newItem };
+              })
+            );
+        }),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  addTemplateSection(result: AuSelectionState) {
+    const name = 'Section';
+    const nodeType = 'au:itemSection';
+    const opts = {
+      ['autoRename']: true
+    };
+
+    const nextId = result.item.properties['au:nextItemId'];
+    return this.nodesApi
+      .createFolder(
+        result.item.parentId,
+        {
+          name: name,
+          properties: {
+            'cm:description': 'You can customize section',
+            'au:nextItemId': nextId,
+            'au:pageId': result.item.properties['au:pageId']
+          },
+          nodeType: nodeType
+        },
+        opts
+      )
+      .pipe(
+        concatMap((newItem) => {
+          return forkJoin([
+            this.nodesApi.updateNode(result.item.id, {
+              properties: {
+                'au:nextItemId': newItem.id
+              }
+            }),
+            this.nodesApi.updateNode(newItem.id, {
+              properties: {
+                'au:sectionId': newItem.id
+              }
+            })
+          ]).pipe(
+            map((nodes) => {
+              return { modifiedItem: nodes[0], newItem: nodes[1] };
+            })
+          );
+        }),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  deleteItemGroup(selection: AuSelectionState) {
+    const nodeObservables: Observable<Node>[] = [];
+    const nextItemId = selection.nextItem ? selection.nextItem.id : null;
+    nodeObservables.push(
+      this.nodesApi.updateNode(selection.prevItem.id, {
+        properties: {
+          'au:nextItemId': nextItemId
+        }
+      })
+    );
+    selection.itemsInGroup.forEach((item) => {
+      const obs = this.nodesApi.deleteNode(item.id);
+      nodeObservables.push(obs);
+    });
+    // eslint-disable-next-line no-console
+    // console.log(`Load Categories from server (forkJoin nodeObservables) ${nodeObservables}`);
+    return forkJoin(nodeObservables);
   }
 
   // updateNode(nodeId: string, nodeBody: any, options?: any): Observable<Node>;
@@ -247,55 +353,6 @@ export class auTemplatesService {
     return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
   }
 
-  /* getTemplateItems() {
-    const opts1 = {
-      skipCount: 0,
-      maxItems: 20,
-      include: [`properties`],
-      where: "(nodeType='au:itemQuestion')"
-    };
-    // where: "(nodeType='au:itemQuestion')"
-
-    const opts2 = {
-      include: [`properties`],
-      where: "(nodeType='au:itemCategory')"
-    };
-
-    return this.auPagesStore.pipe(select(selectCategoriesReady)).pipe(
-      filter((res) => res.ready),
-      take(1),
-      // eslint-disable-next-line no-console
-      // tap((val) => console.log(`selectCategoriesReady from  from getTemplateItems service TAP: - ${JSON.stringify(val)}`)),
-      concatMap((val) => {
-        const categoryObservables: Observable<NodePaging | AuPage>[] = [];
-        val.pages.forEach((category) => {
-          const ob1 = this.nodesApi.getNodeChildren(category.id, opts1);
-          const ob2 = this.nodesApi.getNode(category.id, opts2);
-          categoryObservables.push(ob1);
-          categoryObservables.push(ob2);
-        });
-        // eslint-disable-next-line no-console
-        // console.log(`Load Items from server (forkJoin Categories Observables) ${categoryObservables}`);
-        return forkJoin(categoryObservables);
-      })
-    );
-  } */
-
-  addTemplateItem(parentId: string) {
-    // const { ordLinName, properties, nodesApi, parentNode } = this;
-    const name = 'Item';
-    const nodeType = 'au:itemQuestion';
-    const opts = {
-      ['autoRename']: true
-    };
-    // const properties = { 'cm:description': 'ordLinDescription', 'au:categoryId': categoryId };
-    const properties = { 'cm:description': 'ordLinDescription' };
-
-    // eslint-disable-next-line no-console
-    // console.log('category parent id:' + parentId);
-    return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
-  }
-
   getTemplateResponseSets(rootNodeId: string, term: string, skipCount: number) {
     const searchOptions: SearchOptions = {
       skipCount: skipCount,
@@ -338,51 +395,4 @@ export class auTemplatesService {
 
     return of(null);
   }
-
-  /* getTemplateCategories(rootNodeId: string, term: string, skipCount: number) {
-    const searchOptions: SearchOptions = {
-      skipCount: skipCount,
-      maxItems: 100,
-      rootNodeId: rootNodeId,
-      nodeType: 'cm:folder',
-      include: [`properties`],
-      orderBy: ['id'],
-      fields: []
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    searchOptions;
-    term = 'item';
-
-    return this.searchService.getNodeQueryResults(term);
-  }
- */
-  /*
-  getTemplateItems(nodeId: string) {
-    const opts = {
-      skipCount: 0,
-      maxItems: 20,
-      where: "(nodeType='cm:folder')"
-    };
-    return this.searchService.getNodeQueryResults(term: string, options?: SearchOptions);
-  }
-
-  getTemplateResponseSets(nodeId: string) {
-    const opts = {
-      skipCount: 0,
-      maxItems: 20,
-      where: "(nodeType='cm:folder')"
-    };
-    return this.searchService.getNodeQueryResults(term: string, options?: SearchOptions);
-  }
-
-  getTemplateMedia(nodeId: string) {
-    const opts = {
-      skipCount: 0,
-      maxItems: 20,
-      where: "(nodeType='cm:folder')"
-    };
-    return this.searchService.getNodeQueryResults(term: string, options?: SearchOptions);
-  }
- */
 }

@@ -26,7 +26,7 @@
 import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
 import { Node, NodeEntry } from '@alfresco/js-api';
-import { addAuTemplateSuccessParams, addAuItemSuccessParams } from '../models/au-templ.model';
+import { addAuTemplateSuccessParams, AuItemSuccessParams } from '../models/au-templ.model';
 
 // import { AuTempl } from '../models/au-templ.model';
 
@@ -68,13 +68,24 @@ export const unSelectAuItem = createAction('[AuTempl/API] UnSelect AuItem');
 export const toggleAuItemSelection = createAction('[AuTempl/API] Toggle AuItem Selection', props<{ item: Node }>());
 
 export const addAuPage = createAction('[AuTempl/API] Add AuPage');
-export const addAuPageSuccess = createAction('[AuTempl/API] Add AuPage Success', props<{ params: addAuItemSuccessParams }>());
+export const addAuPageSuccess = createAction('[AuTempl/API] Add AuPage Success', props<{ params: AuItemSuccessParams }>());
 export const addAuPageFailure = createAction('[AuTempl/API] Add AuPage Failure', props<{ error: any }>());
 
-export const deleteAuPage = createAction('[AuTempl/API] Delete AuPage', props<{ templateId: string; item: Node }>());
+/* export const deleteAuPage = createAction('[AuTempl/API] Delete AuPage', props<{ templateId: string; item: Node }>());
 export const deleteAuPageSuccess = createAction('[AuTempl/API] Delete AuPage Success', props<{ templateId: string; pageId: string }>());
-export const deleteAuPageFailure = createAction('[AuTempl/API] Delete AuPage Failure', props<{ error: any }>());
+export const deleteAuPageFailure = createAction('[AuTempl/API] Delete AuPage Failure', props<{ error: any }>()); */
 
-export const addAuItemSuccess = createAction('[AuTempl/API] Add AuPage Success', props<{ params: addAuItemSuccessParams }>());
+export const deleteAuItemGroup = createAction('[AuTempl/API] Delete AuItemGroup');
+// export const deleteAuItemSuccess = createAction('[AuTempl/API] Delete AuItemGroup Success', props<{ templateId: string; pageId: string }>());
+export const deleteAuItemGroupSuccess = createAction('[AuTempl/API] Delete AuItemGroup Success', props<{ params: AuItemSuccessParams }>());
+export const deleteAuItemGroupFailure = createAction('[AuTempl/API] Delete AuItemGroup Failure', props<{ error: any }>());
+
+export const addAuItem = createAction('[AuTempl/API] Add AuItem');
+export const addAuItemSuccess = createAction('[AuTempl/API] Add AuItem Success', props<{ params: AuItemSuccessParams }>());
+export const addAuItemFailure = createAction('[AuTempl/API] Add AuItem Failure', props<{ error: any }>());
+
+export const addAuSection = createAction('[AuTempl/API] Add AuSection');
+// export const addAuSectionSuccess = createAction('[AuTempl/API] Add AuSection Success', props<{ params: AuSectionSuccessParams }>());
+export const addAuSectionFailure = createAction('[AuTempl/API] Add AuSection Failure', props<{ error: any }>());
 
 // export const moveAuItem = createAction('[AuItem/API] Move AuItem', props<{ params: MovePageParams }>());

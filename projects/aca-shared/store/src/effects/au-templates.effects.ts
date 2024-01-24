@@ -147,53 +147,6 @@ export class AuPagesEffects {
       ),
     { dispatch: false }
   );
-  /*
-  saveAuPageIds$ = createEffect(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.actions$.pipe(
-        ofType(AuPageActions.addAuPageSuccess),
-        concatMap((action) => {
-          // lehet hogy a pipe nem kell!!
-          return this.auStore.pipe(select(getAuPagesIds)).pipe(
-            take(1),
-            // eslint-disable-next-line no-console
-            // tap((response) => console.log('response:' + response)),
-            map((iDs) => {
-              return { action: action, iDs: iDs };
-            })
-          );
-        }),
-        map((res) => {
-          return [res.action.params.node.parentId, res.iDs.join()];
-        }),
-        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
-      ),
-    { dispatch: false }
-  ); */
-
-  /*  deleteAuPageIds$ = createEffect(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.actions$.pipe(
-        ofType(AuPageActions.deleteAuPageSuccess),
-        concatMap((action) => {
-          return this.auStore.pipe(select(getAuPagesIds)).pipe(
-            take(1),
-            // eslint-disable-next-line no-console
-            // tap((response) => console.log('response:' + response)),
-            map((iDs) => {
-              return { action: action, iDs: iDs };
-            })
-          );
-        }),
-        map((res) => {
-          return [res.action.templateId, res.iDs.join()];
-        }),
-        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
-      ),
-    { dispatch: false }
-  ); */
 
   constructor() {}
 }
@@ -204,20 +157,6 @@ export class AuCategoryEffects {
   private actions$ = inject(Actions);
   private auStore = inject(Store<AuPagesStore>);
 
-  /*  loadAuCategories$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(AuCategoryActions.loadAuCategories),
-      concatMap((_action) =>
-        this.auTemplates.getTemplateCategories().pipe(
-          // eslint-disable-next-line no-console
-          // tap((catArray) => console.log('loadAuCategories effect (Categories loaded from server):' + catArray)),
-          map((catArray) => AuCategoryActions.loadAuCategoriesSuccess({ catArray })),
-          catchError((error) => of(AuCategoryActions.loadAuCategoriesFailure({ error })))
-        )
-      )
-    );
-  }); */
-
   loadAuCategoriesSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
@@ -226,134 +165,6 @@ export class AuCategoryEffects {
       ),
     { dispatch: false }
   );
-  /*
-  addAuCategory$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(AuCategoryActions.addAuCategory),
-      concatMap((action) => {
-        return this.auTemplates.addTemplateCategory(action.page.id).pipe(
-          //  return this.auTemplates.addTemplateCategory(action.pageId, action.categoryNumber).pipe(
-
-          map((node) => {
-            return { page: action.page, category: node, categoryNumber: action.categoryNumber };
-          }),
-          // eslint-disable-next-line no-console
-          // tap((value) => console.log('addAuCategory:' + value)),
-          map((data) => AuCategoryActions.addAuCategorySuccess(data)),
-          catchError((error) => of(AuCategoryActions.addAuCategoryFailure({ error })))
-        );
-      })
-    );
-  }); */
-
-  /*  deleteAuCategory$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(AuCategoryActions.deleteAuCategory),
-      concatMap((action) => {
-        return this.auTemplates.deleteTemplateNode(action.categoryId).pipe(
-          map((_node: Node) => {
-            return { page: action.page, categoryId: action.categoryId };
-          }),
-          // eslint-disable-next-line no-console
-          // tap((value) => console.log(`deleteAuCategory pageId: ${value.page} categoryId: ${value.categoryId}`)),
-          map(({ page, categoryId }) => AuCategoryActions.deleteAuCategorySuccess({ categoryId, page })),
-
-          catchError((error) => of(AuCategoryActions.deleteAuCategoryFailure({ error })))
-        );
-      })
-    );
-  });
- */
-  /*  moveAuCategory$ = createEffect(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.actions$.pipe(
-        ofType(AuCategoryActions.moveAuCategory),
-        concatMap((action) => {
-          return this.auStore.pipe(select(getAuCategoryIdsOfPage({ page: action.params.page }))).pipe(
-            take(1),
-            // eslint-disable-next-line no-console
-            // tap((response) => console.log('moveAuCategoryEffect CategoriesIds:' + response)),
-            map((iDs) => {
-              return { action: action, iDs: iDs };
-            })
-          );
-        }),
-        map((res) => {
-          return [res.action.params.node.parentId, res.iDs.join()];
-        }),
-        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
-      ),
-    { dispatch: false }
-  ); */
-
-  /*  saveAuCategoryIds$ = createEffect(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.actions$.pipe(
-        ofType(AuCategoryActions.addAuCategorySuccess),
-        concatMap((action) => {
-          return this.auStore.pipe(select(getAuCategoriesIds)).pipe(
-            // eslint-disable-next-line no-console
-            // tap((response) => console.log('response:' + response)),
-            map((iDs) => {
-              return { action: action, iDs: iDs };
-            })
-          );
-        }),
-        map((res) => {
-          return [res.action.category.parentId, res.iDs.join()];
-        }),
-        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
-      ),
-    { dispatch: false }
-  ); */
-  /*
-  saveAuCategoryIds$ = createEffect(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.actions$.pipe(
-        ofType(AuCategoryActions.addAuCategorySuccess),
-        concatMap((action) => {
-          return this.auStore.pipe(select(getAuCategoryIdsOfPage({ page: action.page }))).pipe(
-            take(1),
-            // eslint-disable-next-line no-console
-            // tap((response) => console.log('CategoryIdsOfPage:' + response)),
-            map((iDs) => {
-              return { action: action, iDs: iDs };
-            })
-          );
-        }),
-        map((res) => {
-          return [res.action.category.parentId, res.iDs.join()];
-        }),
-        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
-      ),
-    { dispatch: false }
-  ); */
-
-  /*  deleteAuCategoryIds$ = createEffect(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.actions$.pipe(
-        ofType(AuCategoryActions.deleteAuCategorySuccess),
-        concatMap((action) => {
-          return this.auStore.pipe(select(getAuCategoryIdsOfPage({ page: action.page }))).pipe(
-            take(1),
-            // eslint-disable-next-line no-console
-            // tap((response) => console.log('CategoryIdsOfPage:' + response)),
-            map((iDs) => {
-              return { action: action, iDs: iDs };
-            })
-          );
-        }),
-        map((res) => {
-          return [res.action.page.id, res.iDs.join()];
-        }),
-        concatMap((result) => this.auTemplates.updateTemplateIds(result[0], result[1]))
-      ),
-    { dispatch: false }
-  ); */
 
   constructor() {}
 }
@@ -364,39 +175,6 @@ export class AuItemEffects {
   private auTemplates = inject(auTemplatesService);
   private actions$ = inject(Actions);
   private auStore = inject(Store<AuPagesStore>);
-
-  /*   loadAuItems$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(AuItemActions.loadAuItems),
-      concatMap((_action) =>
-        // this.auTemplates.getTemplateItems('91f74719-c33e-4814-a630-d78022a6cc04', 'aaa*', 0).pipe(
-        this.auTemplates.getTemplateItems().pipe(
-          // eslint-disable-next-line no-console
-          // tap((itemArray) => console.log('loadAuCategories effect (Items loaded from server:' + itemArray)),
-          map((itemArray) => AuItemActions.loadAuItemsSuccess({ itemArray })),
-          catchError((error) => of(AuItemActions.loadAuItemsFailure({ error })))
-        )
-      )
-    );
-  }); */
-
-  addAuItem$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(AuItemActions.addAuItem),
-      concatMap((action) => {
-        return this.auTemplates.addTemplateItem(action.category.id).pipe(
-          //  return this.auTemplates.addTemplateItem(action.pageId, action.categoryNumber).pipe(
-          map((node) => {
-            return { category: action.category, item: node, itemNumber: action.itemNumber };
-          }),
-          // eslint-disable-next-line no-console
-          // tap((value) => console.log('addAuItem:' + value)),
-          map((data) => AuItemActions.addAuItemSuccess(data)),
-          catchError((error) => of(AuItemActions.addAuItemFailure({ error })))
-        );
-      })
-    );
-  });
 
   deleteAuItem$ = createEffect(() => {
     return this.actions$.pipe(

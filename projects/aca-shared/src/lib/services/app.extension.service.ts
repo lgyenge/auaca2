@@ -26,7 +26,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { AppStore, getRuleContext } from '@alfresco/aca-shared/store';
+import { AppStore, getRuleContext, AuSelectionState } from '@alfresco/aca-shared/store';
 import {
   SelectionState,
   NavigationState,
@@ -114,6 +114,7 @@ export class AppExtensionService implements RuleContext {
    * used in au.rules
    */
   auItemSelection: Node = null;
+  auSelection: AuSelectionState;
 
   references$: Observable<ExtensionRef[]>;
   filesDocumentListPreset$: Observable<DocumentListPresetRef[]> = this._filesDocumentListPreset.asObservable();
@@ -144,29 +145,10 @@ export class AppExtensionService implements RuleContext {
       }
     });
 
+    /** !!!Gyladd */
     // eslint-disable-next-line no-console
     console.log('app.extension service');
-
-    /** !!!Gyladd */
-    /* this.auStore.select(getSelectedAuPage).subscribe(() => {
-      this.auPageSelectionId = 'abc';
-      if (this.config) {
-        this.setup(this.config);
-      }
-    });  */
   }
-
-  /* getAuPageSelections(): Observable<string> {
-    return this._createActions.pipe(
-      map((createActions) =>
-        createActions
-          .filter((action) => this.filterVisible(action))
-          .map((action) => this.copyAction(action))
-          .map((action) => this.buildMenu(action))
-          .map((action) => this.setActionDisabledFromRule(action))
-      )
-    );
-  } */
 
   async load() {
     this.config = await this.extensions.load();

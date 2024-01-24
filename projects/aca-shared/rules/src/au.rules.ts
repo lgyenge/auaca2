@@ -24,9 +24,11 @@
 
 import { RuleContext } from '@alfresco/adf-extensions';
 import { Node } from '@alfresco/js-api';
+import { AuSelectionState } from '@alfresco/aca-shared/store';
 
 export interface AuRuleContext extends RuleContext {
   auItemSelection: Node;
+  auSelection: AuSelectionState;
 }
 
 export function isAuTemplate(context: RuleContext): boolean {
@@ -56,30 +58,51 @@ export function isAuTemplateType(context: RuleContext): boolean {
 
 export function isAuPageSelected(auContext: AuRuleContext): boolean {
   // eslint-disable-next-line no-console
-  // console.log('isAuPageSelected:' + auContext.auItemSelection.id);
-  if (auContext.auItemSelection && (auContext.auItemSelection.nodeType === 'au:page' || auContext.auItemSelection.nodeType === 'au:firstPage')) {
+  console.log(`auSelection ${auContext?.auSelection?.page?.id}`);
+
+  /* if (auContext.auItemSelection && (auContext.auItemSelection.nodeType === 'au:page' || auContext.auItemSelection.nodeType === 'au:firstPage')) {
+    return true;
+  } else {
+    return false;
+  } */
+
+  if (auContext.auSelection?.page) {
     return true;
   } else {
     return false;
   }
+}
+
+export function isFirstAuPageSelected(auContext: AuRuleContext): boolean {
+  // eslint-disable-next-line no-console
+  // console.log('isAuSectionSelected:' + auContext.auItemSelection.id);
+  return auContext.auSelection.isFirstPage ? true : false;
+}
+
+export function canDeleteAuPage(auContext: AuRuleContext): boolean {
+  // eslint-disable-next-line no-console
+  // console.log('isAuSectionSelected:' + auContext.auItemSelection.id);
+  if (auContext.auSelection?.isFirstPage === false && !!auContext.auSelection.page === true) {
+    return true;
+  }
+  return false;
 }
 
 export function isAuSectionSelected(auContext: AuRuleContext): boolean {
   // eslint-disable-next-line no-console
   // console.log('isAuSectionSelected:' + auContext.auItemSelection.id);
-  if (auContext.auItemSelection && auContext.auItemSelection.nodeType === 'au:section') {
-    return true;
-  } else {
-    return false;
-  }
+  return auContext.auSelection?.section ? true : false;
 }
 
-export function isAuItemQuestion(auContext: AuRuleContext): boolean {
+export function isAuItemSelected(auContext: AuRuleContext): boolean {
   // eslint-disable-next-line no-console
-  // console.log('isAuitemQuestionSelected:' + auContext.auItemSelection.id);
-  if (auContext.auItemSelection && auContext.auItemSelection.nodeType === 'au:itemQuestion') {
+  // console.log('isAuItemSelected:' + auContext.auItemSelection.id);
+  if (!!auContext.auSelection?.item === true && !!auContext.auSelection.page === false && !!auContext.auSelection.section === false) {
     return true;
-  } else {
-    return false;
   }
+  return false;
+}
+
+export function canCreateAuItem(auContext: AuRuleContext): boolean {
+  return auContext.auSelection?.item ? true : false;
 }

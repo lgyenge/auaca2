@@ -24,13 +24,26 @@
 
 import { State } from '../reducers/au-templ.reducer';
 import { Node } from '@alfresco/js-api';
-import { AuEntitiesParams } from '../models/au-templ.model';
+// import { AuEntitiesParams, AuSelectionState } from '../models/au-templ.model';
+import { AuSelectionState } from '../models/au-templ.model';
 
 export function findPrevNodeFn(node: Node, state: State): Node {
-  let prev = state.firstPage;
-  while (prev.properties['au:nextItemId'] && prev.properties['au:nextItemId'] !== node.id) {
-    prev = prev.properties['au:nextItemId'];
+  let prev: Node = null;
+  if (node && node !== state.firstPage) {
+    // prev = state.firstPage;
+    prev = state.entities[state.firstPage.id];
+
+    // eslint-disable-next-line no-console
+    // console.log(`prev: ${prev?.id} prev-nextItemId ${prev?.properties['au:nextItemId']} node: ${node?.id} node.nodeType: ${node?.nodeType} `);
+    while (prev?.properties['au:nextItemId'] && prev?.properties['au:nextItemId'] !== node.id) {
+      prev = state.entities[prev.properties['au:nextItemId']];
+      // eslint-disable-next-line no-console
+      // console.log(`prev: ${prev?.id} prev-nextItemId ${prev?.properties['au:nextItemId']} node: ${node?.id} node.nodeType: ${node?.nodeType} `);
+    }
   }
+  // eslint-disable-next-line no-console
+  console.log(`prev: ${prev?.id} prev-nextItemId ${prev?.properties['au:nextItemId']} node: ${node?.id} node.nodeType: ${node?.nodeType} `);
+
   return prev;
 }
 
@@ -44,38 +57,86 @@ export function setAllPagesItemsFn(pages: Node[], state: State): Node[] {
 }
 
 /** select page items for add, delete, move page */
-export function setPageItemsFn(page: Node, state: State): AuEntitiesParams {
-  const auEntities: AuEntitiesParams = {
-    prevItem: null,
+export function setPageItemsFn(page: Node, state: State): AuSelectionState {
+  const auEntities: AuSelectionState = {
+    isEmpty: false,
+    // prevItem: null,
     firstItem: page,
     lastItem: null,
-    itemsInGroup: [],
-    newItem: null
+    nextItem: null,
+    itemsInGroup: []
   };
   let current = page;
   let next = state.entities[current.properties['au:nextItemId']];
-  while (!current.properties['au:nextItemId'] && next?.nodeType !== 'au:page') {
+  // eslint-disable-next-line no-console
+  console.log(`current: ${current.id} current-nextItemId ${current.properties['au:nextItemId']} next: ${next?.id} next.nodeType: ${next?.nodeType} `);
+  while (current.properties['au:nextItemId'] && next?.nodeType !== 'au:page') {
+    // eslint-disable-next-line no-console
+    console.log(
+      `current: ${current.id} current-nextItemId ${current.properties['au:nextItemId']} next: ${next?.id} next.nodeType: ${next?.nodeType} `
+    );
+
     current.properties['au:pageId'] = page.id;
     auEntities.itemsInGroup.push(current);
     current = next;
     next = state.entities[current.properties['au:nextItemId']];
+    // eslint-disable-next-line no-console
+    console.log(
+      `current: ${current.id} current-nextItemId ${current.properties['au:nextItemId']} next: ${next?.id} next.nodeType: ${next?.nodeType} `
+    );
   }
+  current.properties['au:pageId'] = page.id;
+  auEntities.itemsInGroup.push(current);
   auEntities.lastItem = current;
+  auEntities.nextItem = next;
+  if (auEntities.nextItem === undefined) {
+    auEntities.nextItem = null;
+  }
+
+  return auEntities;
+}
+
+/** select section items for add, delete, move section */
+export function setSectionItemsFn(section: Node, state: State): AuSelectionState {
+  const auEntities: AuSelectionState = {
+    isEmpty: false,
+    // prevItem: null,
+    firstItem: section,
+    lastItem: null,
+    nextItem: null,
+    itemsInGroup: []
+  };
+  let current = section;
+  let next = state.entities[current.properties['au:nextItemId']];
+  while (
+    current.properties['au:nextItemId'] &&
+    current.properties['au:sectionId'] &&
+    current.properties['au:sectionId'] === next.properties['au:sectionId']
+  ) {
+    auEntities.itemsInGroup.push(current);
+    current = next;
+    next = state.entities[current.properties['au:nextItemId']];
+  }
+  auEntities.itemsInGroup.push(current);
+  auEntities.lastItem = current;
+  auEntities.nextItem = next;
   return auEntities;
 }
 
 /**  order entity state items and sets 'au:pageId' property */
 export function orderStateItemsFn(state: State): Node[] {
   const sortedItems: Node[] = [];
-  const firstPage = state.firstPage;
+  // const firstPage = state.firstPage;
+  const firstPage = state.entities[state.firstPage.id];
+
   let pageId = firstPage.id;
   let current = firstPage;
   let next = state.entities[current.properties['au:nextItemId']];
   while (current) {
     // eslint-disable-next-line no-console
-    console.log(
+    /* console.log(
       `current: ${current.id} current-nextItemId ${current.properties['au:nextItemId']} next: ${next?.id} next.nodeType: ${next?.nodeType} `
-    );
+    ); */
 
     if (current.nodeType === 'au:page') {
       pageId = current.id;
@@ -85,7 +146,7 @@ export function orderStateItemsFn(state: State): Node[] {
     current = next;
     next = state.entities[current?.properties['au:nextItemId']];
     // eslint-disable-next-line no-console
-    console.log(`next: ${next}`);
+    // console.log(`next: ${next}`);
   }
   // eslint-disable-next-line no-console
   // console.log(`sortedItems:  ${JSON.stringify(sortedItems)}`);

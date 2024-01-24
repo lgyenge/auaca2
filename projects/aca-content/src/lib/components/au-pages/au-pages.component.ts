@@ -36,9 +36,11 @@ import * as fromStorePublicApi from '@alfresco/aca-shared/store';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import {
   getAuTemplsAll,
+  getAuSelection,
+  AuSelectionState,
   // AuPage,
   addAuPage,
-  deleteAuPage,
+  deleteAuItemGroup,
   // moveAuItem,
   loadAuItems,
   selectAuItem,
@@ -54,7 +56,7 @@ import {
 import { AppExtensionService } from '@alfresco/aca-shared';
 
 import { Observable, Subject, of } from 'rxjs';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 
 @Component({
   // eslint-disable-next-line @alfresco/eslint-angular/use-none-component-view-encapsulation
@@ -73,6 +75,7 @@ export class AuPagesComponent implements OnInit, OnDestroy {
   auItems$: Observable<Node[]>;
   selectedAuItem$: Observable<Node>;
   selectedItem: Node;
+  auSelection: AuSelectionState;
   pageNumber: number;
   auItems: Node[] = [];
   dataLoaded$: Observable<boolean> = of(false);
@@ -89,7 +92,7 @@ export class AuPagesComponent implements OnInit, OnDestroy {
     this.auStore.dispatch(loadAuItems({ templateId: this.templateId }));
     this.dataLoaded$ = this.auStore.pipe(select(fromStorePublicApi.getAuTemplsLoaded)).pipe(take(1));
     this.auItems$ = this.auStore.pipe(select(getAuTemplsAll)).pipe(
-      filter((res) => res != null),
+      // filter((res) => res != null),
       // eslint-disable-next-line no-console
       // tap((val) => console.log(`Get all Item  from Items ngOnInit ${val}`)),
       takeUntil(this.onDestroy$)
@@ -101,15 +104,14 @@ export class AuPagesComponent implements OnInit, OnDestroy {
       .subscribe((value) => {
         this.template = value;
       });
-
     this.auStore
-      .select(fromStorePublicApi.getSelectedAuItem)
+      .select(getAuSelection)
       .pipe(takeUntil(this.onDestroy$))
-      .subscribe((value) => {
-        this.selectedItem = value;
-        this.extensions.auItemSelection = value;
+      .subscribe((result) => {
+        this.auSelection = result;
+        this.extensions.auSelection = result;
         // eslint-disable-next-line no-console
-        console.log(`page selection changed: ${value?.id}`);
+        // console.log(`auSelection ${JSON.stringify(result)}`);
         // to init change
         this.store.dispatch(new SetSelectedNodesAction([]));
       });
@@ -131,9 +133,8 @@ export class AuPagesComponent implements OnInit, OnDestroy {
     this.auStore.dispatch(addAuPage());
   }
 
-  deletePage(item: Node) {
-    const { templateId } = this;
-    this.auStore.dispatch(deleteAuPage({ templateId, item }));
+  deleteItem() {
+    this.auStore.dispatch(deleteAuItemGroup());
   }
 
   /*  drop(event: CdkDragDrop<Node[]>) {

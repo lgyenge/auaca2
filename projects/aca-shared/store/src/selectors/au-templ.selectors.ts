@@ -40,10 +40,12 @@ export const getAuTemplsLoaded = createSelector(selectState, (state: State) => s
 export const selectTemplsReady = createSelector(getAuTemplsLoaded, getAuTemplsAll, (ready, items) => ({ ready, items }));
 
 // export const getSelectedAuTempl = createSelector(selectState, (state: State) => state.selectedAuTemplId);
-export const getSelectedAuItem = createSelector(selectState, (state: State) => state.selectedAuItem);
+// export const getSelectedAuItem = createSelector(selectState, (state: State) => state.selectedAuItem);
+export const getSelectedAuItem = createSelector(selectState, (state: State) => state.selection.item);
+
 export const getAuState = createSelector(selectState, (state: State) => state);
 
-export const getSelectedId = createSelector(selectState, (state: State) => state.selectedAuItem.id);
+export const getSelectedId = createSelector(selectState, (state: State) => state.selection.item.id);
 
 export const getEntity = createSelector(getAuTemplsEntities, getSelectedId, (entities, selectedId) =>
   selectedId ? entities[selectedId] : undefined
@@ -53,8 +55,10 @@ export const getFirstPage = createSelector(selectState, (state) => state.firstPa
 
 export const selectTemplate = createSelector(selectState, (state) => state.template);
 
+export const getAuSelection = createSelector(selectState, (state) => state.selection);
+
 /** selector for add page */
-export const getAddPageState = createSelector(getAuTemplsEntities, selectState, (entities, state: State) => {
+/* export const getAddPageState = createSelector(getAuTemplsEntities, selectState, (entities, state: State) => {
   // const items = fromAuTempl.selectAll(state);
   let current = state.selectedAuItem;
   let next: Node = null;
@@ -102,7 +106,7 @@ export const getAddPageState = createSelector(getAuTemplsEntities, selectState, 
     }
   }
   return { prev: current, next: next };
-});
+}); */
 
 /** selector for delete page and all items of page*/
 export const getdeletePageState = createSelector(getAuTemplsEntities, getSelectedAuItem, selectState, (entities, selectedItem, state: State) => {

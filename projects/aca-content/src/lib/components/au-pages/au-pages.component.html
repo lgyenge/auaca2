@@ -1,7 +1,40 @@
 <!-- <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)"> -->
-<div cdkDropList class="example-list">
+  <div cdkDropList class="example-list">
+    <ng-container *ngFor="let item of auItems$ | async; let i = index">
+
+      <div class="example-box" cdkDrag [cdkDragData]="item">
+        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+       <!--  <mat-card>
+          <mat-card-content> -->
+            <button
+              mat-icon-button
+              color="primary"
+              aria-label="Clear selection"
+              *ngIf="item === (selectedAuItem$ | async); else notSelected"
+              (click)="unSelectItem()"
+            >
+              <mat-icon>check_box</mat-icon>
+            </button>
+            <ng-template #notSelected>
+              <button mat-icon-button color="primary" aria-label="Select" (click)="selectItem($event, item)">
+                <mat-icon>check_box_outline_blank</mat-icon>
+              </button>
+            </ng-template>
+            <div *ngIf="item.nodeType === 'au:page' || item.nodeType === 'au:firstPage'"> page  Item:{{ item.name }}</div>
+            <div *ngIf="item.nodeType === 'au:itemSection'"> section Item:{{ item.name }}</div>
+            <div *ngIf="item.nodeType === 'au:itemQuestion'"> question Item:{{ item.name }}</div>
+         <!--  </mat-card-content>
+        </mat-card> -->
+      </div>
+    </ng-container>
+  </div>
+
+<!-- <div cdkDropList class="example-list">
   <ng-container *ngFor="let item of auItems$ | async; let i = index">
-    <!--  {{ item.id }} -- {{ selectedId }} -->
+    <div *ngIf="item.nodeType === 'au:page' || item.nodeType === 'au:firstPage'"> page</div>
+    <div *ngIf="item.nodeType === 'au:itemSection'"> section</div>
+    <div *ngIf="item.nodeType === 'au:itemQuestion'"> question</div>
+
     <div class="example-box" cdkDrag [cdkDragData]="item">
       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
       <mat-card>
@@ -21,35 +54,10 @@
             </button>
           </ng-template>
           <button mat-button (click)="createPage()">Add Page</button>
-          <button mat-button (click)="deletePage(item)">Delete Page</button>
+          <button mat-button (click)="deleteItem()">Delete Page</button>
           Item:{{ item.name }}
         </mat-card-content>
       </mat-card>
-      <!-- <mat-accordion class="example-headers-align" multi>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title (click)="$event.stopPropagation()">
-              <div *ngIf="page.id === (selectedAuPage$ | async); else notSelected">
-                <button mat-icon-button color="primary" aria-label="Clear selection" (click)="unSelectPage()">
-                  <mat-icon>check_box</mat-icon>
-                </button>
-              </div>
-
-              <ng-template #notSelected>
-                <button mat-icon-button color="primary" aria-label="Select" (click)="selectPage($event, page)">
-                  <mat-icon>check_box_outline_blank</mat-icon>
-                </button>
-              </ng-template>
-              Oldal:{{ page.name }}
-            </mat-panel-title>
-            <mat-panel-description >
-              <button mat-button (click)="createPage(i)">Add Page</button>
-              <button mat-button (click)="deletePage(page.id)">Delete Page</button>
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-         <lib-au-page [page]="page" *ngIf="dataLoaded$ | async"></lib-au-page>
-        </mat-expansion-panel>
-      </mat-accordion> -->
     </div>
   </ng-container>
-</div>
+</div> -->

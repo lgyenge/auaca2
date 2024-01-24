@@ -31,9 +31,9 @@ export interface addAuTemplateSuccessParams {
   nodes: Node[];
 }
 
-export interface addAuItemSuccessParams {
-  prevItem: Node;
-  newItem: Node;
+export interface AuItemSuccessParams extends AuSelectionState {
+  newItem?: Node;
+  modifiedItem?: Node;
 }
 
 /* export interface addAuPageSuccessParams {
@@ -41,17 +41,22 @@ export interface addAuItemSuccessParams {
   nodePaging: NodePaging;
 } */
 
-export interface addPageSuccessParams {
+/* export interface addPageSuccessParams {
   nodePrev: Node;
   newPage: Node;
-}
+} */
 
-export interface AuEntitiesParams {
-  prevItem: Node;
-  firstItem: Node;
-  lastItem: Node;
-  itemsInGroup: Node[];
-  newItem: Node;
+export interface AuSelectionState {
+  isEmpty?: boolean;
+  item?: Node;
+  page?: Node;
+  isFirstPage?: boolean;
+  section?: Node;
+  prevItem?: Node;
+  nextItem?: Node;
+  firstItem?: Node;
+  lastItem?: Node;
+  itemsInGroup?: Node[];
 }
 
 export interface MovePageParams {
@@ -60,7 +65,7 @@ export interface MovePageParams {
   oldIndex: number;
 }
 
-export interface GetAddPageStateParams {
+/* export interface GetAddPageStateParams {
   prev: Node;
   next: Node | null;
-}
+} */

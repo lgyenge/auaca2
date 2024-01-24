@@ -31,8 +31,7 @@ import * as AuTemplActions from '../actions/au-templ.actions';
 import { Store, select } from '@ngrx/store';
 // import { Node } from '@alfresco/js-api';
 import { auTemplatesService } from '../services/au-templates.service'; // import ok
-// import { getCurrentFolder, AppStore, getAddPageState, GetAddPageStateParams, NavigateRouteAction, getSelectedAuItem } from '../public-api';
-import { getCurrentFolder, AppStore, getAddPageState, GetAddPageStateParams, NavigateRouteAction } from '../public-api';
+import { getCurrentFolder, AppStore, getAuSelection, AuSelectionState, NavigateRouteAction } from '../public-api';
 
 import { of } from 'rxjs';
 
@@ -42,18 +41,6 @@ export class AuTemplEffects {
   private actions$ = inject(Actions);
   // private auStore = inject(Store<AuTemplsStore>);
   private store = inject(Store<AppStore>);
-
-  /*  loadAuTempls$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(AuTemplActions.loadAuTempls),
-      concatMap(() =>
-        EMPTY.pipe(
-          map((data) => AuTemplActions.loadAuTemplsSuccess({ data })),
-          catchError((error) => of(AuTemplActions.loadAuTemplsFailure({ error })))
-        )
-      )
-    );
-  }); */
 
   /* addAuTempl2$ = createEffect(
     () =>
@@ -140,93 +127,101 @@ export class AuTemplEffects {
       // eslint-disable-next-line no-console
       tap((value) => console.log('page added effect1:' + value)),
       concatMap(() => {
-        return this.store.pipe(select(getAddPageState), take(1));
+        return this.store.pipe(select(getAuSelection), take(1));
       }),
       // eslint-disable-next-line no-console
-      tap((value) => console.log('getAddPageState:' + value)),
-      concatMap((result: GetAddPageStateParams) => {
-        return this.auTemplates.addTemplatePage(result).pipe(
-          map((nodes) => {
-            return { prevItem: nodes.prevNode, newItem: nodes.newPage };
-          }),
+      tap((selection) => console.log('getAuSelection:' + selection.lastItem.id)),
+      concatMap((selection: AuSelectionState) => {
+        return this.auTemplates.addTemplatePage(selection).pipe(
+          /* map((nodes) => {
+            // return { prevItem: selection.prevItem, lastItem: nodes.lastNode, newItem: nodes.newPage };
+            return { modifiedItem: nodes.modifiedItem, newItem: nodes.newItem };
+          }), */
           // eslint-disable-next-line no-console
-          tap((value) => console.log('page added effect2:' + value)),
-          map((data) => AuTemplActions.addAuItemSuccess({ params: data })),
+          // tap((result) => console.log(`selection ${JSON.stringify(result)}`)),
+          tap(() => this.store.dispatch(AuTemplActions.unSelectAuItem())),
+          map((result) => AuTemplActions.addAuItemSuccess({ params: result })),
           catchError((error) => of(AuTemplActions.addAuPageFailure({ error })))
         );
       })
     );
   });
 
-  /* deleteAuPage$ = createEffect(() => {
+  addAuItem$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuTemplActions.deleteAuPage),
+      ofType(AuTemplActions.addAuItem),
+      // eslint-disable-next-line no-console
+      tap((value) => console.log('item added effect1:' + value)),
+      concatMap(() => {
+        return this.store.pipe(select(getAuSelection), take(1));
+      }),
+      // eslint-disable-next-line no-console
+      tap((selection) => console.log('getAuSelection:' + selection.lastItem.id)),
+      concatMap((selection: AuSelectionState) => {
+        return this.auTemplates.addTemplateItem(selection).pipe(
+          /*  map((nodes) => {
+            // return { prevItem: selection.prevItem, lastItem: nodes.lastNode, newItem: nodes.newNode };
+            return { modifiedItem: nodes.modifiedItem, newItem: nodes.newItem };
+          }), */
+          // eslint-disable-next-line no-console
+          // tap((result) => console.log(`selection ${JSON.stringify(result)}`)),
+          tap(() => this.store.dispatch(AuTemplActions.unSelectAuItem())),
+          map((result) => AuTemplActions.addAuItemSuccess({ params: result })),
+          catchError((error) => of(AuTemplActions.addAuItemFailure({ error })))
+        );
+      })
+    );
+  });
+
+  addAuSection$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuTemplActions.addAuSection),
       // eslint-disable-next-line no-console
       tap((value) => console.log('page added effect1:' + value)),
       concatMap(() => {
-        return this.store.pipe(select(getSelectedAuItem), take(1));
+        return this.store.pipe(select(getAuSelection), take(1));
       }),
       // eslint-disable-next-line no-console
-      tap((value) => console.log('getAddPageState:' + value)),
-      concatMap((result: GetDeletePageStateParams) => {
-        return this.auTemplates.deleteTemplatePage(result).pipe(
-          map((nodes) => {
-            return { prevItem: nodes.prevNode, newItem: nodes.newPage };
-          }),
+      tap((selection) => console.log('getAuSelection:' + selection.lastItem.id)),
+      concatMap((selection: AuSelectionState) => {
+        return this.auTemplates.addTemplateSection(selection).pipe(
+          /*  map((nodes) => {
+            // return { prevItem: selection.prevItem, lastItem: nodes.lastNode, newItem: nodes.newPage };
+            return { modifiedItem: nodes.modifiedItem, newItem: nodes.newItem };
+          }), */
           // eslint-disable-next-line no-console
-          tap((value) => console.log('page added effect2:' + value)),
-          map((data) => AuTemplActions.deleteAuPageSuccess({ params: data })),
-          catchError((error) => of(AuTemplActions.deleteAuPageFailure({ error })))
+          // tap((result) => console.log(`selection ${JSON.stringify(result)}`)),
+          tap(() => this.store.dispatch(AuTemplActions.unSelectAuItem())),
+          map((result) => AuTemplActions.addAuItemSuccess({ params: result })),
+          catchError((error) => of(AuTemplActions.addAuPageFailure({ error })))
         );
       })
     );
-  }); */
+  });
 
-  /* addAuPage$ = createEffect(() => {
+  deleteAuItemGroup$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(AuTemplActions.addAuPage),
-      concatMap((action) => {
-        return this.auStore.pipe(select(getAuState)).pipe(
-          take(1),
-          // eslint-disable-next-line no-console
-          // tap((response) => console.log('response:' + response)),
-          map((state) => {
-            return { action: action, state: state };
-          })
-        );
+      ofType(AuTemplActions.deleteAuItemGroup),
+      // eslint-disable-next-line no-console
+      tap((value) => console.log('delete item group effect1:' + value)),
+      concatMap(() => {
+        return this.store.pipe(select(getAuSelection), take(1));
       }),
-      map((res) => {
-        return [res.action, res.state];
-      }),
-      concatMap((result) => {
-        return this.auTemplates.addTemplatePage(result[0], result[1]).pipe(
+      // eslint-disable-next-line no-console
+      tap((selection) => console.log('getAuSelection:' + selection.lastItem.id)),
+      concatMap((selection) => {
+        return this.auTemplates.deleteItemGroup(selection).pipe(
           map((node) => {
-            return { node: node, pageNumber: action.pageNumber };
+            /// return { isEmpty: false, prevItem: nodes.prevNode, newItem: nodes.newPage };
+            return { prevItem: node[0], itemsInGroup: selection.itemsInGroup };
           }),
           // eslint-disable-next-line no-console
-          // tap((value) => console.log('page added effect:' + value)),
-          map((data) => AuPageActions.addAuPageSuccess({ params: data })),
-          catchError((error) => of(AuPageActions.addAuPageFailure({ error })))
+          tap((result) => console.log('page deleted effect2:' + result)),
+          tap(() => this.store.dispatch(AuTemplActions.unSelectAuItem())),
+          map((result) => AuTemplActions.deleteAuItemGroupSuccess({ params: result })),
+          catchError((error) => of(AuTemplActions.deleteAuItemGroupFailure({ error })))
         );
       })
     );
-  }); */
-  /*
-  deleteAuPage$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(AuPageActions.deleteAuPage),
-      concatMap((action) => {
-        return this.auTemplates.deleteTemplateNode(action.pageId).pipe(
-          map((_node: Node) => {
-            return { templateId: action.templateId, pageId: action.pageId };
-          }),
-          // eslint-disable-next-line no-console
-          // tap((value) => console.log('valami' + value)),
-          map(({ templateId, pageId }) => AuPageActions.deleteAuPageSuccess({ templateId, pageId })),
-
-          catchError((error) => of(AuPageActions.deleteAuPageFailure({ error })))
-        );
-      })
-    );
-  }); */
+  });
 }

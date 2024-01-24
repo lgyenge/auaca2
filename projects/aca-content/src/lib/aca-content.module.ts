@@ -256,7 +256,10 @@ export class ContentServiceExtensionModule {
       'au.isAuTemplates': rules.isAuTemplates,
       'au.isAuPageSelected': rules.isAuPageSelected,
       'au.isAuSectionSelected': rules.isAuSectionSelected,
-      'au.isAuItemQuestionSelected': rules.isAuItemQuestion
+      'au.isAuItemSelected': rules.isAuItemSelected,
+      'au.isFirstAuPageSelected': rules.isFirstAuPageSelected,
+      'au.canDeleteAuPage': rules.canDeleteAuPage,
+      'au.canCreateAuItem': rules.canCreateAuItem
     });
   }
 }

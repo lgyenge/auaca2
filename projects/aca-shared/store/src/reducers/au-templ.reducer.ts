@@ -28,7 +28,9 @@ import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as AuTemplActions from '../actions/au-templ.actions';
 import { Node, NodeEntry } from '@alfresco/js-api';
-import { orderStateItemsFn } from '../au-helpers/au-store-helpers';
+import { orderStateItemsFn, setPageItemsFn, setSectionItemsFn, findPrevNodeFn } from '../au-helpers/au-store-helpers';
+// import { orderStateItemsFn, setPageItemsFn } from '../au-helpers/au-store-helpers';
+import { AuSelectionState } from '../public-api';
 
 export const auTemplsFeatureKey = 'auTempls';
 
@@ -39,6 +41,7 @@ export interface State extends EntityState<Node> {
   firstPage: Node;
   closed: Node[];
   selectedAuItem: Node;
+  selection: AuSelectionState;
   error: string | null;
 }
 
@@ -46,7 +49,7 @@ export interface AuTemplsStore {
   readonly auTempls: State;
 }
 
-export const adapter: EntityAdapter<Node> = createEntityAdapter<Node>({
+export const adapter: EntityAdapter<Node> = createEntityAdapter<null>({
   sortComparer: false
 });
 
@@ -57,6 +60,18 @@ export const initialState: State = adapter.getInitialState({
   firstPage: null,
   closed: [],
   selectedAuItem: null,
+  selection: {
+    isEmpty: true,
+    item: null,
+    page: null,
+    isFirstPage: false,
+    section: null,
+    prevItem: null,
+    nextItem: null,
+    firstItem: null,
+    lastItem: null,
+    itemsInGroup: []
+  },
   error: null
 });
 
@@ -86,31 +101,11 @@ export const reducer = createReducer(
   on(AuTemplActions.loadAuItems, (state) => ({ ...state, loaded: false, error: null })),
 
   on(AuTemplActions.loadAuItemsSuccess, (state, { items }) => {
-    /* const sortedItems: Node[] = [];
-    const firstPage = items.find((node) => node.entry.nodeType === 'au:firstPage');
-    let prevItem = firstPage;
-
-    sortedItems.push(firstPage.entry);
-    items.forEach((e) => {
-      // eslint-disable-next-line no-console
-      console.log(`e:  ${e.entry.id}`);
-      items.find(checkId);
-      function checkId(value: NodeEntry) {
-        if (prevItem.entry.properties['au:nextItemId'] === value.entry.id) {
-          sortedItems.push(value.entry);
-          prevItem = value;
-          // eslint-disable-next-line no-console
-          console.log(`pushedItem:  ${prevItem.entry.id}`);
-        }
-      }
-      // eslint-disable-next-line no-console
-      console.log(`prevItem2:  ${prevItem.entry.id}`);
-    }); */
     const result = setFirstPageState(items);
     state = adapter.setAll(result.items, { ...state, firstPage: result.firstPage, loaded: true });
     const sortedItems = orderStateItemsFn(state);
     // eslint-disable-next-line no-console
-    console.log(`sortedItems:  ${JSON.stringify(sortedItems)}`);
+    // console.log(`sortedItems:  ${JSON.stringify(sortedItems)}`);
     return adapter.setAll(sortedItems, { ...state, loaded: true });
   }),
   on(AuTemplActions.loadAuItemsFailure, (state, { error }) => ({ ...state, error })),
@@ -127,8 +122,31 @@ export const reducer = createReducer(
     template: null,
     loaded: false
   })),
-  on(AuTemplActions.selectAuItem, (state, action) => ({ ...state, selectedAuItem: action.item })),
-  on(AuTemplActions.unSelectAuItem, (state) => ({ ...state, selectedAuItem: null })),
+  /* on(AuTemplActions.selectAuItem, (state, action) => ({ ...state, selectedAuItem: action.item })), */
+  on(AuTemplActions.selectAuItem, (state, action) => {
+    const newState = updateSelectedAuNodes(state, action.item);
+    // eslint-disable-next-line no-console
+    console.log(`nextItem: ${newState.selection?.nextItem?.id}`);
+    return newState;
+  }),
+
+  // on(AuTemplActions.unSelectAuItem, (state) => ({ ...state, selectedAuItem: null })),
+  on(AuTemplActions.unSelectAuItem, (state) => ({
+    ...state,
+    selection: {
+      isEmpty: true,
+      item: null,
+      page: null,
+      isFirstPage: false,
+      section: null,
+      prevItem: null,
+      nextItem: null,
+      firstItem: null,
+      lastItem: null,
+      itemsInGroup: []
+    }
+  })),
+
   on(AuTemplActions.toggleAuItemSelection, (state, action) => {
     if (state.selectedAuItem) {
       return { ...state, selectedAuItem: null };
@@ -151,14 +169,19 @@ export const reducer = createReducer(
     sortedItems.push(currentItem);
     return adapter.setAll(sortedItems, { ...state, loaded: true });
   }) */
-  on(AuTemplActions.addAuItemSuccess, (state, { params: { prevItem, newItem } }) => {
+  on(AuTemplActions.addAuItemSuccess, (state, { params: { modifiedItem, newItem } }) => {
     const nodes: Node[] = [];
-    nodes.push(prevItem);
+    /*  nodes.push(lastItem);
+    if (prevItem) {
+      nodes.push(prevItem);
+    } */
+    nodes.push(modifiedItem);
     nodes.push(newItem);
     const sortedItems: Node[] = [];
     state = adapter.upsertMany(nodes, state);
     const entities = selectEntities(state);
-    let currentItem = state.firstPage;
+    // let currentItem = state.firstPage;
+    let currentItem = entities[state.firstPage.id];
     do {
       sortedItems.push(currentItem);
       currentItem = entities[currentItem.properties['au:nextItemId']];
@@ -166,11 +189,43 @@ export const reducer = createReducer(
     sortedItems.push(currentItem);
     // return state;
     return adapter.setAll(sortedItems, { ...state, loaded: true });
-  })
+  }),
   // on(AuTemplActions.addAuItemFailure, (state, { error }) => ({ ...state, error })),
-  // on(AuTemplActions.deleteAuItem, (state) => ({ ...state })),
-  // on(AuTemplActions.deleteAuItemSuccess, (state: AuItemData, { itemId }) => adapter.removeOne(itemId, { ...state, loaded: true, error: null })),
-  // on(AuTemplActions.deleteAuItemFailure, (state, { error }) => ({ ...state, error })),
+  on(AuTemplActions.deleteAuItemGroup, (state) => ({ ...state })),
+  on(AuTemplActions.deleteAuItemGroupSuccess, (state, { params: { prevItem, itemsInGroup } }) => {
+    const sortedItems: Node[] = [];
+    const itemIds = itemsInGroup.map((item) => item.id);
+    // eslint-disable-next-line no-console
+    // console.log('itemIds:' + itemIds);
+    // console.log('prevItem:' + prevItem.id);
+    state = adapter.removeMany(itemIds, state);
+    state = adapter.upsertOne(prevItem, state);
+    const entities = selectEntities(state);
+    // let currentItem = state.firstPage;
+    let currentItem = entities[state.firstPage.id];
+    /*  do {
+      sortedItems.push(currentItem);
+      currentItem = entities[currentItem.properties['au:nextItemId']];
+      // exit if property = null or undefined or not exist
+      // eslint-disable-next-line no-console
+      console.log(` property: ${currentItem?.properties['au:nextItemId']} result: ${!(currentItem?.properties['au:nextItemId'] == null)}`);
+    } while (!(currentItem.properties['au:nextItemId'] == null));
+    sortedItems.push(currentItem); */
+
+    sortedItems.push(currentItem);
+    while (!(currentItem.properties['au:nextItemId'] == null)) {
+      currentItem = entities[currentItem.properties['au:nextItemId']];
+      sortedItems.push(currentItem);
+
+      // exit if property = null or undefined or not exist
+      // eslint-disable-next-line no-console
+      console.log(` property: ${currentItem?.properties['au:nextItemId']} result: ${!(currentItem?.properties['au:nextItemId'] == null)}`);
+    }
+
+    // return state;
+    return adapter.setAll(sortedItems, { ...state, loaded: true });
+  }),
+  on(AuTemplActions.deleteAuItemGroupFailure, (state, { error }) => ({ ...state, error }))
 
   // on(AuTemplActions.clearAuTempls, (state) => adapter.removeAll(state))
 );
@@ -186,6 +241,65 @@ function setFirstPageState(itemEntries: NodeEntry[]): { items: Node[]; firstPage
     return value.entry;
   });
   return { items: items, firstPage: firstPage };
+}
+
+function updateSelectedAuNodes(state: State, selectedItem: Node): State {
+  const newState = { ...state };
+  let isEmpty = true;
+  let item = null;
+  let page = null;
+  let isFirstPage = false;
+  let section = null;
+  let prevItem = null;
+  let nextItem = null;
+  let firstItem = null;
+  let lastItem = null;
+  let itemsInGroup = [];
+
+  if (selectedItem.nodeType === 'au:itemQuestion') {
+    isEmpty = false;
+    item = selectedItem;
+    firstItem = item;
+    lastItem = item;
+    nextItem = state.entities[item?.properties['au:nextItemId']];
+    itemsInGroup.push(item);
+  } else if (selectedItem.nodeType === 'au:page' || selectedItem.nodeType === 'au:firstPage') {
+    isEmpty = false;
+    item = selectedItem;
+    isFirstPage = item.nodeType === 'au:firstPage' ? true : false;
+    const selectedPage = setPageItemsFn(item, state);
+    page = item;
+    firstItem = selectedPage.firstItem;
+    lastItem = selectedPage.lastItem;
+    nextItem = selectedPage.nextItem;
+    itemsInGroup = selectedPage.itemsInGroup;
+  } else if (selectedItem.nodeType === 'au:itemSection') {
+    isEmpty = false;
+    item = selectedItem;
+    const selectedSection = setSectionItemsFn(item, state);
+    section = item;
+    firstItem = selectedSection.firstItem;
+    lastItem = selectedSection.lastItem;
+    nextItem = selectedSection.nextItem;
+    itemsInGroup = selectedSection.itemsInGroup;
+    firstItem = item;
+  }
+
+  prevItem = findPrevNodeFn(item, state);
+
+  newState.selection = {
+    isEmpty,
+    item,
+    page,
+    isFirstPage,
+    section,
+    prevItem,
+    nextItem,
+    firstItem,
+    lastItem,
+    itemsInGroup
+  };
+  return newState;
 }
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = adapter.getSelectors();
