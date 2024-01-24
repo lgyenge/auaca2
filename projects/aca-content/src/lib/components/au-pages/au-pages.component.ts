@@ -26,10 +26,6 @@ import { Component, OnInit, OnDestroy, ViewEncapsulation, Input, ChangeDetection
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
 import { Node } from '@alfresco/js-api';
-
-import { AuPageComponent } from '../au-page/au-page.component';
-import { DummyComponentComponent } from '../dummy-component/dummy-component.component';
-
 import { Store, select } from '@ngrx/store';
 import * as fromStorePublicApi from '@alfresco/aca-shared/store';
 // import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
@@ -45,13 +41,8 @@ import {
   loadAuItems,
   selectAuItem,
   unSelectAuItem,
-  // unSelectAuCategory,
-  // unSelectAuItem,
   toggleAuItemSelection,
   SetSelectedNodesAction
-  // clearAuPages,
-  // clearAuCategories,
-  // clearAuItems
 } from '@alfresco/aca-shared/store';
 import { AppExtensionService } from '@alfresco/aca-shared';
 
@@ -65,7 +56,8 @@ import { take, takeUntil } from 'rxjs/operators';
   selector: 'lib-au-pages',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MaterialModule, AuPageComponent, DragDropModule, DummyComponentComponent],
+  // imports: [CommonModule, MaterialModule, AuPageComponent, DragDropModule, DummyComponentComponent],
+  imports: [CommonModule, MaterialModule, DragDropModule],
   templateUrl: './au-pages.component.html',
   styleUrls: ['./au-pages.component.css']
 })

@@ -1,8 +1,0 @@
-<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-  <ng-container *ngFor="let item of auItems$ | async; let i = index" ;>
-    <div class="example-box" cdkDrag [cdkDragData]="item">
-      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-     <!--  <lib-au-item [item]="item" [itemNumber]="i" [category]="category" *ngIf="dataLoaded$ | async"></lib-au-item> -->
-    </div>
-  </ng-container>
-</div>

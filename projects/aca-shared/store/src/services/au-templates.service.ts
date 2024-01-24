@@ -29,22 +29,22 @@ import { Injectable } from '@angular/core';
 import { SearchService, NodesApiService, SearchOptions } from '@alfresco/adf-content-services';
 import { Observable, forkJoin, of } from 'rxjs';
 
-import { Store, select } from '@ngrx/store';
-import * as fromAuPages from '../public-api';
+import { Store } from '@ngrx/store';
+// import * as fromAuPages from '../public-api';
 import {
   // getAuCategoriesAll,
   // loadAuCategories,
   // selectCategoriesReady,
-  selectPagesReady,
+  // selectPagesReady,
   AppStore,
   SnackbarErrorAction,
   AuSelectionState
 } from '../public-api';
 
-import { catchError, concatMap, filter, map, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, map, tap } from 'rxjs/operators';
 
 // import { AuPage } from '../models/au-templates.model';
-import { NodePaging, Node } from '@alfresco/js-api';
+import { Node } from '@alfresco/js-api';
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +53,7 @@ export class auTemplatesService {
   constructor(
     private nodesApi: NodesApiService,
     private searchService: SearchService,
-    private auPagesStore: Store<fromAuPages.fromPages.AuPagesStore>,
+    // private auPagesStore: Store<fromAuPages.fromPages.AuPagesStore>,
     private store: Store<AppStore>
   ) {}
 
@@ -125,7 +125,7 @@ export class auTemplatesService {
   }
 
   getTemplateItems(nodeId: string) {
-    /*  const opts1 = {
+    /*  con st opts1 = {
       skipCount: 0,
       maxItems: 20,
       include: [`properties`],
@@ -142,7 +142,7 @@ export class auTemplatesService {
   }
 
   addTemplatePage(result: AuSelectionState) {
-    // const { ordLinName, properties, nodesApi, parentNode } = this;
+    // const { o rdLinName, properties, nodesApi, parentNode } = this;
     const name = 'Oldal';
     const nodeTypePage = 'au:page';
     const opts = {
@@ -189,7 +189,7 @@ export class auTemplatesService {
   addTemplateItem(result: AuSelectionState) {
     // const { ordLinName, properties, nodesApi, parentNode } = this;
     const name = 'Question';
-    const nodeType = 'au:itemQuestion';
+    const nodeType = 'au:itemQuesti on';
     const opts = {
       ['autoRename']: true
     };
@@ -215,7 +215,7 @@ export class auTemplatesService {
           return this.nodesApi
             .updateNode(result.item.id, {
               properties: {
-                'au:nextItemId': newItem.id
+                'au:nextItemId ': newItem.id
               }
             })
             .pipe(
@@ -291,66 +291,10 @@ export class auTemplatesService {
     // console.log(`Load Categories from server (forkJoin nodeObservables) ${nodeObservables}`);
     return forkJoin(nodeObservables);
   }
-
-  // updateNode(nodeId: string, nodeBody: any, options?: any): Observable<Node>;
-  updateTemplateIds(nodeId: string, iDs: string) {
-    const properties = { 'au:pagesOrder': iDs };
-    // eslint-disable-next-line no-console
-    // console.log('iDs:' + iDs);
-    return this.nodesApi.updateNode(nodeId, { properties });
-  }
-
   deleteTemplateNode(nodeId: string) {
-    // eslint-disable-next-line no-console
+    // es lint-disable-next-line no-console
     // console.log('delete nodeId:' + nodeId);
     return this.nodesApi.deleteNode(nodeId);
-  }
-
-  getTemplateCategories() {
-    const opts1 = {
-      skipCount: 0,
-      maxItems: 20,
-      include: [`properties`],
-      where: "(nodeType='au:itemCategory')"
-    };
-    const opts2 = {
-      include: [`properties`],
-      where: "(nodeType='au:page')"
-    };
-
-    return this.auPagesStore.pipe(select(selectPagesReady)).pipe(
-      filter((res) => res.ready),
-      // eslint-disable-next-line no-console
-      // tap((val) => console.log(`selectPagesReady from getTemplateCategories service TAP: - ${JSON.stringify(val)}`)),
-      take(1),
-      concatMap((val) => {
-        const pageObservables: Observable<NodePaging | Node>[] = [];
-        val.pages.forEach((page) => {
-          const ob1 = this.nodesApi.getNodeChildren(page.id, opts1);
-          const ob2 = this.nodesApi.getNode(page.id, opts2);
-          pageObservables.push(ob1);
-          pageObservables.push(ob2);
-        });
-        // eslint-disable-next-line no-console
-        // console.log(`Load Categories from server (forkJoin Page Observables) ${pageObservables}`);
-        return forkJoin(pageObservables);
-      })
-    );
-  }
-
-  addTemplateCategory(parentId: string) {
-    // const { ordLinName, properties, nodesApi, parentNode } = this;
-    const name = 'Category';
-    const nodeType = 'au:itemCategory';
-    const opts = {
-      ['autoRename']: true
-    };
-    // const properties = { 'cm:description': 'ordLinDescription', 'au:categoryId': categoryId };
-    const properties = { 'cm:description': 'ordLinDescription' };
-
-    // eslint-disable-next-line no-console
-    // console.log('category parent id:' + parentId);
-    return this.nodesApi.createFolder(parentId, { name, properties, nodeType }, opts);
   }
 
   getTemplateResponseSets(rootNodeId: string, term: string, skipCount: number) {
