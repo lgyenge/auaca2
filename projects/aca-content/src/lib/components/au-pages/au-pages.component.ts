@@ -29,15 +29,14 @@ import { Node } from '@alfresco/js-api';
 import { Store, select } from '@ngrx/store';
 import * as fromStorePublicApi from '@alfresco/aca-shared/store';
 // import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import {
   getAuTemplsAll,
   getAuSelection,
   AuSelectionState,
-  // AuPage,
   addAuPage,
   deleteAuItemGroup,
-  // moveAuItem,
+  moveAuItem,
   loadAuItems,
   selectAuItem,
   unSelectAuItem,
@@ -48,6 +47,11 @@ import { AppExtensionService } from '@alfresco/aca-shared';
 
 import { Observable, Subject, of } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
+import { AuQuestionComponent } from '../au-question/au-question.component';
+import { AuPageComponent } from '../au-page/au-page.component';
+import { AuSectionComponent } from '../au-section/au-section.component';
+import { AuSelectComponent } from '../au-select/au-select.component';
+import { AuCloseComponent } from '../au-close/au-close.component';
 
 @Component({
   // eslint-disable-next-line @alfresco/eslint-angular/use-none-component-view-encapsulation
@@ -57,7 +61,16 @@ import { take, takeUntil } from 'rxjs/operators';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   // imports: [CommonModule, MaterialModule, AuPageComponent, DragDropModule, DummyComponentComponent],
-  imports: [CommonModule, MaterialModule, DragDropModule],
+  imports: [
+    CommonModule,
+    MaterialModule,
+    DragDropModule,
+    AuPageComponent,
+    AuSectionComponent,
+    AuQuestionComponent,
+    AuSelectComponent,
+    AuCloseComponent
+  ],
   templateUrl: './au-pages.component.html',
   styleUrls: ['./au-pages.component.css']
 })
@@ -129,9 +142,11 @@ export class AuPagesComponent implements OnInit, OnDestroy {
     this.auStore.dispatch(deleteAuItemGroup());
   }
 
-  /*  drop(event: CdkDragDrop<Node[]>) {
+  drop(event: CdkDragDrop<Node[]>) {
+    // eslint-disable-next-line no-console
+    console.log(`event data ${event.item.data.id} prevIndex: ${event.previousIndex} currentIndex: ${event.currentIndex}`);
     this.auStore.dispatch(moveAuItem({ params: { node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } }));
-  } */
+  }
 
   public toggleItemSelection(_event: any, item: Node) {
     this.auStore.dispatch(toggleAuItemSelection({ item: item }));
@@ -139,8 +154,6 @@ export class AuPagesComponent implements OnInit, OnDestroy {
 
   public selectItem(_event: any, item: Node) {
     this.auStore.dispatch(selectAuItem({ item: item }));
-    // this.auStore.dispatch(unSelectAuCategory());
-    // this.auStore.dispatch(unSelectAuItem());
   }
 
   public unSelectItem() {

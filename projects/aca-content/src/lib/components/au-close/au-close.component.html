@@ -1,0 +1,34 @@
+<div class="container">
+  <span *ngIf="item.nodeType === 'au:page' || item.nodeType === 'au:firstPage'">
+    <button
+      mat-icon-button
+      color="primary"
+      aria-label="Clear selection"
+      *ngIf="item.properties['au:pageClosed']; else notPageClosed"
+      (click)="openPage(item)"
+    >
+      <mat-icon>keyboard_arrow_right</mat-icon>
+    </button>
+    <ng-template #notPageClosed>
+      <button mat-icon-button color="primary" aria-label="Select" (click)="closePage($event, item)">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+    </ng-template>
+  </span>
+  <span *ngIf="item.nodeType === 'au:itemSection'">
+    <button
+      mat-icon-button
+      color="primary"
+      aria-label="Clear selection"
+      *ngIf="item.properties['au:sectionClosed']; else notSectionClosed"
+      (click)="openSection(item)"
+    >
+      <mat-icon>keyboard_arrow_right</mat-icon>
+    </button>
+    <ng-template #notSectionClosed>
+      <button mat-icon-button color="primary" aria-label="Select" (click)="closeSection($event, item)">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+    </ng-template>
+  </span>
+</div>

@@ -1,63 +1,52 @@
-<!-- <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)"> -->
-  <div cdkDropList class="example-list">
-    <ng-container *ngFor="let item of auItems$ | async; let i = index">
-
-      <div class="example-box" cdkDrag [cdkDragData]="item">
-        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-       <!--  <mat-card>
-          <mat-card-content> -->
-            <button
-              mat-icon-button
-              color="primary"
-              aria-label="Clear selection"
-              *ngIf="item === (selectedAuItem$ | async); else notSelected"
-              (click)="unSelectItem()"
-            >
-              <mat-icon>check_box</mat-icon>
-            </button>
-            <ng-template #notSelected>
-              <button mat-icon-button color="primary" aria-label="Select" (click)="selectItem($event, item)">
-                <mat-icon>check_box_outline_blank</mat-icon>
-              </button>
-            </ng-template>
-            <div *ngIf="item.nodeType === 'au:page' || item.nodeType === 'au:firstPage'"> page  Item:{{ item.name }}</div>
-            <div *ngIf="item.nodeType === 'au:itemSection'"> section Item:{{ item.name }}</div>
-            <div *ngIf="item.nodeType === 'au:itemQuestion'"> question Item:{{ item.name }}</div>
-         <!--  </mat-card-content>
-        </mat-card> -->
-      </div>
-    </ng-container>
-  </div>
-
-<!-- <div cdkDropList class="example-list">
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
   <ng-container *ngFor="let item of auItems$ | async; let i = index">
-    <div *ngIf="item.nodeType === 'au:page' || item.nodeType === 'au:firstPage'"> page</div>
-    <div *ngIf="item.nodeType === 'au:itemSection'"> section</div>
-    <div *ngIf="item.nodeType === 'au:itemQuestion'"> question</div>
-
     <div class="example-box" cdkDrag [cdkDragData]="item">
       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-      <mat-card>
-        <mat-card-content>
+      <div class="flex-container" *ngIf="item.nodeType === 'au:page' || item.nodeType === 'au:firstPage'">
+        <lib-au-select class="item" [item]="item"></lib-au-select>
+        <div class="item" cdkDragHandle>
           <button
             mat-icon-button
             color="primary"
             aria-label="Clear selection"
-            *ngIf="item === (selectedAuItem$ | async); else notSelected"
-            (click)="unSelectItem()"
+            *ngIf="item.properties['au:pageClosed']"
           >
-            <mat-icon>check_box</mat-icon>
+            <mat-icon>drag_indicator</mat-icon>
           </button>
-          <ng-template #notSelected>
-            <button mat-icon-button color="primary" aria-label="Select" (click)="selectItem($event, item)">
-              <mat-icon>check_box_outline_blank</mat-icon>
-            </button>
-          </ng-template>
-          <button mat-button (click)="createPage()">Add Page</button>
-          <button mat-button (click)="deleteItem()">Delete Page</button>
-          Item:{{ item.name }}
-        </mat-card-content>
-      </mat-card>
+        </div>
+        <lib-au-page class="long-item" [item]="item"></lib-au-page>
+        <lib-au-close class="item" [item]="item"></lib-au-close>
+      </div>
+      <div class="flex-container" *ngIf="item.nodeType === 'au:itemSection' && !item.properties['au:pageClosed']">
+        <lib-au-select class="item" [item]="item"></lib-au-select>
+        <div class="item" cdkDragHandle>
+          <button
+            mat-icon-button
+            color="primary"
+            aria-label="Clear selection"
+            *ngIf="item.properties['au:sectionClosed']"
+          >
+            <mat-icon>drag_indicator</mat-icon>
+          </button>
+        </div>
+        <lib-au-section class="long-item" [item]="item"></lib-au-section>
+        <lib-au-close class="item" [item]="item"></lib-au-close>
+      </div>
+      <div
+        class="flex-container"
+        *ngIf="item.nodeType === 'au:itemQuestion' && !item.properties['au:pageClosed'] && !item.properties['au:sectionClosed']"
+      >
+        <lib-au-select class="item" [item]="item"></lib-au-select>
+        <div class="item" cdkDragHandle>
+          <button
+            mat-icon-button
+            color="primary"
+          >
+            <mat-icon>drag_indicator</mat-icon>
+          </button>
+        </div>
+        <lib-au-question class="long-item" [item]="item"></lib-au-question>
+      </div>
     </div>
   </ng-container>
-</div> -->
+</div>

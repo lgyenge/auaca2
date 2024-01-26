@@ -189,7 +189,7 @@ export class auTemplatesService {
   addTemplateItem(result: AuSelectionState) {
     // const { ordLinName, properties, nodesApi, parentNode } = this;
     const name = 'Question';
-    const nodeType = 'au:itemQuesti on';
+    const nodeType = 'au:itemQuestion';
     const opts = {
       ['autoRename']: true
     };
@@ -215,7 +215,7 @@ export class auTemplatesService {
           return this.nodesApi
             .updateNode(result.item.id, {
               properties: {
-                'au:nextItemId ': newItem.id
+                'au:nextItemId': newItem.id
               }
             })
             .pipe(

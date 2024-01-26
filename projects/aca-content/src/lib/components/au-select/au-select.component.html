@@ -1,0 +1,18 @@
+  <div class="container" >
+      <span>
+        <button
+          mat-icon-button
+          color="primary"
+          aria-label="Clear selection"
+          *ngIf="item === (selectedAuItem$ | async); else notSelected"
+          (click)="unSelectItem()"
+        >
+          <mat-icon>check_box</mat-icon>
+        </button>
+        <ng-template #notSelected>
+          <button mat-icon-button color="primary" aria-label="Select" (click)="selectItem($event, item)">
+            <mat-icon>check_box_outline_blank</mat-icon>
+          </button>
+        </ng-template>
+      </span>
+  </div>

@@ -40,7 +40,7 @@ export interface State extends EntityState<Node> {
   template: Node;
   firstPage: Node;
   closed: Node[];
-  selectedAuItem: Node;
+  // selectedAuItem: Node;
   selection: AuSelectionState;
   error: string | null;
 }
@@ -59,7 +59,7 @@ export const initialState: State = adapter.getInitialState({
   loaded: false,
   firstPage: null,
   closed: [],
-  selectedAuItem: null,
+  // selectedAuItem: null,
   selection: {
     isEmpty: true,
     item: null,
@@ -90,14 +90,14 @@ export const reducer = createReducer(
   // on(AuTemplActions.updateAuTempl, (state, action) => adapter.updateOne(action.auTempl, state)),
   // on(AuTemplActions.updateAuTempls, (state, action) => adapter.updateMany(action.auTempls, state)),
   // on(AuTemplActions.deleteAuTempl, (state, action) => adapter.removeOne(action.id, state)),
-  /* on(AuTemplActions.deleteAuTempl, (state) => ({ ...state })),
-  on(AuTemplActions.deleteAuTemplSuccess, (state: AuTemplsData, { pageId }) =>
-    auTemplatesAdapter.removeOne(pageId, { ...state, loaded: true, error: null })
-  ),
-  on(AuTemplActions.deleteAuTemplFailure, (state, { error }) => ({ ...state, error })), */
-
-  on(AuTemplActions.deleteAuTempls, (state, action) => adapter.removeMany(action.ids, state)),
+  //  on(AuTemplActions.deleteAuTempl, (state) => ({ ...state })),
+  // on(AuTemplActions.deleteAuTemplSuccess, (state: AuTemplsData, { pageId }) =>
+  //  auTemplatesAdapter.removeOne(pageId, { ...state, loaded: true, error: null })
+  // ),
+  // on(AuTemplActions.deleteAuTemplFailure, (state, { error }) => ({ ...state, error })),
+  // on(AuTemplActions.deleteAuTempls, (state, action) => adapter.removeMany(action.ids, state)),
   // on(AuTemplActions.loadAuTempl, (state, action) => adapter.setAll(action.auTempls, state)),
+
   on(AuTemplActions.loadAuItems, (state) => ({ ...state, loaded: false, error: null })),
 
   on(AuTemplActions.loadAuItemsSuccess, (state, { items }) => {
@@ -146,35 +146,9 @@ export const reducer = createReducer(
       itemsInGroup: []
     }
   })),
-
-  on(AuTemplActions.toggleAuItemSelection, (state, action) => {
-    if (state.selectedAuItem) {
-      return { ...state, selectedAuItem: null };
-    } else {
-      return { ...state, selectedAuItem: action.item };
-    }
-  }),
   // on(AuTemplActions.addAuItem, (state) => ({ ...state })),
-  /* on(AuTemplActions.addAuItemSuccess, (state, { params: { prevItem, newItem } }) => {
-    const sortedItems: Node[] = [];
-    const entities = selectEntities(state);
-    state = adapter.addOne(newItem, state)
-    // entities[newItem.id] = newItem;
-    entities[prevItem.id] = prevItem;
-    let currentItem = state.firstPage;
-    do {
-      sortedItems.push(currentItem);
-      currentItem = entities[currentItem.properties['au:nextItemId']];
-    } while (!(currentItem.properties['au:nextItemId'] == null));
-    sortedItems.push(currentItem);
-    return adapter.setAll(sortedItems, { ...state, loaded: true });
-  }) */
   on(AuTemplActions.addAuItemSuccess, (state, { params: { modifiedItem, newItem } }) => {
     const nodes: Node[] = [];
-    /*  nodes.push(lastItem);
-    if (prevItem) {
-      nodes.push(prevItem);
-    } */
     nodes.push(modifiedItem);
     nodes.push(newItem);
     const sortedItems: Node[] = [];
@@ -195,23 +169,11 @@ export const reducer = createReducer(
   on(AuTemplActions.deleteAuItemGroupSuccess, (state, { params: { prevItem, itemsInGroup } }) => {
     const sortedItems: Node[] = [];
     const itemIds = itemsInGroup.map((item) => item.id);
-    // eslint-disable-next-line no-console
-    // console.log('itemIds:' + itemIds);
-    // console.log('prevItem:' + prevItem.id);
     state = adapter.removeMany(itemIds, state);
     state = adapter.upsertOne(prevItem, state);
     const entities = selectEntities(state);
     // let currentItem = state.firstPage;
     let currentItem = entities[state.firstPage.id];
-    /*  do {
-      sortedItems.push(currentItem);
-      currentItem = entities[currentItem.properties['au:nextItemId']];
-      // exit if property = null or undefined or not exist
-      // eslint-disable-next-line no-console
-      console.log(` property: ${currentItem?.properties['au:nextItemId']} result: ${!(currentItem?.properties['au:nextItemId'] == null)}`);
-    } while (!(currentItem.properties['au:nextItemId'] == null));
-    sortedItems.push(currentItem); */
-
     sortedItems.push(currentItem);
     while (!(currentItem.properties['au:nextItemId'] == null)) {
       currentItem = entities[currentItem.properties['au:nextItemId']];
@@ -225,8 +187,27 @@ export const reducer = createReducer(
     // return state;
     return adapter.setAll(sortedItems, { ...state, loaded: true });
   }),
-  on(AuTemplActions.deleteAuItemGroupFailure, (state, { error }) => ({ ...state, error }))
-
+  on(AuTemplActions.deleteAuItemGroupFailure, (state, { error }) => ({ ...state, error })),
+  on(AuTemplActions.closePage, (state, { params: item }) => {
+    item.properties['au:pageClosed'] = true;
+    const selectedPage = setPageItemsFn(item, state);
+    return adapter.upsertMany(selectedPage.itemsInGroup, state);
+  }),
+  on(AuTemplActions.closeSection, (state, { params: item }) => {
+    item.properties['au:sectionClosed'] = true;
+    const selectedSection = setSectionItemsFn(item, state);
+    return adapter.upsertMany(selectedSection.itemsInGroup, state);
+  }),
+  on(AuTemplActions.openPage, (state, { params: item }) => {
+    item.properties['au:pageClosed'] = false;
+    const selectedPage = setPageItemsFn(item, state);
+    return adapter.upsertMany(selectedPage.itemsInGroup, state);
+  }),
+  on(AuTemplActions.openSection, (state, { params: item }) => {
+    item.properties['au:sectionClosed'] = false;
+    const selectedSection = setSectionItemsFn(item, state);
+    return adapter.upsertMany(selectedSection.itemsInGroup, state);
+  })
   // on(AuTemplActions.clearAuTempls, (state) => adapter.removeAll(state))
 );
 

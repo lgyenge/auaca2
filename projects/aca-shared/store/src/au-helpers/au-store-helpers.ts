@@ -77,6 +77,7 @@ export function setPageItemsFn(page: Node, state: State): AuSelectionState {
     );
 
     current.properties['au:pageId'] = page.id;
+    current.properties['au:pageClosed'] = page.properties['au:pageClosed'];
     auEntities.itemsInGroup.push(current);
     current = next;
     next = state.entities[current.properties['au:nextItemId']];
@@ -86,6 +87,7 @@ export function setPageItemsFn(page: Node, state: State): AuSelectionState {
     );
   }
   current.properties['au:pageId'] = page.id;
+  current.properties['au:pageClosed'] = page.properties['au:pageClosed'];
   auEntities.itemsInGroup.push(current);
   auEntities.lastItem = current;
   auEntities.nextItem = next;
@@ -113,10 +115,12 @@ export function setSectionItemsFn(section: Node, state: State): AuSelectionState
     current.properties['au:sectionId'] &&
     current.properties['au:sectionId'] === next.properties['au:sectionId']
   ) {
+    current.properties['au:sectionClosed'] = section.properties['au:sectionClosed'];
     auEntities.itemsInGroup.push(current);
     current = next;
     next = state.entities[current.properties['au:nextItemId']];
   }
+  current.properties['au:sectionClosed'] = section.properties['au:sectionClosed'];
   auEntities.itemsInGroup.push(current);
   auEntities.lastItem = current;
   auEntities.nextItem = next;

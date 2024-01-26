@@ -1,0 +1,6 @@
+.no-op {
+  background: #ccc;
+  border: dotted 3px #999;
+  min-height: 50px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

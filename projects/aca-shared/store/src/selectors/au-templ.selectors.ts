@@ -26,8 +26,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { State } from '../reducers/au-templ.reducer';
 import * as fromAuTempl from '../reducers/au-templ.reducer';
-import { Node } from '@alfresco/js-api';
-import { findPrevNodeFn } from '../au-helpers/au-store-helpers';
+// import { Node } from '@alfresco/js-api';
+// import { findPrevNodeFn } from '../au-helpers/au-store-helpers';
 
 // Lookup the 'Templ' feature state managed by NgRx
 const selectState = createFeatureSelector<State>(fromAuTempl.auTemplsFeatureKey);
@@ -109,7 +109,7 @@ export const getAuSelection = createSelector(selectState, (state) => state.selec
 }); */
 
 /** selector for delete page and all items of page*/
-export const getdeletePageState = createSelector(getAuTemplsEntities, getSelectedAuItem, selectState, (entities, selectedItem, state: State) => {
+/* export const getdeletePageState = createSelector(getAuTemplsEntities, getSelectedAuItem, selectState, (entities, selectedItem, state: State) => {
   let current = selectedItem;
   let next: Node = findPrevNodeFn(selectedItem, state);
   // eslint-disable-next-line no-console
@@ -156,7 +156,7 @@ export const getdeletePageState = createSelector(getAuTemplsEntities, getSelecte
     }
   }
   return { prev: current, next: next };
-});
+}); */
 
 /*
   export const getAddPageState = createSelector(getAuTemplsEntities, selectState, (entities, state: State) => {
