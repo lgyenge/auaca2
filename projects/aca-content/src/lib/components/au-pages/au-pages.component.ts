@@ -36,11 +36,9 @@ import {
   AuSelectionState,
   addAuPage,
   deleteAuItemGroup,
-  moveAuItem,
+  moveAuItemsGroup,
   loadAuItems,
-  selectAuItem,
   unSelectAuItem,
-  toggleAuItemSelection,
   SetSelectedNodesAction
 } from '@alfresco/aca-shared/store';
 import { AppExtensionService } from '@alfresco/aca-shared';
@@ -144,19 +142,7 @@ export class AuPagesComponent implements OnInit, OnDestroy {
 
   drop(event: CdkDragDrop<Node[]>) {
     // eslint-disable-next-line no-console
-    console.log(`event data ${event.item.data.id} prevIndex: ${event.previousIndex} currentIndex: ${event.currentIndex}`);
-    this.auStore.dispatch(moveAuItem({ params: { node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } }));
-  }
-
-  public toggleItemSelection(_event: any, item: Node) {
-    this.auStore.dispatch(toggleAuItemSelection({ item: item }));
-  }
-
-  public selectItem(_event: any, item: Node) {
-    this.auStore.dispatch(selectAuItem({ item: item }));
-  }
-
-  public unSelectItem() {
-    this.auStore.dispatch(unSelectAuItem());
+    console.log(`event data ${event.item.data.id} oldIndex: ${event.previousIndex} newIndex: ${event.currentIndex}`);
+    this.auStore.dispatch(moveAuItemsGroup({ params: { node: event.item.data, oldIndex: event.previousIndex, newIndex: event.currentIndex } }));
   }
 }

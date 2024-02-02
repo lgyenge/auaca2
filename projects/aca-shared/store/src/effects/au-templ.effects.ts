@@ -31,7 +31,7 @@ import * as AuTemplActions from '../actions/au-templ.actions';
 import { Store, select } from '@ngrx/store';
 // import { Node } from '@alfresco/js-api';
 import { auTemplatesService } from '../services/au-templates.service'; // import ok
-import { getCurrentFolder, AppStore, getAuSelection, AuSelectionState, NavigateRouteAction } from '../public-api';
+import { getCurrentFolder, AppStore, getAuSelection, AuSelectionState, NavigateRouteAction, getNodesModified } from '../public-api';
 
 import { of } from 'rxjs';
 
@@ -108,7 +108,7 @@ export class AuTemplEffects {
       concatMap((action) =>
         this.auTemplates.getTemplateItems(action.templateId).pipe(
           // eslint-disable-next-line no-console
-          // tap((value) => console.log('loadAuItems effect (Items loaded from server):' + value)),
+          // tap((value) => console.log(`items: ${JSON.stringify(value)}`)),
           /*  map((data) => {
             const obj = { nodePaging: data[0], node: data[1] };
             return obj;
@@ -151,12 +151,12 @@ export class AuTemplEffects {
     return this.actions$.pipe(
       ofType(AuTemplActions.addAuItem),
       // eslint-disable-next-line no-console
-      tap((value) => console.log('item added effect1:' + value)),
+      // tap((value) => console.log('item added effect1:' + value)),
       concatMap(() => {
         return this.store.pipe(select(getAuSelection), take(1));
       }),
       // eslint-disable-next-line no-console
-      tap((selection) => console.log('getAuSelection:' + selection.lastItem.id)),
+      // tap((selection) => console.log('getAuSelection:' + selection.lastItem.id)),
       concatMap((selection: AuSelectionState) => {
         return this.auTemplates.addTemplateItem(selection).pipe(
           /*  map((nodes) => {
@@ -177,12 +177,12 @@ export class AuTemplEffects {
     return this.actions$.pipe(
       ofType(AuTemplActions.addAuSection),
       // eslint-disable-next-line no-console
-      tap((value) => console.log('page added effect1:' + value)),
+      // tap((value) => console.log('page added effect1:' + value)),
       concatMap(() => {
         return this.store.pipe(select(getAuSelection), take(1));
       }),
       // eslint-disable-next-line no-console
-      tap((selection) => console.log('getAuSelection:' + selection.lastItem.id)),
+      // tap((selection) => console.log('getAuSelection:' + selection.lastItem.id)),
       concatMap((selection: AuSelectionState) => {
         return this.auTemplates.addTemplateSection(selection).pipe(
           /*  map((nodes) => {
@@ -220,6 +220,31 @@ export class AuTemplEffects {
           tap(() => this.store.dispatch(AuTemplActions.unSelectAuItem())),
           map((result) => AuTemplActions.deleteAuItemGroupSuccess({ params: result })),
           catchError((error) => of(AuTemplActions.deleteAuItemGroupFailure({ error })))
+        );
+      })
+    );
+  });
+
+  moveAuItemsGroup$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuTemplActions.moveAuItemsGroup),
+      // eslint-disable-next-line no-console
+      // tap((value) => console.log('delete item group effect1:' + value)),
+      concatMap(() => {
+        return this.store.pipe(select(getNodesModified), take(1));
+      }),
+      // eslint-disable-next-line no-console
+      // tap((nodes) => console.log('getAuSelection:' + JSON.stringify(nodes[0].id))),
+      concatMap((nodes) => {
+        return this.auTemplates.moveItemsGroup(nodes).pipe(
+          /* map((nodes) => {
+            /// return { isEmpty: false, prevItem: nodes.prevNode, newItem: nodes.newPage };
+            return nodes;
+          }), */
+          // eslint-disable-next-line no-console
+          // tap((result) => console.log('nodesUpdated:' + result)),
+          map((result) => AuTemplActions.moveAuItemsGroupSuccess({ params: result })),
+          catchError((error) => of(AuTemplActions.moveAuItemsGroupFailure({ error })))
         );
       })
     );

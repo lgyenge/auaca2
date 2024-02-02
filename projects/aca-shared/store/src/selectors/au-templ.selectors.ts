@@ -57,6 +57,7 @@ export const selectTemplate = createSelector(selectState, (state) => state.templ
 
 export const getAuSelection = createSelector(selectState, (state) => state.selection);
 
+export const getNodesModified = createSelector(selectState, (state) => state.nodesModified);
 /** selector for add page */
 /* export const getAddPageState = createSelector(getAuTemplsEntities, selectState, (entities, state: State) => {
   // const items = fromAuTempl.selectAll(state);

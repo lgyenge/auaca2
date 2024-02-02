@@ -27,10 +27,18 @@
 import { createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as AuTemplActions from '../actions/au-templ.actions';
-import { Node, NodeEntry } from '@alfresco/js-api';
-import { orderStateItemsFn, setPageItemsFn, setSectionItemsFn, findPrevNodeFn } from '../au-helpers/au-store-helpers';
+import { Node } from '@alfresco/js-api';
+import {
+  orderStateItemsFn,
+  setPageItemsFn,
+  setSectionItemsFn,
+  updateSelectedAuNodes,
+  setFirstPageState,
+  removeItemsModifiedFn
+} from '../au-helpers/au-store-helpers';
 // import { orderStateItemsFn, setPageItemsFn } from '../au-helpers/au-store-helpers';
 import { AuSelectionState } from '../public-api';
+// import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 export const auTemplsFeatureKey = 'auTempls';
 
@@ -39,9 +47,10 @@ export interface State extends EntityState<Node> {
   loaded: boolean;
   template: Node;
   firstPage: Node;
-  closed: Node[];
+  // closed: Node[];
   // selectedAuItem: Node;
   selection: AuSelectionState;
+  nodesModified: Node[];
   error: string | null;
 }
 
@@ -58,7 +67,7 @@ export const initialState: State = adapter.getInitialState({
   template: null,
   loaded: false,
   firstPage: null,
-  closed: [],
+  // closed: [],
   // selectedAuItem: null,
   selection: {
     isEmpty: true,
@@ -72,6 +81,7 @@ export const initialState: State = adapter.getInitialState({
     lastItem: null,
     itemsInGroup: []
   },
+  nodesModified: [],
   error: null
 });
 
@@ -126,7 +136,7 @@ export const reducer = createReducer(
   on(AuTemplActions.selectAuItem, (state, action) => {
     const newState = updateSelectedAuNodes(state, action.item);
     // eslint-disable-next-line no-console
-    console.log(`nextItem: ${newState.selection?.nextItem?.id}`);
+    // console.log(`nextItem: ${newState.selection?.nextItem?.id}`);
     return newState;
   }),
 
@@ -207,80 +217,86 @@ export const reducer = createReducer(
     item.properties['au:sectionClosed'] = false;
     const selectedSection = setSectionItemsFn(item, state);
     return adapter.upsertMany(selectedSection.itemsInGroup, state);
+  }),
+
+  on(AuTemplActions.moveAuItemsGroup, (state, { params: { newIndex, oldIndex } }) => {
+    if (newIndex === oldIndex) {
+      return state;
+    }
+    const itemIds = [];
+    const nodesModified: Node[] = [];
+    let items = selectAll(state);
+    let newIndexNode = items[newIndex];
+    let newIndexNodeState = updateSelectedAuNodes(state, newIndexNode);
+    let newIndexSelection = newIndexNodeState.selection;
+    const oldIndexNode = items[oldIndex];
+    const selectedState = updateSelectedAuNodes(state, oldIndexNode);
+    const selection = selectedState.selection;
+    // remove selection
+    selectedState.selection.itemsInGroup.map((element) => {
+      itemIds.push(element.id);
+    });
+    let newState = adapter.removeMany(itemIds, selectedState);
+    newState.entities[selection.prevItem.id].properties['au:nextItemId'] = selection.lastItem.properties['au:nextItemId']
+      ? selection.lastItem.properties['au:nextItemId']
+      : '';
+    newState.entities[selection.prevItem.id].properties['au:itemModified'] = true;
+    // nodesModified.push(newState.entities[selection.prevItem.id]);
+    items = selectAll(newState);
+    // move down
+    if (newIndex < oldIndex) {
+      newIndex = newIndex - 1;
+    } else {
+      // move up
+      newIndex = newIndex - selection.itemsInGroup.length;
+    }
+    newIndexNode = items[newIndex];
+    newIndexNodeState = updateSelectedAuNodes(newState, newIndexNode);
+    newState = adapter.addMany(selectedState.selection.itemsInGroup, newState);
+    newIndexSelection = newIndexNodeState.selection;
+    if (newIndexSelection.item.properties['au:pageClosed'] || newIndexSelection.item.properties['au:sectionClosed']) {
+      newState.entities[selection.lastItem.id].properties['au:nextItemId'] = newIndexSelection.lastItem.properties['au:nextItemId']
+        ? newIndexSelection.lastItem.properties['au:nextItemId']
+        : null;
+      // if question then set sectionId from previous item sectionId
+      if (selection.item.nodeType === 'au:itemQuestion') {
+        newState.entities[selection.lastItem.id].properties['au:sectionId'] = newIndexSelection.lastItem.properties['au:sectionId']
+          ? newIndexSelection.lastItem.properties['au:sectionId']
+          : null;
+      }
+      newState.entities[selection.lastItem.id].properties['au:itemModified'] = true;
+      newState.entities[newIndexSelection.lastItem.id].properties['au:nextItemId'] = selection.item.id;
+      newState.entities[newIndexSelection.lastItem.id].properties['au:itemModified'] = true;
+    } else {
+      newState.entities[selection.lastItem.id].properties['au:nextItemId'] = newIndexSelection.item.properties['au:nextItemId']
+        ? newIndexSelection.item.properties['au:nextItemId']
+        : null;
+      if (selection.item.nodeType === 'au:itemQuestion') {
+        newState.entities[selection.lastItem.id].properties['au:sectionId'] = newIndexSelection.item.properties['au:sectionId']
+          ? newIndexSelection.lastItem.properties['au:sectionId']
+          : null;
+      }
+      newState.entities[selection.lastItem.id].properties['au:itemModified'] = true;
+      newState.entities[newIndexSelection.item.id].properties['au:nextItemId'] = selection.item.id;
+      newState.entities[newIndexSelection.item.id].properties['au:itemModified'] = true;
+    }
+
+    const sortedItems = orderStateItemsFn(newState);
+    sortedItems.forEach((item) => {
+      if (item.properties['au:itemModified']) {
+        nodesModified.push(item);
+      }
+    });
+    return adapter.setAll(sortedItems, { ...state, nodesModified: nodesModified, loaded: true });
+  }),
+  on(AuTemplActions.moveAuItemsGroupSuccess, (state) => {
+    return removeItemsModifiedFn(state);
+  }),
+  on(AuTemplActions.moveAuItemsGroupFailure, (state) => {
+    return removeItemsModifiedFn(state);
   })
+
   // on(AuTemplActions.clearAuTempls, (state) => adapter.removeAll(state))
 );
-
-/** map nodeEnties to nodes and find first page */
-function setFirstPageState(itemEntries: NodeEntry[]): { items: Node[]; firstPage: Node } {
-  // const firstPage = itemEntries.find((node) => node.entry.nodeType === 'au:firstPage');
-  let firstPage: Node = null;
-  const items = itemEntries.map((value) => {
-    if (value.entry.nodeType === 'au:firstPage') {
-      firstPage = value.entry;
-    }
-    return value.entry;
-  });
-  return { items: items, firstPage: firstPage };
-}
-
-function updateSelectedAuNodes(state: State, selectedItem: Node): State {
-  const newState = { ...state };
-  let isEmpty = true;
-  let item = null;
-  let page = null;
-  let isFirstPage = false;
-  let section = null;
-  let prevItem = null;
-  let nextItem = null;
-  let firstItem = null;
-  let lastItem = null;
-  let itemsInGroup = [];
-
-  if (selectedItem.nodeType === 'au:itemQuestion') {
-    isEmpty = false;
-    item = selectedItem;
-    firstItem = item;
-    lastItem = item;
-    nextItem = state.entities[item?.properties['au:nextItemId']];
-    itemsInGroup.push(item);
-  } else if (selectedItem.nodeType === 'au:page' || selectedItem.nodeType === 'au:firstPage') {
-    isEmpty = false;
-    item = selectedItem;
-    isFirstPage = item.nodeType === 'au:firstPage' ? true : false;
-    const selectedPage = setPageItemsFn(item, state);
-    page = item;
-    firstItem = selectedPage.firstItem;
-    lastItem = selectedPage.lastItem;
-    nextItem = selectedPage.nextItem;
-    itemsInGroup = selectedPage.itemsInGroup;
-  } else if (selectedItem.nodeType === 'au:itemSection') {
-    isEmpty = false;
-    item = selectedItem;
-    const selectedSection = setSectionItemsFn(item, state);
-    section = item;
-    firstItem = selectedSection.firstItem;
-    lastItem = selectedSection.lastItem;
-    nextItem = selectedSection.nextItem;
-    itemsInGroup = selectedSection.itemsInGroup;
-    firstItem = item;
-  }
-
-  prevItem = findPrevNodeFn(item, state);
-
-  newState.selection = {
-    isEmpty,
-    item,
-    page,
-    isFirstPage,
-    section,
-    prevItem,
-    nextItem,
-    firstItem,
-    lastItem,
-    itemsInGroup
-  };
-  return newState;
-}
 
 export const { selectIds, selectEntities, selectAll, selectTotal } = adapter.getSelectors();

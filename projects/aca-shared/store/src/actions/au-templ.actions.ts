@@ -88,4 +88,9 @@ export const openPage = createAction('[AuTempl/API] Open AuPage', props<{ params
 export const closeSection = createAction('[AuTempl/API] Close AuSection', props<{ params: Node }>());
 export const openSection = createAction('[AuTempl/API] Open AuSection', props<{ params: Node }>());
 
-export const moveAuItem = createAction('[AuItem/API] Move AuItem', props<{ params: { node: any; oldIndex: number; newIndex: number } }>());
+export const moveAuItemsGroup = createAction(
+  '[AuItem/API] Move AuItemsGroup',
+  props<{ params: { node: any; oldIndex: number; newIndex: number } }>()
+);
+export const moveAuItemsGroupSuccess = createAction('[AuItem/API] Move AuItemsGroup Success', props<{ params: Node[] }>());
+export const moveAuItemsGroupFailure = createAction('[AuTempl/API] Move AuItemsGroup Failure', props<{ error: any }>());

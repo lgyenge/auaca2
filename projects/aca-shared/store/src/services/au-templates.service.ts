@@ -41,7 +41,7 @@ import {
   AuSelectionState
 } from '../public-api';
 
-import { catchError, concatMap, map, tap } from 'rxjs/operators';
+import { catchError, concatMap, map } from 'rxjs/operators';
 
 // import { AuPage } from '../models/au-templates.model';
 import { Node } from '@alfresco/js-api';
@@ -68,7 +68,7 @@ export class auTemplatesService {
 
     return this.nodesApi.createFolder(templatesId, { name, properties, nodeType }, opts).pipe(
       // eslint-disable-next-line no-console
-      tap((template) => console.log('addAuTemplate:' + template.id)),
+      // tap((template) => console.log('addAuTemplate:' + template.id)),
       concatMap((template) => {
         return forkJoin([
           this.nodesApi.createFolder(
@@ -291,6 +291,22 @@ export class auTemplatesService {
     // console.log(`Load Categories from server (forkJoin nodeObservables) ${nodeObservables}`);
     return forkJoin(nodeObservables);
   }
+
+  moveItemsGroup(nodesModified: Node[]) {
+    const nodeObservables: Observable<Node>[] = [];
+    nodesModified.forEach((item) => {
+      const properties = item.properties;
+      // eslint-disable-next-line no-console
+      // console.log(`properties: ${properties}`);
+      const nodeId = item.id;
+      const obs = this.nodesApi.updateNode(nodeId, { properties });
+      nodeObservables.push(obs);
+    });
+    // eslint-disable-next-line no-console
+    // console.log(`Load Categories from server (forkJoin nodeObservables) ${nodeObservables}`);
+    return forkJoin(nodeObservables);
+  }
+
   deleteTemplateNode(nodeId: string) {
     // es lint-disable-next-line no-console
     // console.log('delete nodeId:' + nodeId);

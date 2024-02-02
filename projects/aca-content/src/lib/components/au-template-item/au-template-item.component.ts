@@ -49,6 +49,7 @@ import { TranslateModule } from '@ngx-translate/core';
 // import { DocumentListDirective } from '@alfresco/aca-content';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuPagesComponent } from '../au-pages/au-pages.component';
+// import { AuPagesComponent } from '../au-pages/AuPagesComponent';
 import * as fromStorePublicApi from '@alfresco/aca-shared/store';
 import { Store } from '@ngrx/store';
 @Component({

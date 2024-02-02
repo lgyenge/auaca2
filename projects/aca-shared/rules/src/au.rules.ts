@@ -58,7 +58,7 @@ export function isAuTemplateType(context: RuleContext): boolean {
 
 export function isAuPageSelected(auContext: AuRuleContext): boolean {
   // eslint-disable-next-line no-console
-  console.log(`auSelection ${auContext?.auSelection?.page?.id}`);
+  // console.log(`auSelection ${auContext?.auSelection?.page?.id}`);
 
   /* if (auContext.auItemSelection && (auContext.auItemSelection.nodeType === 'au:page' || auContext.auItemSelection.nodeType === 'au:firstPage')) {
     return true;

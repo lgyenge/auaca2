@@ -5,12 +5,10 @@
       <div class="flex-container" *ngIf="item.nodeType === 'au:page' || item.nodeType === 'au:firstPage'">
         <lib-au-select class="item" [item]="item"></lib-au-select>
         <div class="item" cdkDragHandle>
-          <button
-            mat-icon-button
-            color="primary"
-            aria-label="Clear selection"
-            *ngIf="item.properties['au:pageClosed']"
-          >
+          <!-- <button mat-icon-button color="primary" aria-label="Clear selection" *ngIf="item.properties['au:pageClosed']">
+            <mat-icon>drag_indicator</mat-icon>
+          </button> -->
+          <button mat-icon-button color="primary" aria-label="Clear selection" *ngIf="null">
             <mat-icon>drag_indicator</mat-icon>
           </button>
         </div>
@@ -20,12 +18,7 @@
       <div class="flex-container" *ngIf="item.nodeType === 'au:itemSection' && !item.properties['au:pageClosed']">
         <lib-au-select class="item" [item]="item"></lib-au-select>
         <div class="item" cdkDragHandle>
-          <button
-            mat-icon-button
-            color="primary"
-            aria-label="Clear selection"
-            *ngIf="item.properties['au:sectionClosed']"
-          >
+          <button mat-icon-button color="primary" aria-label="Clear selection" *ngIf="item.properties['au:sectionClosed']">
             <mat-icon>drag_indicator</mat-icon>
           </button>
         </div>
@@ -38,10 +31,7 @@
       >
         <lib-au-select class="item" [item]="item"></lib-au-select>
         <div class="item" cdkDragHandle>
-          <button
-            mat-icon-button
-            color="primary"
-          >
+          <button mat-icon-button color="primary">
             <mat-icon>drag_indicator</mat-icon>
           </button>
         </div>

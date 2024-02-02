@@ -1,2 +1,2 @@
-<p>Item:{{ item.name }} pageId: {{ item.properties['au:pageId'] }} sectionId: {{ item.properties['au:sectionId'] }}</p>
-
+<!-- <p>Item:{{ item.name }}   Id: {{ item.id }}  nextId: {{ item.properties['au:nextItemId'] }} pageId: {{ item.properties['au:pageId'] }} sectionId: {{ item.properties['au:sectionId'] }}</p> -->
+<p>Id: {{ item.id.slice(0,4) }}  next: {{ (item?.properties['au:nextItemId'])?.slice(0,4) }} page: {{ (item?.properties['au:pageId'])?.slice(0,4) }} sec: {{ (item?.properties['au:sectionId'])?.slice(0,4) }} Item:{{ item.name }}</p>
