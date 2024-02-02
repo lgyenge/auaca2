@@ -7,7 +7,7 @@
   <div class="aca-page-layout-content aca-scrollable">
     <div class="aca-main-content" *ngIf="!(showLoader$ | async)">
       <lib-au-pages [templateId]="nodeId"></lib-au-pages>
-    </div>
+      </div>
     <mat-progress-spinner
       *ngIf="showLoader$ | async"
       id="adf-document-list-loading"

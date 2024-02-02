@@ -125,7 +125,7 @@ export class auTemplatesService {
   }
 
   getTemplateItems(nodeId: string) {
-    /*  con st opts1 = {
+    /*  const opts1 = {
       skipCount: 0,
       maxItems: 20,
       include: [`properties`],
@@ -134,15 +134,15 @@ export class auTemplatesService {
 
     const opts1 = {
       skipCount: 0,
-      maxItems: 200,
-      include: [`properties`]
+      maxItems: 200
+      // include: [`properties`]
     };
 
     return this.nodesApi.getNodeChildren(nodeId, opts1);
   }
 
   addTemplatePage(result: AuSelectionState) {
-    // const { o rdLinName, properties, nodesApi, parentNode } = this;
+    // const { ordLinName, properties, nodesApi, parentNode } = this;
     const name = 'Oldal';
     const nodeTypePage = 'au:page';
     const opts = {
