@@ -23,24 +23,16 @@
  */
 
 import { ElementFinder, by, browser } from 'protractor';
-import { Logger, BrowserVisibility, BrowserActions } from '@alfresco/adf-testing';
 import { Component } from '../component';
-import { Utils, waitForPresence, waitForStaleness } from '../../utilities/utils';
+import { click, waitForPresence, waitForStaleness, waitUntilElementIsVisible } from '../../utilities';
 
 export class Menu extends Component {
   items = this.allByCss('.mat-menu-item');
-
   uploadFilesInput = this.byId('app-upload-files', browser);
-  submenus = browser.element.all(by.css('app-context-menu-item .mat-menu-item'));
-  createFolderAction = this.byId('app.create.folder');
-
   cancelEditingAction = this.byCss(`.mat-menu-item[title='Cancel Editing']`);
   copyAction = this.byTitleAttr('Copy');
   editFolderAction = this.byCss(`.mat-menu-item[id$='editFolder']`);
   editOfflineAction = this.byCss(`.mat-menu-item[title='Edit Offline']`);
-  managePermissionsAction = this.byCssText('.mat-menu-item', 'Permissions');
-  shareAction = this.byCssText('.mat-menu-item', 'Share');
-  shareEditAction = this.byCssText('.mat-menu-item', 'Shared Link Settings');
 
   constructor(ancestor?: string) {
     super('.mat-menu-panel', ancestor);
@@ -48,105 +40,27 @@ export class Menu extends Component {
 
   async waitForMenuToOpen(): Promise<void> {
     await waitForPresence(browser.element(by.css('.cdk-overlay-container .mat-menu-panel')));
-    await BrowserVisibility.waitUntilElementIsVisible(this.items.get(0));
+    await waitUntilElementIsVisible(this.items.get(0));
   }
 
   async waitForMenuToClose(): Promise<void> {
     await waitForStaleness(browser.element(by.css('.cdk-overlay-container .mat-menu-panel')));
   }
 
-  async closeMenu(): Promise<void> {
-    await Utils.pressEscape();
-    await this.waitForMenuToClose();
-  }
-
-  getNthItem(nth: number): ElementFinder {
-    return this.items.get(nth - 1);
-  }
-
   private getItemByLabel(menuItem: string): ElementFinder {
     return this.byCssText('.mat-menu-item', menuItem);
-  }
-
-  getItemById(id: string): ElementFinder {
-    return this.byId(id);
   }
 
   async getItemIconText(menuItem: string): Promise<string> {
     return this.getItemByLabel(menuItem).element(by.css('.mat-icon')).getText();
   }
 
-  async getItemIdAttribute(menuItem: string): Promise<string> {
-    return this.getItemByLabel(menuItem).getAttribute('id');
-  }
-
-  async getItemsCount(): Promise<number> {
-    return this.items.count();
-  }
-
-  async clickNthItem(nth: number): Promise<void> {
-    try {
-      const elem = this.getNthItem(nth);
-      await BrowserVisibility.waitUntilElementIsClickable(elem);
-      await browser.actions().mouseMove(elem).perform();
-      await browser.actions().click().perform();
-      await this.waitForMenuToClose();
-    } catch (e) {
-      Logger.error('____ click nth menu item catch ___', e);
-    }
-  }
-
   async clickMenuItem(menuItem: string): Promise<void> {
     try {
       const elem = this.getItemByLabel(menuItem);
-      await BrowserActions.click(elem);
+      await click(elem);
     } catch (e) {
-      Logger.error(`___click menu item catch : failed to click on ${menuItem}___`, e);
-    }
-  }
-
-  async mouseOverMenuItem(menuItem: string): Promise<void> {
-    try {
-      const elem = this.getItemByLabel(menuItem);
-      await BrowserVisibility.waitUntilElementIsClickable(elem);
-      await browser.actions().mouseMove(elem).perform();
-      await browser.sleep(500);
-    } catch (error) {
-      Logger.error(`----- mouse over error : failed to mouse over ${menuItem} : `, error);
-    }
-  }
-
-  async hasSubMenu(menuItem: string): Promise<boolean> {
-    try {
-      const elem = this.getItemByLabel(menuItem);
-      await BrowserVisibility.waitUntilElementIsClickable(elem);
-      const elemClass = await elem.getAttribute('class');
-      return elemClass.includes('mat-menu-item-submenu-trigger');
-    } catch (error) {
-      Logger.error('---- has submenu error: ', error);
-      return false;
-    }
-  }
-
-  async isMenuItemPresent(title: string): Promise<boolean> {
-    return browser.element(by.cssContainingText('.mat-menu-item', title)).isPresent();
-  }
-
-  async isSubMenuItemPresent(title: string): Promise<boolean> {
-    return browser.element(by.cssContainingText('app-context-menu-item .mat-menu-item', title)).isPresent();
-  }
-
-  async getSubmenuItemsCount(): Promise<number> {
-    return this.submenus.count();
-  }
-
-  async isMenuItemDisabled(title: string): Promise<string | null> {
-    try {
-      const item = this.getItemByLabel(title);
-      return await item.getAttribute('disabled');
-    } catch (error) {
-      Logger.error('----- isMenuItemDisabled catch: ', error);
-      return null;
+      console.error(`___click menu item catch : failed to click on ${menuItem}___`, e);
     }
   }
 }

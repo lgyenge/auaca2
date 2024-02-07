@@ -35,7 +35,9 @@
           <ng-container *ngFor="let column of columns; trackBy: trackByColumnId">
             <ng-container *ngIf="column.template && !(column.desktopOnly && isSmallScreen)">
               <data-column
+                [id]="column.id"
                 [draggable]="column.draggable"
+                [resizable]="column.resizable"
                 [key]="column.key"
                 [title]="column.title"
                 [type]="column.type"
@@ -52,8 +54,10 @@
 
             <ng-container *ngIf="!column.template && !(column.desktopOnly && isSmallScreen)">
               <data-column
+                [id]="column.id"
                 [key]="column.key"
                 [draggable]="column.draggable"
+                [resizable]="column.resizable"
                 [title]="column.title"
                 [type]="column.type"
                 [format]="column.format"

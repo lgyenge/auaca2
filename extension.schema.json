@@ -582,6 +582,10 @@
           "description": "Toggles sortable state of the column",
           "type": "boolean"
         },
+        "resizable": {
+          "description": "Toggles resizable state of the column",
+          "type": "boolean"
+        },
         "template": {
           "description": "Column template id",
           "type": "string"
@@ -807,7 +811,7 @@
               "items": { "$ref": "#/definitions/contentActionRef" },
               "minItems": 1
             },
-            "content": {
+            "extensions": {
               "description": "Viewer content extensions",
               "type": "array",
               "items": { "$ref": "#/definitions/viewerExtensionRef" },

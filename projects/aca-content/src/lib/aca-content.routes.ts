@@ -444,7 +444,8 @@ export const CONTENT_LAYOUT_ROUTES: Route = {
           path: '',
           component: SearchResultsComponent,
           data: {
-            title: 'APP.BROWSE.SEARCH.TITLE'
+            title: 'APP.BROWSE.SEARCH.TITLE',
+            sortingPreferenceKey: 'search'
           }
         },
         {
@@ -482,7 +483,8 @@ export const CONTENT_LAYOUT_ROUTES: Route = {
           path: '',
           component: SearchLibrariesResultsComponent,
           data: {
-            title: 'APP.BROWSE.SEARCH.TITLE'
+            title: 'APP.BROWSE.SEARCH.TITLE',
+            sortingPreferenceKey: 'search-libraries'
           }
         },
         {

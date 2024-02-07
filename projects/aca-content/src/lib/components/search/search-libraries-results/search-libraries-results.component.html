@@ -39,6 +39,7 @@
               <ng-container *ngFor="let column of columns; trackBy: trackByColumnId">
                 <ng-container *ngIf="column.template && !(column.desktopOnly && isSmallScreen)">
                   <data-column
+                    [id]="column.id"
                     [key]="column.key"
                     [title]="column.title"
                     [type]="column.type"
@@ -46,6 +47,7 @@
                     [class]="column.class"
                     [sortable]="column.sortable"
                     [draggable]="column.draggable"
+                    [resizable]="column.resizable"
                   >
                     <ng-template let-context>
                       <adf-dynamic-column [id]="column.template" [context]="context"> </adf-dynamic-column>
@@ -55,6 +57,7 @@
 
                 <ng-container *ngIf="!column.template && !(column.desktopOnly && isSmallScreen)">
                   <data-column
+                    [id]="column.id"
                     [key]="column.key"
                     [title]="column.title"
                     [type]="column.type"
@@ -62,6 +65,7 @@
                     [class]="column.class"
                     [sortable]="column.sortable"
                     [draggable]="column.draggable"
+                    [resizable]="column.resizable"
                   >
                   </data-column>
                 </ng-container>

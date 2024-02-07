@@ -64,9 +64,12 @@ export class LoginPage extends BasePage {
 
   async isPasswordDisplayed(): Promise<boolean> {
     const type = await this.password.getAttribute('type');
-    if (type === 'text') {
-      return true;
+    return type === 'text';
+  }
+
+  async verifyUserLogin(): Promise<void> {
+    if (this.username.isVisible()) {
+      await this.page.reload({ waitUntil:"load" });
     }
-    return false;
   }
 }

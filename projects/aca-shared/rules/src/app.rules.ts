@@ -71,7 +71,7 @@ export const supportedExtensions = {
 
 export function getFileExtension(fileName: string): string | null {
   if (fileName) {
-    const match = fileName.match(/\.([^\./\?\#]+)($|\?|\#)/);
+    const match = fileName.toLowerCase().match(/\.([^\./\?\#]+)($|\?|\#)/);
 
     return match ? match[1] : null;
   }
@@ -554,7 +554,7 @@ export const canShowLogout = (context: AcaRuleContext): boolean => !context.with
  * @param context Rule execution context
  */
 export const isLibraryManager = (context: RuleContext): boolean =>
-  hasLibrarySelected(context) && context.selection.library?.entry.role === 'SiteManager';
+  hasLibrarySelected(context) && (context.selection.library?.entry.role === 'SiteManager' || isAdmin(context));
 
 /**
  * Checks if the preview button for search results can be showed

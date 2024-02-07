@@ -22,7 +22,7 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TestElement } from '@alfresco/adf-testing';
+import { TestElement } from '../../utilities';
 
 export class UploadFilesDialog {
   uploadDialog = TestElement.byCss('.adf-upload-dialog');
@@ -33,7 +33,7 @@ export class UploadFilesDialog {
 
   async closeUploadDialog(): Promise<void> {
     if (await this.uploadDialog.isVisible()) {
-      this.closeUploadButton.click();
+      await this.closeUploadButton.click();
     }
   }
 }

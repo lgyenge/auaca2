@@ -23,10 +23,10 @@
  */
 
 import { browser, protractor, ElementFinder, ExpectedConditions as EC, by, until, WebElement } from 'protractor';
-import { BrowserVisibility, Logger } from '@alfresco/adf-testing';
 import { BROWSER_WAIT_TIMEOUT } from '../configs';
 import * as path from 'path';
 import * as fs from 'fs';
+import { waitUntilElementIsPresent, waitUntilElementIsVisible } from './browser-visibility';
 
 const StreamZip = require('node-stream-zip');
 const crypto = require('crypto');
@@ -55,7 +55,7 @@ export async function waitForStaleness(element: ElementFinder, errorMessage?: st
 
 export const isPresentAndEnabled = async (element: ElementFinder): Promise<boolean> => {
   try {
-    await BrowserVisibility.waitUntilElementIsPresent(element);
+    await waitUntilElementIsPresent(element);
     return element.isEnabled();
   } catch (error) {
     return false;
@@ -64,7 +64,7 @@ export const isPresentAndEnabled = async (element: ElementFinder): Promise<boole
 
 export const isPresentAndDisplayed = async (element: ElementFinder): Promise<boolean> => {
   try {
-    await BrowserVisibility.waitUntilElementIsVisible(element);
+    await waitUntilElementIsVisible(element);
     return true;
   } catch (error) {
     return false;
@@ -84,13 +84,6 @@ export class Utils {
 
   static random(): string {
     return crypto.getRandomValues(new Uint32Array(1))[0].toString(36).substring(0, 5).toLowerCase();
-  }
-
-  static async setSessionStorageFromConfig(configFileName: string): Promise<void> {
-    const configFile = `${browser.params.e2eRootPath}/resources/extensibility-configs/${configFileName}`;
-    const fileContent = JSON.stringify(fs.readFileSync(configFile, { encoding: 'utf8' }));
-
-    await browser.executeScript(`window.sessionStorage.setItem('app.extension.config', ${fileContent});`);
   }
 
   static retryCall(fn: () => Promise<any>, retry: number = 30, delay: number = 1500): Promise<any> {
@@ -138,7 +131,7 @@ export class Utils {
     if (fileExists) {
       fs.rename(oldFilePath, newFilePath, function (err: any) {
         if (err) {
-          Logger.error(`==== rename err : failed to rename file from ${oldName} to ${newName} : `, err);
+          console.error(`==== rename err : failed to rename file from ${oldName} to ${newName} : `, err);
         }
       });
     }
@@ -155,7 +148,7 @@ export class Utils {
     });
 
     await zip.on('error', (err: any) => {
-      Logger.error(`=== unzip err : failed to unzip ${filename} - ${unzippedName} :`, err);
+      console.error(`=== unzip err : failed to unzip ${filename} - ${unzippedName} :`, err);
     });
 
     await zip.on('ready', async () => {
@@ -182,10 +175,6 @@ export class Utils {
 
   static async releaseKeyPressed(): Promise<void> {
     await browser.actions().sendKeys(protractor.Key.NULL).perform();
-  }
-
-  static formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('en-US');
   }
 
   static async uploadFileNewVersion(fileFromOS: string): Promise<void> {

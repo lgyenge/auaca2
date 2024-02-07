@@ -22,11 +22,10 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { by, browser, protractor } from 'protractor';
-import { GenericDialog } from '../dialog/generic-dialog';
-import { waitForStaleness, waitForPresence } from '../../utilities/utils';
+import { by, browser } from 'protractor';
+import { GenericDialog } from './generic-dialog';
+import { waitForStaleness, waitForPresence, click } from '../../utilities';
 import { DataTable } from '../data-table/data-table';
-import { BrowserActions } from '@alfresco/adf-testing';
 
 export class ContentNodeSelectorDialog extends GenericDialog {
   copyButton = this.childElement(by.cssContainingText('[data-automation-id="content-node-selector-actions-choose"]', 'Copy'));
@@ -52,12 +51,12 @@ export class ContentNodeSelectorDialog extends GenericDialog {
   }
 
   async selectLocation(location: string): Promise<void> {
-    await BrowserActions.click(this.locationDropDown);
+    await click(this.locationDropDown);
 
     if (location === 'Personal Files') {
-      await BrowserActions.click(this.locationPersonalFiles);
+      await click(this.locationPersonalFiles);
     } else {
-      await BrowserActions.click(this.locationFileLibraries);
+      await click(this.locationFileLibraries);
     }
 
     await this.waitForDropDownToClose();
@@ -65,13 +64,7 @@ export class ContentNodeSelectorDialog extends GenericDialog {
 
   async selectDestination(folderName: string): Promise<void> {
     const row = this.dataTable.getRowByName(folderName);
-    await BrowserActions.click(row);
+    await click(row);
     await waitForPresence(browser.element(by.css('.adf-is-selected')));
-  }
-
-  async searchFor(text: string): Promise<void> {
-    await BrowserActions.clearWithBackSpace(this.searchInput);
-    await this.searchInput.sendKeys(text);
-    await this.searchInput.sendKeys(protractor.Key.ENTER);
   }
 }

@@ -25,10 +25,9 @@
 import { by, browser } from 'protractor';
 import { Component } from '../component';
 import { Menu } from '../menu/menu';
-import { Toolbar } from './../toolbar/toolbar';
-import { SearchInput } from '../search/search-input';
-import { waitElement } from '../../utilities/utils';
-import { BrowserActions } from '@alfresco/adf-testing';
+import { Toolbar } from '../toolbar/toolbar';
+import { SearchInput } from '../search';
+import { click, waitElement } from '../../utilities';
 
 export class Header extends Component {
   userMenuButton = this.byCss(`.aca-user-menu-button`);
@@ -43,13 +42,8 @@ export class Header extends Component {
   }
 
   async openMoreMenu(): Promise<void> {
-    await BrowserActions.click(this.userMenuButton);
+    await click(this.userMenuButton);
     await this.menu.waitForMenuToOpen();
-  }
-
-  async closeMoreMenu(): Promise<void> {
-    await BrowserActions.click(this.userMenuButton);
-    await this.menu.waitForMenuToClose();
   }
 
   async isSidenavExpanded(): Promise<boolean> {
@@ -59,7 +53,7 @@ export class Header extends Component {
   async expandSideNav(): Promise<void> {
     const expanded = await this.isSidenavExpanded();
     if (!expanded) {
-      await BrowserActions.click(this.sidenavToggle);
+      await click(this.sidenavToggle);
       await waitElement(`[data-automation-id='expanded']`);
     }
   }

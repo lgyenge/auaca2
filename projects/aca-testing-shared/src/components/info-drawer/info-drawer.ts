@@ -22,24 +22,19 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { by, browser } from 'protractor';
-import { BrowserActions, BrowserVisibility, Logger, TestElement } from '@alfresco/adf-testing';
+import { browser } from 'protractor';
 import { Component } from '../component';
 import { CommentsTab } from './info-drawer-comments-tab';
 import { LibraryMetadata } from './info-drawer-metadata-library';
-import { ContentMetadata } from './info-drawer-metadata-content';
-import { waitForPresence } from '../../utilities/utils';
+import { click, TestElement, waitForPresence, waitUntilElementIsVisible } from '../../utilities';
 import { Toolbar } from '../toolbar/toolbar';
 
 export class InfoDrawer extends Component {
   commentsTab = new CommentsTab('adf-info-drawer');
   aboutTab = new LibraryMetadata('adf-info-drawer');
-  propertiesTab = new ContentMetadata('adf-info-drawer');
   header = this.byCss('.adf-info-drawer-layout-header');
   headerTitle = this.byCss('.adf-info-drawer-layout-header-title > div');
-  tabLabelsList = this.allByCss('.mat-tab-label-content');
   tabActiveLabel = this.byCss('.mat-tab-label-active');
-  tabActiveContent = this.byCss('.mat-tab-body-active .mat-tab-body-content adf-dynamic-tab');
   expandDetailsButton = TestElement.byCss(`button[title='Expand panel']`);
   selectedTab = TestElement.byCss(`.mat-tab-list [aria-selected='true'] div`);
   expandedDetailsPermissionsTab = TestElement.byText('.aca-details-container .mat-tab-label-content', 'Permissions');
@@ -58,20 +53,12 @@ export class InfoDrawer extends Component {
     return browser.isElementPresent(this.header);
   }
 
-  async isEmpty() {
-    return !(await browser.isElementPresent(by.css('.adf-info-drawer-tabs')));
-  }
-
   getTabByTitle(title: string) {
     return this.byCssText('.mat-tab-label-content', title);
   }
 
   async getTabsCount(): Promise<number> {
     return this.allByCss('.mat-tab-label-content').count();
-  }
-
-  async isTabPresent(title: string) {
-    return this.getTabByTitle(title).isPresent();
   }
 
   async isTabDisplayed(title: string): Promise<boolean> {
@@ -82,21 +69,8 @@ export class InfoDrawer extends Component {
     return false;
   }
 
-  async getTabTitle(index: number): Promise<string> {
-    const attributeValue: string = await browser.executeScript(`return arguments[0].innerText`, this.tabLabelsList.get(index - 1));
-    return attributeValue || '';
-  }
-
   async getActiveTabTitle(): Promise<string> {
     return this.tabActiveLabel.getText();
-  }
-
-  async clickTab(title: string) {
-    await BrowserActions.click(this.getTabByTitle(title));
-  }
-
-  async getComponentIdOfTab(): Promise<string> {
-    return this.tabActiveContent.getAttribute('data-automation-id');
   }
 
   async getHeaderTitle(): Promise<string> {
@@ -113,11 +87,11 @@ export class InfoDrawer extends Component {
 
   async clickCommentsTab() {
     try {
-      await BrowserActions.click(this.getTabByTitle('Comments'));
+      await click(this.getTabByTitle('Comments'));
       await this.commentsTab.waitForCommentsContainer();
-      await Promise.all([BrowserVisibility.waitUntilElementIsVisible(this.commentsTab.component)]);
+      await waitUntilElementIsVisible(this.commentsTab.component);
     } catch (error) {
-      Logger.error('--- info-drawer clickCommentsTab catch error: ', error);
+      console.error('--- info-drawer clickCommentsTab catch error: ', error);
     }
   }
 }
