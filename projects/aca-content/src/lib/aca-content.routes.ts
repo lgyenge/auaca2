@@ -44,6 +44,7 @@ import { TrashcanComponent } from './components/trashcan/trashcan.component';
 import { ShellLayoutComponent } from '@alfresco/adf-core/shell';
 import { AuTemplatesComponent } from './components/au-templates/au-templates.component';
 import { AuTemplateItemComponent } from './components/au-template-item/au-template-item.component';
+import { AuTemplateBuilderComponent } from './components/au-template-builder/au-template-builder.component';
 
 export const CONTENT_ROUTES: ExtensionRoute[] = [
   {
@@ -540,6 +541,19 @@ export const CONTENT_LAYOUT_ROUTES: Route = {
       ]
       /* canActivateChild: [AuthGuardEcm] */
     },
+    {
+      path: 'template-builder',
+      children: [
+        {
+          path: '',
+          component: AuTemplateBuilderComponent,
+          data: {
+            title: 'Template builder'
+          }
+        }
+      ]
+    },
+
     {
       path: '**',
       component: GenericErrorComponent

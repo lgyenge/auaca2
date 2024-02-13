@@ -89,9 +89,18 @@
           "node_modules/cropperjs/dist/cropper.min.css",
           "node_modules/pdfjs-dist/web/pdf_viewer.css",
           "projects/aca-content/src/lib/ui/application.scss",
-          "app/src/styles.scss"
+          "app/src/styles.scss",
+          "node_modules/grapesjs/dist/css/grapes.min.css"
         ],
-        "scripts": ["node_modules/pdfjs-dist/build/pdf.js", "node_modules/pdfjs-dist/web/pdf_viewer.js"],
+        "scripts": [
+          "node_modules/pdfjs-dist/build/pdf.js",
+          "node_modules/pdfjs-dist/web/pdf_viewer.js",
+          "node_modules/grapesjs/dist/grapes.min.js",
+          "./node_modules/grapesjs-blocks-basic/dist/index.js",
+          "./node_modules/grapesjs-plugin-forms/dist/index.js",
+          "./node_modules/grapesjs-blocks-flexbox/dist/index.js"
+
+        ],
         "vendorChunk": true,
         "extractLicenses": false,
         "buildOptimizer": false,

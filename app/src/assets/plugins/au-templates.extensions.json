@@ -70,16 +70,28 @@
   "features": {
     "navbar": [
       {
-        "id": "au.extension.nav",
+        "id": "au.extension.template",
         "items": [
           {
             "id": "au.extension.main",
             "icon": "extension",
-            "title": "au Extension",
+            "title": "Templates",
             "route": "templates"
           }
         ]
+      },
+      {
+        "id": "au.extension.builder",
+        "items": [
+          {
+            "id": "au.extension.main",
+            "icon": "build",
+            "title": "Template builder",
+            "route": "template-builder"
+          }
+        ]
       }
+
     ],
     "toolbar": [
       {
