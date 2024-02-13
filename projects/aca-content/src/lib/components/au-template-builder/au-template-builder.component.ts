@@ -26,12 +26,6 @@
 
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import grapesjs from 'grapesjs';
-// import 'grapesjs-preset-webpage';
-import presetWebpage from 'grapesjs-preset-webpage';
-import pluginForms from 'grapesjs-plugin-forms';
-import blocksBasic from 'grapesjs-blocks-basic';
-import blocksFlexbox from 'grapesjs-blocks-flexbox';
 import { MaterialModule } from '@alfresco/adf-core';
 
 @Component({
@@ -47,128 +41,7 @@ export class AuTemplateBuilderComponent implements OnInit {
   public editor: any = null;
 
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
-  ngOnInit(): void {
-    this.editor = grapesjs.init({
-      // Indicate where to init the editor. You can also pass an HTMLElement
-      container: '#gjs',
-      fromElement: true,
-      // Size of the editor
-      height: '800px',
-      width: 'auto',
-      panels: { defaults: [] },
-      // Get the content for the canvas directly from the element
-      // As an alternative we could use: `components: '<h1>Hello World Component!</h1>'`,
-      plugins: [
-        presetWebpage,
-        blocksBasic,
-        pluginForms,
-        // pluginExport,
-        blocksFlexbox
-      ],
-      // Disable the storage manager for the moment
-      /* storageManager: {
-        type: 'local', // Type of the storage, available: 'local' | 'remote'
-        autosave: true, // Store data automatically
-        autoload: true, // Autoload stored data on init
-        stepsBeforeSave: 1, // If autosave enabled, indicates how many changes are necessary before store method is triggered
-        options: {
-          local: {
-            // Options for the `local` type
-            key: 'gjsProject' // The key for the local storage
-          }
-        }
-      } */
-      storageManager: false
-      // We define a default panel as a sidebar to contain layers
-    });
-
-    this.editor.onReady(() => {
-      // eslint-disable-next-line no-console
-      console.log(`editor ready`);
-
-      const cmp = this.editor.Components;
-
-      // Change background of the wrapper and set some attribute
-      const wrapper = cmp.getWrapper();
-      wrapper.set('style', { 'background-color': 'red' });
-      wrapper.set('attributes', { title: 'Hello!' });
-
-      let wrapperChildren = cmp.getComponents();
-
-      wrapperChildren = cmp.getComponents();
-      // perform actions
-      const comp1 = wrapperChildren.add([
-        { style: { 'background-color': 'red' } },
-        { style: { height: '200px', width: '100px' } },
-        { style: { color: 'blue' } }
-      ]);
-      // Let's add some component
-      // Now let's add an other one inside first component
-      // First we have to get the collection inside. Each
-      // component has 'components' property
-      const comp1Children = comp1.get('components');
-      // Procede as before. You could also add multiple objects
-      comp1Children.add([{ style: { 'background-color': 'blue' } }, { style: { height: '200px', width: '100px' } }]);
-    });
-
-    // this.docObj= {html:this.editor.getHtml(), css:this.editor.getCss(), js:this.editor.getJs() }
-  }
-
-  /* ngAfterViewInit(): void {
-  } */
-
-  /*
-  ngAfterViewInit(): void {
-    // const wrapper = this.editor.DomComponents.getWrapper();
-    this.editor.addComponents(`<div> <img src="https://path/image" /><span title="foo">Hello world!!!</span></div>`);
-
-    let cmp = this.editor.Components;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // cmp = cmp * 2;
-
-    this.editor.onReady(() => {
-      const cmp = this.editor.Components;
-
-      const wrapperChildren = cmp.getComponents();
-      // perform actions
-      wrapperChildren.add([{ style: { 'background-color': 'red' } }, { style: { height: '200px', width: '100px' } }]);
-      // Let's add some component
-      wrapperChildren.add({
-        style: { 'background-color': 'blue' }
-      });
-      wrapperChildren.add({
-        style: { 'background-color': 'red' }
-      });
-      // eslint-disable-next-line no-console
-      console.log(`editor ready`);
-    });
-
-    // Change background of the wrapper and set some attribute
-    const wrapper = cmp.getWrapper();
-    wrapper.set('style', { 'background-color': 'red' });
-    wrapper.set('attributes', { title: 'Hello!' });
-
-    // Let's add some component
-    const wrapperChildren = cmp.getComponents();
-    const comp1 = wrapperChildren.add({
-      style: { 'background-color': 'blue' }
-    });
-    wrapperChildren.add({
-      style: { 'background-color': 'red' }
-    });
-
-    wrapperChildren.add({
-      tagName: 'span',
-      attributes: { title: 'Hello!' }
-    });
-    // Now let's add an other one inside first component
-    // First we have to get the collection inside. Each
-    // component has 'components' property
-    const comp1Children = comp1.get('components');
-    // Procede as before. You could also add multiple objects
-    comp1Children.add([{ style: { 'background-color': 'red' } }, { style: { height: '200px', width: '100px' } }]);
-  } */
-
+  ngOnInit(): void {}
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public closePage(_event: any) {
     // this.editor.addComponents(`<div> <img src="https://path/image" /><span title="foo">Hello world!!!</span></div>`);
