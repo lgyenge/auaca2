@@ -38,8 +38,6 @@ import { MaterialModule } from '@alfresco/adf-core';
   styleUrls: ['./au-template-builder.component.css']
 })
 export class AuTemplateBuilderComponent implements OnInit {
-  public editor: any = null;
-
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {}
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
