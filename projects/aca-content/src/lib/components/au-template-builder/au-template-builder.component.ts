@@ -27,73 +27,93 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
+import { FormlyMaterialModule } from '@ngx-formly/material';
+// import { MatButtonModule } from '@angular/material/button';
+// import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldDefaultOptions } from '@angular/material/form-field';
 
 @Component({
-  encapsulation: ViewEncapsulation.None,
+  // eslint-disable-next-line @alfresco/eslint-angular/use-none-component-view-encapsulation
+  encapsulation: ViewEncapsulation.Emulated,
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'lib-au-template-builder',
   standalone: true,
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MaterialModule, FormlyModule, ReactiveFormsModule, FormlyMaterialModule],
   templateUrl: './au-template-builder.component.html',
   styleUrls: ['./au-template-builder.component.css']
 })
 export class AuTemplateBuilderComponent implements OnInit {
-  public editor: any = null;
-
-  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
-  ngOnInit(): void {}
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public closePage(_event: any) {
-    // this.editor.addComponents(`<div> <img src="https://path/image" /><span title="foo">Hello world!!!</span></div>`);
-    // Example of a new component with some extra property
-    const cmp = this.editor.Components;
-    cmp.addComponent({
-      tagName: 'div',
-      removable: true, // Can't remove it
-      draggable: true, // Can't move it
-      copyable: true, // Disable copy/past
-      content: 'Content text', // Text inside component
-      style: { color: 'blue' },
-      attributes: { title: 'here' }
-    });
-    cmp.addComponent({
+  form = new FormGroup({});
+  model = { email: 'email@gmail.com' };
+  fields: FormlyFieldConfig[] = [
+    {
+      key: 'email',
       type: 'input',
-      traits: {
+      props: {
+        label: 'Email address',
+        placeholder: 'Enter email',
+        required: true
+      }
+    },
+    {
+      key: 'input',
+      type: 'input',
+      props: {
+        label: 'Input',
+        placeholder: 'Input placeholder',
+        required: true
+      }
+    },
+    {
+      key: 'textarea',
+      type: 'textarea',
+      props: {
+        label: 'Textarea',
+        placeholder: 'Textarea placeholder',
+        required: true
+      }
+    },
+    {
+      key: 'checkbox',
+      type: 'checkbox',
+      props: {
+        label: 'Checkbox'
+      }
+    },
+    {
+      key: 'select',
+      type: 'select',
+      props: {
+        label: 'Select',
+        placeholder: 'Select placeholder',
+        required: true,
         options: [
-          { name: 'opt1', value: 'abc' },
-          { name: 'opt2', value: 'bce' }
+          { label: 'Option 1', value: '1' },
+          { label: 'Option 2', value: '2' },
+          { label: 'Option 3', value: '3' }
         ]
       }
-    });
-    const comp1 = cmp.addComponent({
-      type: 'select'
-    });
-    const traits = comp1.get('traits');
-    // eslint-disable-next-line no-console
-    traits.forEach((trait) => console.log(trait.props()));
+    },
+    {
+      key: 'radio',
+      type: 'radio',
+      props: {
+        label: 'Radio',
+        required: true,
+        options: [
+          { label: 'Option 1', value: '1' },
+          { label: 'Option 2', value: '2' }
+        ]
+      }
+    }
+  ];
 
-    // eslint-disable-next-line no-console
-    console.log(comp1.getTrait('options').props());
-    // console.log(comp1.getTrait('name').props());
-    comp1.getTrait('name').set({ label: 'valami', default: 'kaka' });
-
-    // console.log(comp1.getTrait('options').props());
-
-    /*  comp1.getTrait('options').set({
-      changeProp: true,
-      options: [
-        { name: 'opt1', value: 'abc' },
-        { name: 'opt2', value: 'bce' }
-      ]
-    });
-
-    const categsTrait = comp1.get('traits').where({ name: 'options' })[0];
-    console.log(categsTrait);
-    categsTrait.set('options', [
-      { value: 'val1', name: 'name12' },
-      { value: 'val2', name: 'name13' }
-    ]); */
-
-    comp1.addAttributes({ 'data-key': 'value' });
+  onSubmit() {
+    if (this.form.valid) {
+      alert(JSON.stringify(this.model, null, 2));
+    }
   }
+  // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
+  ngOnInit(): void {}
 }

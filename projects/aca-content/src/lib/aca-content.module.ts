@@ -86,7 +86,15 @@ import { ViewProfileComponent } from './components/view-profile/view-profile.com
 import { TrashcanComponent } from './components/trashcan/trashcan.component';
 import { SharedLinkViewComponent } from './components/shared-link-view/shared-link-view.component';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
-
+// !!! gyl add !!!
+// import { MatButtonModule } from '@angular/material/button';
+// import { FormlyModule } from '@ngx-formly/core';
+// import { FormlyMaterialModule } from '@ngx-formly/material';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldDefaultOptions } from '@angular/material/form-field';
+const appearance: MatFormFieldDefaultOptions = {
+  appearance: 'outline'
+};
+// !! gyl add end !!
 @NgModule({
   imports: [
     CommonModule,
@@ -120,6 +128,11 @@ import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
     LibrariesComponent,
     HomeComponent,
     UploadFilesDialogComponent
+    /* FormlyModule.forRoot({
+      validationMessages: [{ name: 'required', message: 'This field is required' }]
+    }), */
+    // FormlyMaterialModule,
+    // MatButtonModule
   ],
   providers: [
     { provide: ContentVersionService, useClass: ContentUrlService },
@@ -136,7 +149,13 @@ import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: { closeOnNavigation: true, hasBackdrop: true, autoFocus: true }
+    },
+    // !!! gyL add !!!  fields frame
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: appearance
     }
+    // !!! gyL add end  !!!
   ]
 })
 export class ContentServiceExtensionModule {
