@@ -23,21 +23,53 @@
  */
 
 /* eslint-disable @cspell/spellchecker */
+/* eslint-disable no-console */
 
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@alfresco/adf-core';
+import { AswFormBuilderModule } from '@asoftwareworld/form-builder/form-builder';
+import { AswPreviewTemplateModule } from '@asoftwareworld/form-builder/preview-template';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'lib-au-template-builder',
   standalone: true,
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MaterialModule, AswFormBuilderModule, AswPreviewTemplateModule],
   templateUrl: './au-template-builder.component.html',
   styleUrls: ['./au-template-builder.component.css']
 })
 export class AuTemplateBuilderComponent implements OnInit {
+  title = 'ASW Form Builder Demo';
+  jsonData: any[] = [];
+  jsonData1: any[] = [];
+  isShowPreviewButton = false;
+  isShowJsonDataButton = true;
+  isShowPublishButton = false;
+
+  constructor() {}
+
+  // Publish Template
+  saveJsonData(data: any) {
+    // ....
+    console.log(data);
+    // do something
+  }
+
+  // Preview Template
+  previewTemplate(data: any) {
+    this.jsonData = data;
+  }
+
+  buttonClick(data: any): void {
+    console.log(data);
+  }
+
+  onSelectionChange(control: any): void {
+    console.log(control);
+  }
+
   // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
   ngOnInit(): void {}
 }
